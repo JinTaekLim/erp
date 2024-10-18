@@ -1,4 +1,4 @@
-package com.erp.erp.domain.accounts.common.exception;
+package com.erp.erp.domain.customers.common.exception;
 
 import lombok.Getter;
 
@@ -7,11 +7,11 @@ public class InvalidGenderException extends RuntimeException{
 
   private final String code;
   public InvalidGenderException() {
-    this(AccountsErrorType.Invalid_Gender.getMessage());
+    this(CustomersErrorType.Invalid_Gender.getMessage());
   }
 
   public InvalidGenderException(final String message) {
     super(message);
-    this.code = AccountsErrorType.Invalid_Gender.name();
+    this.code = CustomersErrorType.Invalid_Gender.name();
   }
 }
