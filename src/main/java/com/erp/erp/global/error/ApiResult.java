@@ -20,8 +20,18 @@ public class ApiResult<T> {
     return new ApiResult<T>(HttpStatus.OK.name(), HttpStatus.OK.getReasonPhrase(), data);
   }
 
+
+
+  public static <T> ApiResult<T> fail(ApiErrorType errorType, String message) {
+    return new ApiResult<T>(errorType.name(), message, null);
+  }
+
   public static <T> ApiResult<T> fail(String code, String message, T data) {
     return new ApiResult<T>(code, message, data);
+  }
+
+  public static <T> ApiResult<T> fail(ApiErrorType errorType) {
+    return new ApiResult<T>(errorType.name(), errorType.getMessage(), null);
   }
 
   public static <T> ApiResult<T> fail(){
