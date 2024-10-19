@@ -1,6 +1,7 @@
 package com.erp.erp.domain.customers.service;
 
 import com.erp.erp.domain.accounts.business.PhotoUtil;
+import com.erp.erp.domain.customers.common.dto.GetCustomerDto;
 import com.erp.erp.domain.customers.common.entity.Gender;
 import com.erp.erp.domain.customers.business.CustomersCreator;
 import com.erp.erp.domain.customers.business.CustomersReader;
@@ -9,8 +10,12 @@ import com.erp.erp.domain.customers.common.dto.AddCustomerDto;
 import com.erp.erp.domain.customers.common.dto.UpdateStatusDto;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,7 +40,7 @@ public class CustomersService {
     String photoUrl = (photo == null) ? null : photoUtil.upload(photo);
 
     Customers customers = Customers.builder()
-        .institutesId(institutes)
+        .institutes(institutes)
         .name(req.getName())
         .gender(gender)
         .phone(req.getPhone())
@@ -56,5 +61,21 @@ public class CustomersService {
     return customersReader.findById(customersId).getStatus();
   }
 
+
+  public List<Customers> getCurrentCustomers(Long institutesId, int page) {
+    Pageable pageable = PageRequest.of(page, 4);
+    Page<Customers> customersPage = customersReader.findByInstitutesIdAndStatusTrue(
+        institutesId,
+        pageable
+    );
+
+    List<Customers> customers = customersPage.getContent();
+    for (Customers c : customers ) {
+      log.info("ID " + c.getId());
+      log.info("NAME " + c.getName());
+    }
+
+    return customersPage.getContent();
+  }
 
 }

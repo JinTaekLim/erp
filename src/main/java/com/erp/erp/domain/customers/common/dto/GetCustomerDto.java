@@ -15,23 +15,26 @@ public class GetCustomerDto {
   @AllArgsConstructor
   public static class Response{
 
-    @Schema(description = "이름")
+    @Schema(description = "프로필 URL")
     private String photoUrl;
+    @Schema(description = "이름")
     private String name;
+    @Schema(description = "성별")
     private String gender;
+    @Schema(description = "전화번호")
     private String phone;
-
+    @Schema(description = "이용권")
     private String plans;
-
+    @Schema(description = "남은 시간")
     private int remainingTime;
-
+    @Schema(description = "사용 시간")
     private int usedTime;
-
+    @Schema(description = "등록 날짜")
     private int registrationDate;
-
+    @Schema(description = "지각 횟수")
     private int tardinessCount;
-
-    private int AbsenceCount;
+    @Schema(description = "결석 횟수")
+    private int absenceCount;
   }
 
 }

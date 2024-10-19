@@ -24,9 +24,9 @@ public class Accounts {
   private Long id;
 
   @ManyToOne
-  @JoinColumn(name = "institute_id")
+  @JoinColumn(name = "institutes_id")
   @NotNull
-  private Institutes institute;
+  private Institutes institutes;
 
   @NotNull
   private String accountId;
@@ -38,8 +38,8 @@ public class Accounts {
 
 
   @Builder
-  public Accounts(Institutes institute, String accountId, String password, boolean locked) {
-    this.institute = institute;
+  public Accounts(Institutes institutes, String accountId, String password, boolean locked) {
+    this.institutes = institutes;
     this.accountId = accountId;
     this.password = password;
     this.locked = locked;

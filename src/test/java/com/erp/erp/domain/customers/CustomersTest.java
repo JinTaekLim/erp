@@ -6,8 +6,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.erp.erp.domain.accounts.business.PhotoUtil;
+import com.erp.erp.domain.accounts.common.entity.Accounts;
+import com.erp.erp.domain.accounts.repository.AccountsRepository;
 import com.erp.erp.domain.customers.common.dto.AddCustomerDto;
 
+import com.erp.erp.domain.customers.common.dto.GetCustomerDto.Response;
 import com.erp.erp.domain.customers.common.dto.UpdateStatusDto;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.customers.repository.CustomersRepository;
@@ -17,6 +20,8 @@ import com.erp.erp.global.error.ApiResult;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.util.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
+import java.util.List;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -39,17 +44,37 @@ class CustomersTest extends IntegrationTest {
   @Autowired
   private InstitutesRepository institutesRepository;
 
+  @Autowired
+  private AccountsRepository accountsRepository;
+
+
 
 
   @MockBean
   private PhotoUtil photoUtil;
 
+
+  @BeforeAll
+  static void setup() {
+    System.out.println("Setup for all tests");
+  }
+
+
+
+  private Accounts getAccounts() {
+    Institutes institutes = createInstitutes();
+    return fixtureMonkey.giveMeBuilder(Accounts.class)
+        .setNull("id")
+        .set("institutes", institutes)
+        .sample();
+  }
   private Institutes getInstitutes() {
     return fixtureMonkey.giveMeBuilder(Institutes.class)
         .setNull("id")
         .sample();
   }
 
+  private Accounts createAccounts() { return accountsRepository.save(getAccounts()); }
   private Institutes createInstitutes() {
     return institutesRepository.save(getInstitutes());
   }
@@ -59,7 +84,7 @@ class CustomersTest extends IntegrationTest {
 
     return fixtureMonkey.giveMeBuilder(Customers.class)
         .setNull("id")
-        .set("institutesId", institutes)
+        .set("institutes", institutes)
         .sample();
   }
 
@@ -158,4 +183,46 @@ class CustomersTest extends IntegrationTest {
     assertNotNull(apiResponse);
     assertThat(customers.getStatus()).isNotEqualTo(status);
   }
+
+
+  @Test
+  void getCurrentCustomers_4명_반환() {
+    //given
+    Accounts accounts = createAccounts();
+    Institutes institutes = accounts.getInstitutes();
+
+    int randomInt = RandomValue.getInt(4,20);
+    int page = Math.max(0, (randomInt / 4) - 1 );
+
+    for(int i = 0; i<randomInt; i++) {
+      Customers customers = fixtureMonkey.giveMeBuilder(Customers.class)
+          .setNull("id")
+          .set("institutes" , institutes)
+          .set("status", true)
+          .sample();
+      customersRepository.save(customers);
+    }
+
+    String url = "http://localhost:" + port + "/api/customers/currentCustomers/" + page;
+
+
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+        url,
+        String.class
+    );
+
+    ApiResult<List<Response>> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<List<Response>>>(){}.getType()
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertNotNull(apiResponse);
+
+    int dataSize = apiResponse.getData().size();
+    assertThat(dataSize).isEqualTo(4);
+  }
+
 }

@@ -1,6 +1,7 @@
 package com.erp.erp.domain.auth.service;
 
 import com.erp.erp.domain.accounts.business.AccountsCreator;
+import com.erp.erp.domain.accounts.business.AccountsReader;
 import com.erp.erp.domain.accounts.common.entity.Accounts;
 import com.erp.erp.domain.accounts.repository.AccountsRepository;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
   private final AccountsCreator accountsCreator;
+  private final AccountsReader accountsReader;
   private final InstitutesRepository institutesRepository;
 
   @Transactional
@@ -29,13 +31,17 @@ public class AuthService {
 
     institutesRepository.save(institutes);
 
-    Accounts accounts = Accounts.builder()
-        .accountId("test")
-        .password("test")
-        .institute(institutes)
-        .build();
+    Accounts accounts = accountsReader.findOptionalById(1L)
+        .orElseGet(() -> {
+          Accounts newAccount = Accounts.builder()
+              .accountId("test")
+              .password("test")
+              .institutes(institutes)
+              .build();
 
-    return accountsCreator.save(accounts);
+          return accountsCreator.save(newAccount);
+        });
+
+    return accounts;
   }
-
 }
