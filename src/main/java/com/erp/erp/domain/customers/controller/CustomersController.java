@@ -33,7 +33,7 @@ public class CustomersController {
       @RequestBody AddCustomerDto.Request req
       ) {
     Accounts accounts = authService.getAccountsInfo();
-    Institutes institutes = accounts.getInstitute();
+    Institutes institutes = accounts.getInstitutes();
 
 
     Customers customers = customersService.addCustomer(institutes,req);

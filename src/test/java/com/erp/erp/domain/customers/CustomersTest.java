@@ -59,7 +59,7 @@ class CustomersTest extends IntegrationTest {
 
     return fixtureMonkey.giveMeBuilder(Customers.class)
         .setNull("id")
-        .set("institutesId", institutes)
+        .set("institutes", institutes)
         .sample();
   }
 

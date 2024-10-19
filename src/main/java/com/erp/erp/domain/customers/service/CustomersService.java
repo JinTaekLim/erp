@@ -35,7 +35,7 @@ public class CustomersService {
     String photoUrl = (photo == null) ? null : photoUtil.upload(photo);
 
     Customers customers = Customers.builder()
-        .institutesId(institutes)
+        .institutes(institutes)
         .name(req.getName())
         .gender(gender)
         .phone(req.getPhone())

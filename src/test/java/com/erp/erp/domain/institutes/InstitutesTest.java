@@ -52,7 +52,7 @@ public class InstitutesTest extends IntegrationTest {
     /* 인증 관련 코드 추가 작성 필요*/
     Accounts accounts = fixtureMonkey.giveMeOne(Accounts.class);
     
-    Institutes institutes = accounts.getInstitute();
+    Institutes institutes = accounts.getInstitutes();
 
     UpdateTotalSpotsDto.Request request = fixtureMonkey.giveMeOne(
         UpdateTotalSpotsDto.Request.class
@@ -92,7 +92,7 @@ public class InstitutesTest extends IntegrationTest {
     /* 인증 관련 코드 추가 작성 필요*/
     Accounts accounts = fixtureMonkey.giveMeOne(Accounts.class);
 
-    Institutes institutes = accounts.getInstitute();
+    Institutes institutes = accounts.getInstitutes();
 
     UpdateTotalSpotsDto.Request request = UpdateTotalSpotsDto.Request.builder()
         .num(RandomValue.getInt(-999,-1))
@@ -131,7 +131,7 @@ public class InstitutesTest extends IntegrationTest {
     /* 인증 관련 코드 추가 작성 필요*/
     Accounts accounts = fixtureMonkey.giveMeOne(Accounts.class);
 
-    Institutes institutes = accounts.getInstitute();
+    Institutes institutes = accounts.getInstitutes();
 
 
     String url = "http://localhost:" + port + "/api/institutes/updateTotalSpots";

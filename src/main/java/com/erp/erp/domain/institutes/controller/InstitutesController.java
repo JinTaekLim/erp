@@ -29,7 +29,7 @@ public class InstitutesController {
   ) {
 
     Accounts accounts = authService.getAccountsInfo();
-    Institutes institutes = accounts.getInstitute();
+    Institutes institutes = accounts.getInstitutes();
     UpdateTotalSpotsDto.Response response = institutesService.updateTotalSpots(institutes, req);
     return ApiResult.success(response);
 

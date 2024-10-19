@@ -23,7 +23,7 @@ public class Customers {
 
   @ManyToOne
   @NotNull
-  private Institutes institutesId;
+  private Institutes institutes;
 
   @NotNull
   private String name;
@@ -46,9 +46,9 @@ public class Customers {
   private Boolean status;
 
   @Builder
-  public Customers(Institutes institutesId, String name, Gender gender, String phone, String address,
+  public Customers(Institutes institutes, String name, Gender gender, String phone, String address,
       String photoUrl, LocalDate birthDate) {
-    this.institutesId = institutesId;
+    this.institutes = institutes;
     this.name = name;
     this.gender = gender;
     this.phone = phone;
