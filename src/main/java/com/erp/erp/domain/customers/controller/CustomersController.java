@@ -4,11 +4,14 @@ import com.erp.erp.domain.accounts.common.entity.Accounts;
 import com.erp.erp.domain.auth.service.AuthService;
 import com.erp.erp.domain.customers.common.dto.AddCustomerDto;
 import com.erp.erp.domain.customers.common.dto.AddCustomerDto.Response;
+import com.erp.erp.domain.customers.common.dto.GetCustomerDto;
 import com.erp.erp.domain.customers.common.dto.UpdateStatusDto;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.customers.service.CustomersService;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.global.error.ApiResult;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,13 +59,34 @@ public class CustomersController {
     return ApiResult.success(status);
   }
 
-  @GetMapping("customers/{page}")
-  public ApiResult<?> getCurrentCustomers(@PathVariable Long page) {
-    return ApiResult.success(null);
+  @GetMapping("currentCustomers/{page}")
+  public ApiResult<List<GetCustomerDto.Response>> getCurrentCustomers(@PathVariable int page) {
+    Accounts accounts = authService.getAccountsInfo();
+    Long institutesId = accounts.getInstitutes().getId();
+
+    List<Customers> customersList = customersService.getCurrentCustomers(institutesId, page);
+
+    List<GetCustomerDto.Response> response = customersList.stream()
+        .map(customers -> GetCustomerDto.Response.builder()
+            .photoUrl(customers.getPhotoUrl())
+            .name(customers.getName())
+            .gender(String.valueOf(customers.getGender()))
+            .phone(customers.getPhone())
+            .plans(customers.getInstitutes().getName())
+            .remainingTime(0)
+            .usedTime(0)
+            .registrationDate(0)
+            .tardinessCount(0)
+            .absenceCount(0)
+            .build())
+        .collect(Collectors.toList());
+
+    return ApiResult.success(response);
   }
 
+
   @GetMapping("expiredCustomer/{page}")
-  public ApiResult<?> getExpiredCustomers(@PathVariable Long page) {
+  public ApiResult<?> getExpiredCustomers(@PathVariable int page) {
     return ApiResult.success(null);
   }
 }
