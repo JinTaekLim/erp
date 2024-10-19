@@ -32,6 +32,7 @@ public class GetCustomerDto {
     private int tardinessCount;
 
     private int AbsenceCount;
+    private int absenceCount;
   }
 
 }
