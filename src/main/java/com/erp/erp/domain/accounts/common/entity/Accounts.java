@@ -2,7 +2,6 @@ package com.erp.erp.domain.accounts.common.entity;
 
 
 import com.erp.erp.domain.institutes.common.entity.Institutes;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -38,10 +37,9 @@ public class Accounts {
 
 
   @Builder
-  public Accounts(Institutes institutes, String accountId, String password, boolean locked) {
+  public Accounts(Institutes institutes, String accountId, String password) {
     this.institutes = institutes;
     this.accountId = accountId;
     this.password = password;
-    this.locked = locked;
   }
 }
