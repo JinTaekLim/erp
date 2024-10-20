@@ -10,6 +10,8 @@ import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.customers.service.CustomersService;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.global.error.ApiResult;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -31,9 +33,10 @@ public class CustomersController {
   private final AuthService authService;
 
   // note. 이후 프로필 사진 관련 처리 필요
+  @Operation(summary = "고객 추가")
   @PostMapping("/addCustomer")
   public ApiResult<AddCustomerDto.Response> addCustomer(
-      @RequestBody AddCustomerDto.Request req
+      @Valid @RequestBody AddCustomerDto.Request req
       ) {
     Accounts accounts = authService.getAccountsInfo();
     Institutes institutes = accounts.getInstitutes();
@@ -53,12 +56,14 @@ public class CustomersController {
     return ApiResult.success(response);
   }
 
+  @Operation(summary = "고객 상태 값 변경")
   @PostMapping("/updateStatus")
   public ApiResult<Boolean> updateStatus(@RequestBody UpdateStatusDto.Request req) {
     boolean status = customersService.updateStatus(req);
     return ApiResult.success(status);
   }
 
+  @Operation(summary = "이용 중 고객 조회")
   @GetMapping("currentCustomers/{page}")
   public ApiResult<List<GetCustomerDto.Response>> getCurrentCustomers(@PathVariable int page) {
     Accounts accounts = authService.getAccountsInfo();
@@ -85,6 +90,7 @@ public class CustomersController {
   }
 
 
+  @Operation(summary = "만료된 고객 조회")
   @GetMapping("expiredCustomer/{page}")
   public ApiResult<?> getExpiredCustomers(@PathVariable int page) {
     return ApiResult.success(null);
