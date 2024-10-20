@@ -6,6 +6,7 @@ import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.institutes.service.InstitutesService;
 import com.erp.erp.domain.reservations.common.dto.AddReservationsDto;
+import com.erp.erp.domain.reservations.common.dto.DeleteReservationsDto;
 import com.erp.erp.domain.reservations.common.dto.GetDailyReservationsDto;
 import com.erp.erp.domain.reservations.common.entity.Reservations;
 import com.erp.erp.domain.reservations.service.ReservationsService;
@@ -36,7 +37,8 @@ public class ReservationsController {
 
   @Operation(summary = "예약 추가")
   @PostMapping("/addReservations")
-  public ApiResult<AddReservationsDto.Response> addReservations(@Valid @RequestBody AddReservationsDto.Request req) {
+  public ApiResult<AddReservationsDto.Response> addReservations(
+      @Valid @RequestBody AddReservationsDto.Request req) {
     Accounts accounts = authService.getAccountsInfo();
     Institutes institutes = accounts.getInstitutes();
     Customers customers = institutesService.validateCustomerBelongsToInstitute(
@@ -79,4 +81,14 @@ public class ReservationsController {
     return ApiResult.success(response);
   }
 
+  @Operation(summary = "예약 삭제")
+  @PostMapping("/deleteReservations")
+  public ApiResult<Boolean> deleteReservations(
+      @Valid @RequestBody DeleteReservationsDto.Request req) {
+    Accounts accounts = authService.getAccountsInfo();
+    Institutes institutes = accounts.getInstitutes();
+    reservationsService.deleteReservations(req, institutes);
+    return ApiResult.success(true);
+  }
 }
+
