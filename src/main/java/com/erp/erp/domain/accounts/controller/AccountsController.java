@@ -5,6 +5,7 @@ import com.erp.erp.domain.accounts.service.AccountsService;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
 import com.erp.erp.domain.auth.service.TokenService;
 import com.erp.erp.global.error.ApiResult;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,7 @@ public class AccountsController {
   private final TokenService tokenService;
 
 
+  @Operation(summary = "로그인")
   @PostMapping("/login")
   public ApiResult<TokenDto> login(@Valid @RequestBody AccountsLoginDto.Request request) {
     TokenDto response = tokenService.getToken();

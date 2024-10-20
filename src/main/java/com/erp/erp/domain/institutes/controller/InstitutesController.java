@@ -6,6 +6,7 @@ import com.erp.erp.domain.institutes.common.dto.UpdateTotalSpotsDto;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.institutes.service.InstitutesService;
 import com.erp.erp.global.error.ApiResult;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,7 @@ public class InstitutesController {
   private final InstitutesService institutesService;
   private final AuthService authService;
 
+  @Operation(summary = "예약 가능한 총 갯수 변경")
   @PostMapping("/updateTotalSpots")
   public ApiResult<UpdateTotalSpotsDto.Response> updateTotalSpots(
       @Valid @RequestBody UpdateTotalSpotsDto.Request req
