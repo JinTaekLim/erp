@@ -36,7 +36,7 @@ public class ReservationsController {
 
   @Operation(summary = "예약 추가")
   @PostMapping("/addReservations")
-  public ApiResult<?> addReservations(@Valid @RequestBody AddReservationsDto.Request req) {
+  public ApiResult<AddReservationsDto.Response> addReservations(@Valid @RequestBody AddReservationsDto.Request req) {
     Accounts accounts = authService.getAccountsInfo();
     Institutes institutes = accounts.getInstitutes();
     Customers customers = institutesService.validateCustomerBelongsToInstitute(
@@ -44,9 +44,17 @@ public class ReservationsController {
         req.getCustomersId()
     );
 
-    reservationsService.addReservations(req, customers);
+    Reservations reservations = reservationsService.addReservations(req, customers);
 
-    return null;
+    AddReservationsDto.Response response = AddReservationsDto.Response.builder()
+        .reservationsId(reservations.getId())
+        .customersId(reservations.getCustomers().getId())
+        .startTime(reservations.getStartTime())
+        .endTime(reservations.getEndTime())
+        .memo(reservations.getMemo())
+        .build();
+
+    return ApiResult.success(response);
   }
 
   @Operation(summary = "하루 예약 조회")
