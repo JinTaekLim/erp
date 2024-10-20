@@ -47,18 +47,8 @@ class CustomersTest extends IntegrationTest {
   @Autowired
   private AccountsRepository accountsRepository;
 
-
-
-
   @MockBean
   private PhotoUtil photoUtil;
-
-
-  @BeforeAll
-  static void setup() {
-    System.out.println("Setup for all tests");
-  }
-
 
 
   private Accounts getAccounts() {

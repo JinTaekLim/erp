@@ -1,5 +1,6 @@
 package com.erp.erp.global.util.randomValue;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
@@ -51,6 +52,11 @@ public class RandomValueGenerator {
     return LocalDateTime.now().minusDays(RandomValue.random.nextInt(365)).withNano(0);
   }
 
+  public LocalDate getRandomLocalDate() {
+    LocalDate today = LocalDate.now();
+    int randomInt = RandomValue.random.nextInt(365);
+    return today.plusDays(randomInt);
+  }
   public <T> T getRandomEnum(Class<T> clazz) {
     T[] enumConstants = clazz.getEnumConstants();
     return enumConstants[RandomValue.random.nextInt(enumConstants.length)];

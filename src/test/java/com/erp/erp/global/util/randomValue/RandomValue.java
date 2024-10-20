@@ -1,5 +1,6 @@
 package com.erp.erp.global.util.randomValue;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -85,6 +86,10 @@ public class RandomValue {
 
   public static LocalDateTime getRandomLocalDateTime() {
     return randomValueGenerator.getRandomLocalDateTime();
+  }
+
+  public static LocalDate getRandomLocalDate() {
+    return randomValueGenerator.getRandomLocalDate();
   }
 
   public static <T> T getRandomEnum(Class<T> clazz) {
