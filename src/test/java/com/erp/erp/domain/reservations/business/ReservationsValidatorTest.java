@@ -17,10 +17,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-class ReservationValidatorTest extends ServiceTest {
+class ReservationsValidatorTest extends ServiceTest {
 
   @InjectMocks
-  private ReservationValidator reservationValidator;
+  private ReservationsValidator reservationsValidator;
 
   @Mock
   private ReservationsRepository reservationsRepository;
@@ -52,7 +52,7 @@ class ReservationValidatorTest extends ServiceTest {
 
 
     // then
-    reservationValidator.isTimeSlotAvailable(institutes,startTime,endTime);
+    reservationsValidator.isTimeSlotAvailable(institutes,startTime,endTime);
   }
 
   @Test
@@ -86,7 +86,7 @@ class ReservationValidatorTest extends ServiceTest {
     // then
     assertThrows(
         NoAvailableSpotsException.class,
-        () -> reservationValidator.isTimeSlotAvailable(institutes, startTime, endTime)
+        () -> reservationsValidator.isTimeSlotAvailable(institutes, startTime, endTime)
     );
   }
 
@@ -98,7 +98,7 @@ class ReservationValidatorTest extends ServiceTest {
     LocalDateTime endTime = startTime.plusMinutes(30L * randomInt);
 
     // when && then
-    assertDoesNotThrow(() -> reservationValidator.calculate30MinSlots(startTime, endTime));
+    assertDoesNotThrow(() -> reservationsValidator.calculate30MinSlots(startTime, endTime));
   }
 
   @Test
@@ -111,7 +111,7 @@ class ReservationValidatorTest extends ServiceTest {
     // when && then
     assertThrows(
         InvalidReservationTimeException.class,
-        () -> reservationValidator.calculate30MinSlots(startTime, endTime)
+        () -> reservationsValidator.calculate30MinSlots(startTime, endTime)
     );
   }
   @Test
@@ -122,7 +122,7 @@ class ReservationValidatorTest extends ServiceTest {
     LocalDateTime endTime = startTime.plusMinutes(30L * randomInt);
 
     // when && then
-    assertDoesNotThrow(() -> reservationValidator.getMinutesBetween(startTime, endTime));
+    assertDoesNotThrow(() -> reservationsValidator.getMinutesBetween(startTime, endTime));
   }
 
   @Test
@@ -135,7 +135,7 @@ class ReservationValidatorTest extends ServiceTest {
     // when && then
     assertThrows(
         InvalidReservationTimeException.class,
-        () -> reservationValidator.getMinutesBetween(startTime, endTime)
+        () -> reservationsValidator.getMinutesBetween(startTime, endTime)
     );
   }
 
