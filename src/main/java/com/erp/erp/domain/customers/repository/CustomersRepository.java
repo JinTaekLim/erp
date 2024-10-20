@@ -10,8 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface CustomersRepository extends JpaRepository<Customers, Long> {
 
-  Page<Customers> findByInstitutesIdAndStatusTrue(Long institutesId, Pageable pageable);
-  Page<Customers> findByStatusFalse(Pageable pageable);
+  Page<Customers> findByInstitutesIdAndStatus(Long institutesId, Boolean status, Pageable pageable);
 
 
   @Modifying
