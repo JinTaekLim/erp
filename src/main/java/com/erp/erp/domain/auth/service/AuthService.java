@@ -24,12 +24,15 @@ public class AuthService {
   public Accounts getAccountsInfo() {
 
     /* 임시 설정 */
-    Institutes institutes = Institutes.builder()
-        .name("test")
-        .totalSpots(4)
-        .build();
+    Institutes institutes = institutesRepository.findById(1L)
+        .orElseGet(()-> {
+      Institutes newInstitutes = Institutes.builder()
+          .name("test")
+          .totalSpots(4)
+          .build();
 
-    institutesRepository.save(institutes);
+      return institutesRepository.save(newInstitutes);
+    });
 
     Accounts accounts = accountsReader.findOptionalById(1L)
         .orElseGet(() -> {

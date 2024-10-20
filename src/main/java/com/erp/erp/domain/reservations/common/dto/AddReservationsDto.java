@@ -34,4 +34,24 @@ public class AddReservationsDto {
     private String memo;
 
   }
+
+  @Schema(name = "AddReservationsDto_Request" , description = "회원 예약 추가 반환")
+  @Builder
+  @Getter
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class Response{
+
+    @Schema(description = "예약 ID")
+    private Long reservationsId;
+    @Schema(description = "회원 ID")
+    private Long customersId;
+    @Schema(description = "시작 시간")
+    private LocalDateTime startTime;
+    @Schema(description = "종료 시간")
+    private LocalDateTime endTime;
+    @Schema(description = "메모")
+    private String memo;
+
+  }
 }
