@@ -2,6 +2,7 @@ package com.erp.erp.domain.institutes.common.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +18,7 @@ public class UpdateTotalSpotsDto {
   public static class Request {
 
     @Schema(description = "좌석 갯수")
-    @Min(value = 1, message = "좌석 갯수는 1개 이상이어야 합니다.")
+    @Positive(message = "좌석 갯수는 1개 이상이어야 합니다.")
     private int num;
 
   }
