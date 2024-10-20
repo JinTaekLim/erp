@@ -92,7 +92,27 @@ public class CustomersController {
 
   @Operation(summary = "만료된 고객 조회")
   @GetMapping("expiredCustomer/{page}")
-  public ApiResult<?> getExpiredCustomers(@PathVariable int page) {
-    return ApiResult.success(null);
+  public ApiResult<List<GetCustomerDto.Response>> getExpiredCustomers(@PathVariable int page) {
+    Accounts accounts = authService.getAccountsInfo();
+    Long institutesId = accounts.getInstitutes().getId();
+
+    List<Customers> customersList = customersService.getExpiredCustomers(institutesId, page);
+
+    List<GetCustomerDto.Response> response = customersList.stream()
+        .map(customers -> GetCustomerDto.Response.builder()
+            .photoUrl(customers.getPhotoUrl())
+            .name(customers.getName())
+            .gender(String.valueOf(customers.getGender()))
+            .phone(customers.getPhone())
+            .plans(customers.getInstitutes().getName())
+            .remainingTime(0)
+            .usedTime(0)
+            .registrationDate(0)
+            .tardinessCount(0)
+            .absenceCount(0)
+            .build())
+        .collect(Collectors.toList());
+
+    return ApiResult.success(response);
   }
 }

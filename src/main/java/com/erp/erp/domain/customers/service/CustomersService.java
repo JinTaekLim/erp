@@ -68,13 +68,15 @@ public class CustomersService {
         institutesId,
         pageable
     );
+    return customersPage.getContent();
+  }
 
-    List<Customers> customers = customersPage.getContent();
-    for (Customers c : customers ) {
-      log.info("ID " + c.getId());
-      log.info("NAME " + c.getName());
-    }
-
+  public List<Customers> getExpiredCustomers(Long institutesId, int page) {
+    Pageable pageable = PageRequest.of(page, 4);
+    Page<Customers> customersPage = customersReader.findByInstitutesIdAndStatusFalse(
+        institutesId,
+        pageable
+    );
     return customersPage.getContent();
   }
 

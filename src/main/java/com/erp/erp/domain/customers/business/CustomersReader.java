@@ -21,6 +21,10 @@ public class CustomersReader {
   }
 
   public Page<Customers> findByInstitutesIdAndStatusTrue(Long institutesId, Pageable page) {
-    return customersRepository.findByInstitutesIdAndStatusTrue(institutesId, page);
+    return customersRepository.findByInstitutesIdAndStatus(institutesId, true, page);
+  }
+
+  public Page<Customers> findByInstitutesIdAndStatusFalse(Long institutesId, Pageable page) {
+    return customersRepository.findByInstitutesIdAndStatus(institutesId, false, page);
   }
 }
