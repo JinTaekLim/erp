@@ -25,5 +25,10 @@ public class ReservationsReader {
     return reservationsList;
   }
 
+  public Reservations findById(Long reservationsId) {
+    return reservationsRepository.findById(reservationsId)
+        .orElseThrow(NotFoundReservationException::new);
+  }
+
 
 }

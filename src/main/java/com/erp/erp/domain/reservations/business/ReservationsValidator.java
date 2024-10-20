@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class ReservationValidator {
+public class ReservationsValidator {
 
   private final ReservationsRepository reservationsRepository;
 
