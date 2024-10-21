@@ -44,4 +44,12 @@ public class Reservations {
     this.endTime = endTime;
     this.memo = memo;
   }
+
+
+  public Reservations update(LocalDateTime startTime, LocalDateTime endTime, String memo) {
+    this.startTime = startTime;
+    this.endTime = endTime;
+    this.memo = memo;
+    return this;
+  }
 }

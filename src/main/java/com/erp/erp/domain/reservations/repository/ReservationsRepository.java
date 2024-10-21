@@ -16,4 +16,9 @@ public interface ReservationsRepository extends JpaRepository<Reservations, Long
   @Query("SELECT r FROM Reservations r WHERE r.institutes = :institutes AND r.startTime BETWEEN :startTime AND :endTime")
   List<Reservations> findByInstitutesAndTimeRange(Institutes institutes, LocalDateTime startTime, LocalDateTime endTime);
 
+//  @Modifying
+//  @Transactional
+//  @Query("UPDATE Reservations r SET r.startTime = :startTime, r.endTime = :endTime, r.memo = :memo WHERE r.id = :reservationsId")
+//  void updateReservations(Long reservationsId, LocalDateTime startTime, LocalDateTime endTime, String memo);
+
 }
