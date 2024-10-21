@@ -8,6 +8,7 @@ import com.erp.erp.domain.institutes.service.InstitutesService;
 import com.erp.erp.domain.reservations.common.dto.AddReservationsDto;
 import com.erp.erp.domain.reservations.common.dto.DeleteReservationsDto;
 import com.erp.erp.domain.reservations.common.dto.GetDailyReservationsDto;
+import com.erp.erp.domain.reservations.common.dto.UpdateReservationsDto;
 import com.erp.erp.domain.reservations.common.entity.Reservations;
 import com.erp.erp.domain.reservations.service.ReservationsService;
 import com.erp.erp.global.error.ApiResult;
@@ -80,6 +81,28 @@ public class ReservationsController {
 
     return ApiResult.success(response);
   }
+
+
+
+  @Operation(summary = "예약 수정")
+  @PostMapping("/updateReservation")
+  public ApiResult<UpdateReservationsDto.Response> updateReservation(
+      @Valid @RequestBody UpdateReservationsDto.Request req) {
+    Accounts accounts = authService.getAccountsInfo();
+    Institutes institutes = accounts.getInstitutes();
+
+    Reservations reservations = reservationsService.updateReservation(req, institutes);
+
+    UpdateReservationsDto.Response response = UpdateReservationsDto.Response.builder()
+        .reservationsId(reservations.getId())
+        .startTime(reservations.getStartTime().toLocalTime())
+        .endTime(reservations.getEndTime().toLocalTime())
+        .memo(reservations.getMemo())
+        .build();
+
+    return ApiResult.success(response);
+  }
+
 
   @Operation(summary = "예약 삭제")
   @PostMapping("/deleteReservations")
