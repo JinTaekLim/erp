@@ -15,6 +15,7 @@ import com.erp.erp.global.error.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -68,6 +69,26 @@ public class ReservationsController {
     Accounts accounts = authService.getAccountsInfo();
     Institutes institutes = accounts.getInstitutes();
     List<Reservations> reservationsList = reservationsService.getDailyReservations(day, institutes);
+
+    List<GetDailyReservationsDto.Response> response = reservationsList.stream()
+        .map(reservations -> GetDailyReservationsDto.Response.builder()
+            .reservationsId(reservations.getId())
+            .startTime(LocalTime.from(reservations.getStartTime()))
+            .endTime(LocalTime.from(reservations.getEndTime()))
+            .name(reservations.getCustomers().getName())
+            .build()
+        )
+        .toList();
+
+    return ApiResult.success(response);
+  }
+
+  @Operation(summary = "특정 시간 예약 조회")
+  @GetMapping("/getReservationByTime")
+  public ApiResult<?> getReservationByTime(@RequestParam LocalDateTime time) {
+    Accounts accounts = authService.getAccountsInfo();
+    Institutes institutes = accounts.getInstitutes();
+    List<Reservations> reservationsList = reservationsService.getReservationByTime(institutes,time);
 
     List<GetDailyReservationsDto.Response> response = reservationsList.stream()
         .map(reservations -> GetDailyReservationsDto.Response.builder()

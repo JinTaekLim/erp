@@ -13,6 +13,7 @@ import com.erp.erp.domain.reservations.common.dto.AddReservationsDto;
 import com.erp.erp.domain.reservations.common.dto.DeleteReservationsDto;
 import com.erp.erp.domain.reservations.common.dto.UpdateReservationsDto;
 import com.erp.erp.domain.reservations.common.entity.Reservations;
+import com.erp.erp.global.util.TimeUtil;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -57,6 +58,20 @@ public class ReservationsService {
 
   public List<Reservations> getDailyReservations(LocalDate date, Institutes institutes) {
     return reservationsReader.findByInstitutesAndStartTimeOn(institutes, date);
+  }
+
+  public List<Reservations> getReservationByTime(
+      Institutes institutes,
+      LocalDateTime time
+  ) {
+    LocalDateTime startTime = TimeUtil.roundToNearestHalfHour(time);
+    LocalDateTime endTime = startTime.plusMinutes(30);
+
+    return reservationsReader.findByInstitutesAndReservationTimeBetween(
+        institutes,
+        startTime,
+        endTime
+    );
   }
 
   public Reservations updateReservation(UpdateReservationsDto.Request req, Institutes institutes) {
