@@ -2,7 +2,7 @@ spring:
   config:
     import: classpath:application-secret.yml
   profiles:
-    active: dev
+    active: localhost
 
 springdoc:
   swagger-ui:
