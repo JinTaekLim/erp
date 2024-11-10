@@ -85,6 +85,9 @@ jobs:
             set -e
             echo "배포를 시작합니다."
 
+            # 환경 변수로 dev 프로필 활성화
+            export SPRING_PROFILES_ACTIVE=dev
+
             echo "도커 이미지 pull"
             docker pull ${{ env.DOCKER_IMAGE_NAME }}
 
