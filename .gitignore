@@ -41,4 +41,3 @@ application-secret.yml
 
 ### docker
 docker-compose.yml
-Dockerfile
