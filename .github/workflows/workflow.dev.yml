@@ -92,11 +92,14 @@ jobs:
             echo "도커 이미지 pull"
             docker pull ${{ env.DOCKER_IMAGE_NAME }}
             
+            echo "docker-compose 위치 이동"
+            cd /home/ubuntu
+
             echo "컨테이너 삭제 및 정리"
-            docker-compose -f /home/ubuntu/docker-compose.yml down
+            docker-compose down
 
             echo "새로운 컨테이너 시작"
-            docker-compose -f /home/ubuntu/docker-compose.yml up -d
+            docker-compose up -d
 
             echo "사용하지 않는 이미지 삭제"
             docker image prune -af
