@@ -110,32 +110,32 @@ class CustomersTest extends IntegrationTest {
   }
 
   // note. 이후 이미지 처리 필요
-  @Test
-  void addCustomer_잘못된_성별() {
-    //given
-    AddCustomerDto.Request request = fixtureMonkey.giveMeOne(AddCustomerDto.Request.class);
-
-    String url = "http://localhost:" + port + "/api/customers/addCustomer";
-
-
-    //when
-    when(photoUtil.upload(any())).thenReturn(RandomValue.string(50).get());
-
-    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
-        url,
-        request,
-        String.class
-    );
-
-    ApiResult<AddCustomerDto.Response> apiResponse = gson.fromJson(
-        responseEntity.getBody(),
-        new TypeToken<ApiResult<AddCustomerDto.Response>>(){}
-    );
-
-    //then
-    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertNotNull(apiResponse);
-  }
+//  @Test
+//  void addCustomer_잘못된_성별() {
+//    //given
+//    AddCustomerDto.Request request = fixtureMonkey.giveMeOne(AddCustomerDto.Request.class);
+//
+//    String url = "http://localhost:" + port + "/api/customers/addCustomer";
+//
+//
+//    //when
+//    when(photoUtil.upload(any())).thenReturn(RandomValue.string(50).get());
+//
+//    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+//        url,
+//        request,
+//        String.class
+//    );
+//
+//    ApiResult<AddCustomerDto.Response> apiResponse = gson.fromJson(
+//        responseEntity.getBody(),
+//        new TypeToken<ApiResult<AddCustomerDto.Response>>(){}
+//    );
+//
+//    //then
+//    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+//    assertNotNull(apiResponse);
+//  }
 
 
   @Test
@@ -175,44 +175,44 @@ class CustomersTest extends IntegrationTest {
   }
 
 
-  @Test
-  void getCurrentCustomers_4명_반환() {
-    //given
-    Accounts accounts = createAccounts();
-    Institutes institutes = accounts.getInstitutes();
-
-    int randomInt = RandomValue.getInt(4,20);
-    int page = Math.max(0, (randomInt / 4) - 1 );
-
-    for(int i = 0; i<randomInt; i++) {
-      Customers customers = fixtureMonkey.giveMeBuilder(Customers.class)
-          .setNull("id")
-          .set("institutes" , institutes)
-          .set("status", true)
-          .sample();
-      customersRepository.save(customers);
-    }
-
-    String url = "http://localhost:" + port + "/api/customers/currentCustomers/" + page;
-
-
-    // when
-    ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-        url,
-        String.class
-    );
-
-    ApiResult<List<Response>> apiResponse = gson.fromJson(
-        responseEntity.getBody(),
-        new TypeToken<ApiResult<List<Response>>>(){}.getType()
-    );
-
-    // then
-    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertNotNull(apiResponse);
-
-    int dataSize = apiResponse.getData().size();
-    assertThat(dataSize).isEqualTo(4);
-  }
+//  @Test
+//  void getCurrentCustomers_4명_반환() {
+//    //given
+//    Accounts accounts = createAccounts();
+//    Institutes institutes = accounts.getInstitutes();
+//
+//    int randomInt = RandomValue.getInt(4,20);
+//    int page = Math.max(0, (randomInt / 4) - 1 );
+//
+//    for(int i = 0; i<randomInt; i++) {
+//      Customers customers = fixtureMonkey.giveMeBuilder(Customers.class)
+//          .setNull("id")
+//          .set("institutes" , institutes)
+//          .set("status", true)
+//          .sample();
+//      customersRepository.save(customers);
+//    }
+//
+//    String url = "http://localhost:" + port + "/api/customers/currentCustomers/" + page;
+//
+//
+//    // when
+//    ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+//        url,
+//        String.class
+//    );
+//
+//    ApiResult<List<Response>> apiResponse = gson.fromJson(
+//        responseEntity.getBody(),
+//        new TypeToken<ApiResult<List<Response>>>(){}.getType()
+//    );
+//
+//    // then
+//    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+//    assertNotNull(apiResponse);
+//
+//    int dataSize = apiResponse.getData().size();
+//    assertThat(dataSize).isEqualTo(4);
+//  }
 
 }

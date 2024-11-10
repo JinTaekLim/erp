@@ -12,7 +12,7 @@ class InstitutesControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
-  @Test
-  void updateTotalSpots() {
-  }
+//  @Test
+//  void updateTotalSpots() {
+//  }
 }

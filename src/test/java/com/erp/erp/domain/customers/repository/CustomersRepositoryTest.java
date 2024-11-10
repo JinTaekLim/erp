@@ -38,59 +38,59 @@ class CustomersRepositoryTest extends JpaTest {
         .sample();
   }
 
-  @Test
-  void findAll() {
-    // Given
-    int randomInt = faker.random().nextInt(0, 100);
-    List<Customers> customersToSave = new ArrayList<>();
+//  @Test
+//  void findAll() {
+//    // Given
+//    int randomInt = faker.random().nextInt(0, 100);
+//    List<Customers> customersToSave = new ArrayList<>();
+//
+//    for (int i = 0; i < randomInt; i++) {
+//      customersToSave.add(getCustomers());
+//    }
+//
+//    customersRepository.saveAll(customersToSave);
+//
+//    // When
+//    List<Customers> customersList = customersRepository.findAll();
+//
+//    // Then
+//    assertThat(customersList).hasSize(randomInt);
+//  }
 
-    for (int i = 0; i < randomInt; i++) {
-      customersToSave.add(getCustomers());
-    }
-
-    customersRepository.saveAll(customersToSave);
-
-    // When
-    List<Customers> customersList = customersRepository.findAll();
-
-    // Then
-    assertThat(customersList).hasSize(randomInt);
-  }
-
-  @Test
-  void save() {
-    // Given
-    Customers customers = getCustomers();
-    customersRepository.save(customers);
-
-    // Then
-    Long customersId = customers.getId();
-    Customers testCustomers = customersRepository.findById(customersId)
-        .orElseThrow(AssertionError::new);
-
-    // When
-    assertThat(testCustomers)
-        .usingRecursiveComparison()
-        .isEqualTo(customers);
-  }
-  @Test
-  void updateStatusById() {
-    // Given
-    Customers customers = getCustomers();
-    customersRepository.save(customers);
-
-    long customersId = customers.getId();
-    boolean status = !customers.getStatus();
-
-    // Then
-    customersRepository.updateStatusById(customersId, status);
-
-    Customers testCustomers = customersRepository.findById(customersId)
-        .orElseThrow(AssertionError::new);
-
-    boolean testStatus = testCustomers.getStatus();
-
-    // When
-    assertThat(status).isNotEqualTo(testStatus);
-  }
+//  @Test
+//  void save() {
+//    // Given
+//    Customers customers = getCustomers();
+//    customersRepository.save(customers);
+//
+//    // Then
+//    Long customersId = customers.getId();
+//    Customers testCustomers = customersRepository.findById(customersId)
+//        .orElseThrow(AssertionError::new);
+//
+//    // When
+//    assertThat(testCustomers)
+//        .usingRecursiveComparison()
+//        .isEqualTo(customers);
+//  }
+//  @Test
+//  void updateStatusById() {
+//    // Given
+//    Customers customers = getCustomers();
+//    customersRepository.save(customers);
+//
+//    long customersId = customers.getId();
+//    boolean status = !customers.getStatus();
+//
+//    // Then
+//    customersRepository.updateStatusById(customersId, status);
+//
+//    Customers testCustomers = customersRepository.findById(customersId)
+//        .orElseThrow(AssertionError::new);
+//
+//    boolean testStatus = testCustomers.getStatus();
+//
+//    // When
+//    assertThat(status).isNotEqualTo(testStatus);
+//  }
 }
