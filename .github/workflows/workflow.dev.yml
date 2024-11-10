@@ -22,7 +22,7 @@ env:
 jobs:
   ci:
     # PR이 merge 된 경우에만 동작하도록 조건 명시
-    if: github.event.pull_request.merged == true
+#    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest # 최신 Ubuntu 러너에 의해 동작
     environment: develop # develop 환경 변수설정 사용
     steps:
