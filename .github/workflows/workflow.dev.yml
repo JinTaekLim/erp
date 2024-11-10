@@ -97,7 +97,7 @@ jobs:
             docker rm ${{env.CONTAINER_NAME}} || true
       
             echo "새로운 컨테이너 시작"
-            docker run -d --name ${{env.CONTAINER_NAME}} -p 8080:8080 ${{ env.DOCKER_IMAGE_NAME }}
+            docker run -d --name ${{env.CONTAINER_NAME}} -p 8080:8080 -e SPRING_PROFILES_ACTIVE=dev ${{ env.DOCKER_IMAGE_NAME }}
 
 
             echo "사용하지 않는 이미지 삭제"
