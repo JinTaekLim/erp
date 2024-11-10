@@ -93,10 +93,10 @@ jobs:
             docker pull ${{ env.DOCKER_IMAGE_NAME }}
             
             echo "컨테이너 삭제 및 정리"
-            docker-compose.yml down
+            docker-compose -f /home/ubuntu/docker-compose.yml down
 
             echo "새로운 컨테이너 시작"
-            docker-compose.yml up -d
+            docker-compose -f /home/ubuntu/docker-compose.yml up -d
 
             echo "사용하지 않는 이미지 삭제"
             docker image prune -af
