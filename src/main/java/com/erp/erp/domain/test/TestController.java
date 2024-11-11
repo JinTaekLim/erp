@@ -19,7 +19,7 @@ public class TestController {
   @Schema(name = "/테스트")
   public ApiResult<String> test(@PathVariable String status) {
     if (status.equals("success")) return ApiResult.success("success");
-    System.out.println("123");
+    System.out.println("1234");
     return ApiResult.fail("코드","메세지","데이터");
   }
 
