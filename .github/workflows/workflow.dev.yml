@@ -3,15 +3,11 @@ name : Develop PR Merge - CI/CD to Dev Server
 # 트리거
 # - develop 브랜치에 PR이 merge 및 close 되었을 때 workflow 동작
 on:
-  push:
+  pull_request:
     branches:
-      - test
-#on:
-#  pull_request:
-#    branches:
-#      - develop
-#    types:
-#      - closed
+      - develop
+    types:
+      - closed
 
 env:
   DOCKER_IMAGE_NAME: jintaeklim/erp
