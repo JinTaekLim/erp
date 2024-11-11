@@ -37,7 +37,7 @@ jobs:
       - name: Create application-secret.yml
         run: |
           mkdir -p src/main/resources
-          echo "${{secrets.SECRET_YML}}" | base64 --decode > src/main/resources/application-secret.yml
+          echo "${{ secrets.SECRET_YML }}" > src/main/resources/application-secret.yml
 
       # gradlew 스크립트 실행 권한 부여
       - name: Grant execute permission for gradlew
