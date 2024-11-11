@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://${datasource.dev.host}:3306/erp?useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://mysql-erp:3306/erp?useSSL=false&allowPublicKeyRetrieval=true
     username: ${datasource.dev.usernames}
     password: ${datasource.dev.password}
     driver-class-name: com.mysql.cj.jdbc.Driver
