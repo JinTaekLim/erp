@@ -18,7 +18,7 @@ env:
 jobs:
   ci:
     # PR이 merge 된 경우에만 동작하도록 조건 명시
-    if: github.event.pull_request.merged == true
+#    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest # 최신 Ubuntu 러너에 의해 동작
     environment: develop # develop 환경 변수설정 사용
     steps:
@@ -87,14 +87,17 @@ jobs:
 
             echo "도커 이미지 pull"
             docker pull ${{ env.DOCKER_IMAGE_NAME }}
-
+            
             echo "기존 컨테이너 삭제"
             docker stop ${{env.CONTAINER_NAME}} || true
             docker rm ${{env.CONTAINER_NAME}} || true
-      
+            
             echo "새로운 컨테이너 시작"
-            docker run -d --name ${{env.CONTAINER_NAME}} -p 8080:8080 ${{ env.DOCKER_IMAGE_NAME }}
-
+            docker run --name ${{env.CONTAINER_NAME}} -d -p 8080:8080 --network erp-network \
+            -e SPRING_PROFILES_ACTIVE=dev \
+            ${{ env.DOCKER_IMAGE_NAME }}
+            
+            
             echo "사용하지 않는 이미지 삭제"
             docker image prune -af
 
