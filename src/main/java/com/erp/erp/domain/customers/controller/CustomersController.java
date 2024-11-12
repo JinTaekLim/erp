@@ -5,12 +5,14 @@ import com.erp.erp.domain.auth.service.AuthService;
 import com.erp.erp.domain.customers.common.dto.AddCustomerDto;
 import com.erp.erp.domain.customers.common.dto.AddCustomerDto.Response;
 import com.erp.erp.domain.customers.common.dto.GetCustomerDto;
+import com.erp.erp.domain.customers.common.dto.GetReservationCustomerDetailsDto;
 import com.erp.erp.domain.customers.common.dto.UpdateStatusDto;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.customers.service.CustomersService;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.global.error.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/customers")
+@Tag(name = "customers" ,description = "고객 관리")
 @RequiredArgsConstructor
 @Slf4j
 public class CustomersController {

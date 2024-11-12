@@ -7,6 +7,7 @@ import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.institutes.service.InstitutesService;
 import com.erp.erp.global.error.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/institutes")
+@Tag(name = "institutes", description = "매장 관리")
 @RequiredArgsConstructor
 @Slf4j
 public class InstitutesController {
@@ -29,14 +31,10 @@ public class InstitutesController {
   public ApiResult<UpdateTotalSpotsDto.Response> updateTotalSpots(
       @Valid @RequestBody UpdateTotalSpotsDto.Request req
   ) {
-
     Accounts accounts = authService.getAccountsInfo();
     Institutes institutes = accounts.getInstitutes();
     UpdateTotalSpotsDto.Response response = institutesService.updateTotalSpots(institutes, req);
     return ApiResult.success(response);
-
-
-
   }
 
 }
