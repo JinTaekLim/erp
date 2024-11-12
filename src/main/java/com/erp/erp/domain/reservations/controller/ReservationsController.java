@@ -106,6 +106,20 @@ public class ReservationsController {
     return ApiResult.success(response);
   }
 
+  @Operation(summary = "좌석 번호 변경")
+  @PostMapping("/updatedSeatNumber")
+  public ApiResult<UpdatedSeatNumberDto.Response> updatedSeatNumber(
+      UpdatedSeatNumberDto.Request req
+  ) {
+    Reservations reservations = reservationsService.updatedSeatNumber(req);
+
+    UpdatedSeatNumberDto.Response response = UpdatedSeatNumberDto.Response.builder()
+        .reservationsId(reservations.getId())
+        .seatNumber(reservations.getSeatNumber())
+        .build();
+
+    return ApiResult.success(response);
+  }
 
   @Operation(summary = "예약 삭제")
   @PostMapping("/deleteReservations")

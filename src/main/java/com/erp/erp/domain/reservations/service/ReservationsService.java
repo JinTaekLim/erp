@@ -94,7 +94,15 @@ public class ReservationsService {
     return reservationsUpdater.updatedReservations(reservations, startTime, endTime, memo);
   }
 
+  public Reservations updatedSeatNumber(UpdatedSeatNumberDto.Request req) {
+    Institutes institutes = authProvider.getCurrentInstitutes();
+    long reservationsId = req.getReservationsId();
+    Reservations reservations = reservationsReader.findById(reservationsId);
+    Customers customers = reservations.getCustomers();
+    institutesValidator.validateCustomerBelongsToInstitute(institutes, customers);
 
+    return reservationsUpdater.updateSeatNumber(reservations, req.getSeatNumber());
+  }
 
 
   public void deleteReservations(DeleteReservationsDto.Request req) {

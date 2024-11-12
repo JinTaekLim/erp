@@ -46,10 +46,13 @@ public class Reservations {
   }
 
 
-  public Reservations update(LocalDateTime startTime, LocalDateTime endTime, String memo) {
+  public void updatedReservations(LocalDateTime startTime, LocalDateTime endTime, String memo) {
     this.startTime = startTime;
     this.endTime = endTime;
     this.memo = memo;
-    return this;
+  }
+
+  public void updatedSeat(int seatNumber) {
+    this.seatNumber = seatNumber;
   }
 }

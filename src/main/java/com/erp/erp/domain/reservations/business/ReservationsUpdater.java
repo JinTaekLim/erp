@@ -22,4 +22,9 @@ public class ReservationsUpdater {
     reservations.updatedReservations(startTime,endTime,memo);
     return reservationsRepository.save(reservations);
   }
+
+  public Reservations updateSeatNumber(Reservations reservations, int seatNumber) {
+    reservations.updatedSeat(seatNumber);
+    return reservations;
+  }
 }
