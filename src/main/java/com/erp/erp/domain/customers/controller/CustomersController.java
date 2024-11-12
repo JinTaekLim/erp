@@ -1,14 +1,11 @@
 package com.erp.erp.domain.customers.controller;
 
-import com.erp.erp.domain.accounts.common.entity.Accounts;
-import com.erp.erp.domain.auth.service.AuthService;
 import com.erp.erp.domain.customers.common.dto.AddCustomerDto;
 import com.erp.erp.domain.customers.common.dto.AddCustomerDto.Response;
 import com.erp.erp.domain.customers.common.dto.GetCustomerDto;
 import com.erp.erp.domain.customers.common.dto.UpdateStatusDto;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.customers.service.CustomersService;
-import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.payments.common.entity.Payments;
 import com.erp.erp.domain.plans.service.PlansService;
 import com.erp.erp.global.error.ApiResult;
@@ -32,7 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class CustomersController {
 
   private final CustomersService customersService;
-  private final AuthService authService;
   private final PlansService plansService;
 
   // note. 이후 프로필 사진 관련 처리 필요
@@ -42,10 +38,7 @@ public class CustomersController {
   public ApiResult<AddCustomerDto.Response> addCustomer(
       @Valid @RequestBody AddCustomerDto.Request req
       ) {
-    Accounts accounts = authService.getAccountsInfo();
-    Institutes institutes = accounts.getInstitutes();
-
-    Payments payments = customersService.addCustomer(institutes,req);
+    Payments payments = customersService.addCustomer(req);
     Customers customers = payments.getCustomers();
 
     AddCustomerDto.Response response = Response.builder()
@@ -71,10 +64,8 @@ public class CustomersController {
   @Operation(summary = "이용 중 고객 조회")
   @GetMapping("currentCustomers/{page}")
   public ApiResult<List<GetCustomerDto.Response>> getCurrentCustomers(@PathVariable int page) {
-    Accounts accounts = authService.getAccountsInfo();
-    Long institutesId = accounts.getInstitutes().getId();
 
-    List<Customers> customersList = customersService.getCurrentCustomers(institutesId, page);
+    List<Customers> customersList = customersService.getCurrentCustomers(page);
 
     List<GetCustomerDto.Response> response = customersList.stream()
         .map(customers -> GetCustomerDto.Response.builder()
@@ -98,10 +89,7 @@ public class CustomersController {
   @Operation(summary = "만료된 고객 조회")
   @GetMapping("expiredCustomer/{page}")
   public ApiResult<List<GetCustomerDto.Response>> getExpiredCustomers(@PathVariable int page) {
-    Accounts accounts = authService.getAccountsInfo();
-    Long institutesId = accounts.getInstitutes().getId();
-
-    List<Customers> customersList = customersService.getExpiredCustomers(institutesId, page);
+    List<Customers> customersList = customersService.getExpiredCustomers(page);
 
     List<GetCustomerDto.Response> response = customersList.stream()
         .map(customers -> GetCustomerDto.Response.builder()

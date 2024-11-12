@@ -10,7 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class UpdateReservationsDto {
+public class UpdatedReservationsDto {
 
   @Schema(name = "UpdateReservationsDto_Request" , description = "회원 예약 변경 요청")
   @Builder

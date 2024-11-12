@@ -1,6 +1,7 @@
 package com.erp.erp.domain.customers.service;
 
 import com.erp.erp.domain.accounts.business.PhotoUtil;
+import com.erp.erp.domain.auth.business.AuthProvider;
 import com.erp.erp.domain.customers.common.entity.Gender;
 import com.erp.erp.domain.customers.business.CustomersCreator;
 import com.erp.erp.domain.customers.business.CustomersReader;
@@ -28,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 public class CustomersService {
 
+  private final AuthProvider authProvider;
   private final CustomersCreator customersCreator;
   private final CustomersReader customersReader;
   private final CustomersUpdater customersUpdater;
@@ -36,10 +38,8 @@ public class CustomersService {
   private final PhotoUtil photoUtil;
 
   @Transactional
-  public Payments addCustomer(
-      Institutes institutes ,
-      AddCustomerDto.Request req
-  ) {
+  public Payments addCustomer(AddCustomerDto.Request req) {
+    Institutes institutes = authProvider.getCurrentInstitutes();
 
     Gender gender = Gender.getString(req.getGender());
     Plans plans = plansReader.findById(req.getPlansId());
@@ -80,19 +80,21 @@ public class CustomersService {
   }
 
 
-  public List<Customers> getCurrentCustomers(Long institutesId, int page) {
+  public List<Customers> getCurrentCustomers(int page) {
+    Institutes institutes = authProvider.getCurrentInstitutes();
     Pageable pageable = PageRequest.of(page, 4);
     Page<Customers> customersPage = customersReader.findByInstitutesIdAndStatusTrue(
-        institutesId,
+        institutes,
         pageable
     );
     return customersPage.getContent();
   }
 
-  public List<Customers> getExpiredCustomers(Long institutesId, int page) {
+  public List<Customers> getExpiredCustomers(int page) {
+    Institutes institutes = authProvider.getCurrentInstitutes();
     Pageable pageable = PageRequest.of(page, 4);
     Page<Customers> customersPage = customersReader.findByInstitutesIdAndStatusFalse(
-        institutesId,
+        institutes,
         pageable
     );
     return customersPage.getContent();
