@@ -83,4 +83,8 @@ public class CustomersService {
     return customersPage.getContent();
   }
 
+  public List<Customers> getCurrentCustomers(){
+    Institutes institutes = authProvider.getCurrentInstitutes();
+    return customersReader.findByInstitutesIdAndStatusTrue(institutes);
+  }
 }

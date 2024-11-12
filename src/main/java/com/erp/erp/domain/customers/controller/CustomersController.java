@@ -78,4 +78,17 @@ public class CustomersController {
 
     return ApiResult.success(response);
   }
+
+  @Operation(summary = "이용 가능 모든 고객 이름 조회")
+  @GetMapping("getAvailableCustomerNames")
+  public ApiResult<List<GetAvailableCustomerNamesDto.Response>> getAvailableCustomerNames() {
+    List<Customers> customersList = customersService.getCurrentCustomers();
+
+    List<GetAvailableCustomerNamesDto.Response> response = customersList.stream()
+        .map(GetAvailableCustomerNamesDto.Response::fromEntity)
+        .toList();
+
+    return ApiResult.success(response);
+  }
+
 }

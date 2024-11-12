@@ -1,6 +1,7 @@
 package com.erp.erp.domain.customers.repository;
 
 import com.erp.erp.domain.customers.common.entity.Customers;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface CustomersRepository extends JpaRepository<Customers, Long> {
 
   Page<Customers> findByInstitutesIdAndStatus(Long institutesId, Boolean status, Pageable pageable);
+  List<Customers> findByInstitutesIdAndStatus(Long institutesId, Boolean status);
 
 
   @Modifying
