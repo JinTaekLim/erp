@@ -3,7 +3,6 @@ package com.erp.erp.domain.customers.controller;
 import com.erp.erp.domain.customers.common.dto.AddCustomerDto;
 import com.erp.erp.domain.customers.common.dto.GetAvailableCustomerNamesDto;
 import com.erp.erp.domain.customers.common.dto.GetCustomerDto;
-import com.erp.erp.domain.customers.common.dto.GetReservationCustomerDetailsDto;
 import com.erp.erp.domain.customers.common.dto.UpdateStatusDto;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.customers.service.CustomersService;
