@@ -36,9 +36,7 @@ public class ReservationsService {
   private final ReservationsDelete reservationsDelete;
   private final ReservationsValidator reservationsValidator;
   private final CustomersReader customersReader;
-  public Reservations findById(Long reservationsId) {
-    return reservationsReader.findById(reservationsId);
-  }
+
 
   public Reservations addReservations(AddReservationsDto.Request req) {
     Institutes institutes = authProvider.getCurrentInstitutes();
