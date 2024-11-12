@@ -1,4 +1,4 @@
-package com.erp.erp.domain.membership.common.dto;
+package com.erp.erp.domain.plans.common.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class GetMembershipDto {
+public class GetPlansDto {
 
   @Schema(name = "GetMembershipDto_Response" , description = "이용권 조회 반환")
   @Builder

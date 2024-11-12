@@ -1,9 +1,9 @@
 package com.erp.erp.domain.admins.controller;
 
 
-import com.erp.erp.domain.membership.common.dto.AddMembershipDto;
-import com.erp.erp.domain.membership.common.entity.Membership;
-import com.erp.erp.domain.membership.service.MembershipService;
+import com.erp.erp.domain.plans.common.dto.AddPlansDto;
+import com.erp.erp.domain.plans.common.entity.Plans;
+import com.erp.erp.domain.plans.service.PlansService;
 import com.erp.erp.global.error.ApiResult;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -21,17 +21,17 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class adminsController {
 
-  private final MembershipService membershipService;
+  private final PlansService plansService;
 
   @PostMapping("/addMembership")
-  public ApiResult<AddMembershipDto.Response> addMembership(
-      @RequestBody @Valid AddMembershipDto.Request request
+  public ApiResult<AddPlansDto.Response> addMembership(
+      @RequestBody @Valid AddPlansDto.Request request
   ) {
-    Membership membership = membershipService.addMembership(request);
+    Plans plans = plansService.addMembership(request);
 
-    AddMembershipDto.Response response = AddMembershipDto.Response.builder()
-        .name(membership.getName())
-        .price(membership.getPrice())
+    AddPlansDto.Response response = AddPlansDto.Response.builder()
+        .name(plans.getName())
+        .price(plans.getPrice())
         .build();
 
     return ApiResult.success(response);
