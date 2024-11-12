@@ -10,18 +10,17 @@ import com.erp.erp.domain.accounts.common.entity.Accounts;
 import com.erp.erp.domain.accounts.repository.AccountsRepository;
 import com.erp.erp.domain.customers.common.dto.AddCustomerDto;
 
-import com.erp.erp.domain.customers.common.dto.GetCustomerDto.Response;
 import com.erp.erp.domain.customers.common.dto.UpdateStatusDto;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.customers.repository.CustomersRepository;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.institutes.repository.InstitutesRepository;
+import com.erp.erp.domain.plans.common.entity.Plans;
+import com.erp.erp.domain.plans.repository.PlansRepository;
 import com.erp.erp.global.error.ApiResult;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.util.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
-import java.util.List;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -47,6 +46,9 @@ class CustomersTest extends IntegrationTest {
   @Autowired
   private AccountsRepository accountsRepository;
 
+  @Autowired
+  private PlansRepository plansRepository;
+
   @MockBean
   private PhotoUtil photoUtil;
 
@@ -69,6 +71,10 @@ class CustomersTest extends IntegrationTest {
     return institutesRepository.save(getInstitutes());
   }
 
+  private Plans createPlans() {
+    return plansRepository.save(getPlans());
+  }
+
   private Customers getCustomers() {
     Institutes institutes = createInstitutes();
 
@@ -78,13 +84,21 @@ class CustomersTest extends IntegrationTest {
         .sample();
   }
 
+  private Plans getPlans() {
+    return fixtureMonkey.giveMeBuilder(Plans.class)
+        .setNull("id")
+        .sample();
+  }
+
 
   // note. 이후 이미지 처리 필요
   @Test
   void addCustomer_성공() {
     //given
+    Plans plans = createPlans();
     AddCustomerDto.Request request = fixtureMonkey.giveMeBuilder(AddCustomerDto.Request.class)
         .set("gender","M")
+        .set("plansId", plans.getId())
         .sample();
 
     String url = "http://localhost:" + port + "/api/customers/addCustomer";
@@ -109,33 +123,33 @@ class CustomersTest extends IntegrationTest {
     assertNotNull(apiResponse);
   }
 
-  // note. 이후 이미지 처리 필요
-//  @Test
-//  void addCustomer_잘못된_성별() {
-//    //given
-//    AddCustomerDto.Request request = fixtureMonkey.giveMeOne(AddCustomerDto.Request.class);
-//
-//    String url = "http://localhost:" + port + "/api/customers/addCustomer";
-//
-//
-//    //when
-//    when(photoUtil.upload(any())).thenReturn(RandomValue.string(50).get());
-//
-//    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
-//        url,
-//        request,
-//        String.class
-//    );
-//
-//    ApiResult<AddCustomerDto.Response> apiResponse = gson.fromJson(
-//        responseEntity.getBody(),
-//        new TypeToken<ApiResult<AddCustomerDto.Response>>(){}
-//    );
-//
-//    //then
-//    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-//    assertNotNull(apiResponse);
-//  }
+   // note. 이후 이미지 처리 필요
+  @Test
+  void addCustomer_잘못된_성별() {
+    //given
+    AddCustomerDto.Request request = fixtureMonkey.giveMeOne(AddCustomerDto.Request.class);
+
+    String url = "http://localhost:" + port + "/api/customers/addCustomer";
+
+
+    //when
+    when(photoUtil.upload(any())).thenReturn(RandomValue.string(50).get());
+
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+        url,
+        request,
+        String.class
+    );
+
+    ApiResult<AddCustomerDto.Response> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<AddCustomerDto.Response>>(){}
+    );
+
+    //then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertNotNull(apiResponse);
+  }
 
 
   @Test
@@ -173,6 +187,7 @@ class CustomersTest extends IntegrationTest {
     assertNotNull(apiResponse);
     assertThat(customers.getStatus()).isNotEqualTo(status);
   }
+
 
 
 //  @Test

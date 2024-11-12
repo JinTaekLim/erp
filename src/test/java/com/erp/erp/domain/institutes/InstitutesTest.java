@@ -7,23 +7,16 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
 import com.erp.erp.domain.accounts.common.entity.Accounts;
-import com.erp.erp.domain.auth.service.AuthService;
+import com.erp.erp.domain.auth.business.AuthProvider;
 import com.erp.erp.domain.institutes.common.dto.UpdateTotalSpotsDto;
 import com.erp.erp.domain.institutes.common.dto.UpdateTotalSpotsDto.Request;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.global.error.ApiResult;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.util.test.IntegrationTest;
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
-import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPlugin;
-
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -44,7 +37,7 @@ public class InstitutesTest extends IntegrationTest {
   private TestRestTemplate restTemplate;
 
   @MockBean
-  private AuthService authService;
+  private AuthProvider authProvider;
 
   @Test
   void updateTotalSpots_성공() {
@@ -60,7 +53,7 @@ public class InstitutesTest extends IntegrationTest {
     String url = "http://localhost:" + port + "/api/institutes/updateTotalSpots";
 
     //when
-    when(authService.getAccountsInfo()).thenReturn(accounts);
+    when(authProvider.getCurrentInstitutes()).thenReturn(institutes);
 
 
     ResponseEntity<String> responseEntity = restTemplate.postForEntity(
@@ -101,8 +94,7 @@ public class InstitutesTest extends IntegrationTest {
     String url = "http://localhost:" + port + "/api/institutes/updateTotalSpots";
 
     //when
-    when(authService.getAccountsInfo()).thenReturn(accounts);
-
+    when(authProvider.getCurrentInstitutes()).thenReturn(institutes);
 
     ResponseEntity<String> responseEntity = restTemplate.postForEntity(
         url,
@@ -137,8 +129,7 @@ public class InstitutesTest extends IntegrationTest {
     String url = "http://localhost:" + port + "/api/institutes/updateTotalSpots";
 
     //when
-    when(authService.getAccountsInfo()).thenReturn(accounts);
-
+    when(authProvider.getCurrentInstitutes()).thenReturn(institutes);
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);

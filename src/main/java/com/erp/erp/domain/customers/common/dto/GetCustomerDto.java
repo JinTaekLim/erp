@@ -1,5 +1,6 @@
 package com.erp.erp.domain.customers.common.dto;
 
+import com.erp.erp.domain.customers.common.entity.Customers;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,6 +36,20 @@ public class GetCustomerDto {
     private int tardinessCount;
     @Schema(description = "결석 횟수")
     private int absenceCount;
-  }
 
+    public static Response fromEntity(Customers customers) {
+      return Response.builder()
+          .photoUrl(customers.getPhotoUrl())
+          .name(customers.getName())
+          .gender(String.valueOf(customers.getGender()))
+          .phone(customers.getPhone())
+          .plans(customers.getInstitutes().getName())
+          .remainingTime(0)
+          .usedTime(0)
+          .registrationDate(0)
+          .tardinessCount(0)
+          .absenceCount(0)
+          .build();
+    }
+  }
 }

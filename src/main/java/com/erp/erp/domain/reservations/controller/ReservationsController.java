@@ -1,14 +1,11 @@
 package com.erp.erp.domain.reservations.controller;
 
-import com.erp.erp.domain.accounts.common.entity.Accounts;
-import com.erp.erp.domain.auth.service.AuthService;
-import com.erp.erp.domain.customers.common.entity.Customers;
-import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.institutes.service.InstitutesService;
 import com.erp.erp.domain.reservations.common.dto.AddReservationsDto;
 import com.erp.erp.domain.reservations.common.dto.DeleteReservationsDto;
 import com.erp.erp.domain.reservations.common.dto.GetDailyReservationsDto;
-import com.erp.erp.domain.reservations.common.dto.UpdateReservationsDto;
+import com.erp.erp.domain.reservations.common.dto.UpdatedReservationsDto;
+import com.erp.erp.domain.reservations.common.dto.UpdatedSeatNumberDto;
 import com.erp.erp.domain.reservations.common.entity.Reservations;
 import com.erp.erp.domain.reservations.service.ReservationsService;
 import com.erp.erp.global.error.ApiResult;
@@ -29,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/reservation")
+@RequestMapping("/api/reservation")
 @Tag(name = "reservations", description = "예약 관리")
 @RequiredArgsConstructor
 @Slf4j
@@ -37,20 +34,12 @@ public class ReservationsController {
 
   private final ReservationsService reservationsService;
   private final InstitutesService institutesService;
-  private final AuthService authService;
 
   @Operation(summary = "예약 추가")
   @PostMapping("/addReservations")
   public ApiResult<AddReservationsDto.Response> addReservations(
       @Valid @RequestBody AddReservationsDto.Request req) {
-    Accounts accounts = authService.getAccountsInfo();
-    Institutes institutes = accounts.getInstitutes();
-    Customers customers = institutesService.validateCustomerBelongsToInstitute(
-        institutes,
-        req.getCustomersId()
-    );
-
-    Reservations reservations = reservationsService.addReservations(req, customers);
+    Reservations reservations = reservationsService.addReservations(req);
 
     AddReservationsDto.Response response = AddReservationsDto.Response.builder()
         .reservationsId(reservations.getId())
@@ -68,9 +57,7 @@ public class ReservationsController {
   public ApiResult<List<GetDailyReservationsDto.Response>> getDailyReservations(
       @RequestParam LocalDate day
   ) {
-    Accounts accounts = authService.getAccountsInfo();
-    Institutes institutes = accounts.getInstitutes();
-    List<Reservations> reservationsList = reservationsService.getDailyReservations(day, institutes);
+    List<Reservations> reservationsList = reservationsService.getDailyReservations(day);
 
     List<GetDailyReservationsDto.Response> response = reservationsList.stream()
         .map(reservations -> GetDailyReservationsDto.Response.builder()
@@ -88,9 +75,7 @@ public class ReservationsController {
   @Operation(summary = "특정 시간 예약 조회")
   @GetMapping("/getReservationByTime")
   public ApiResult<?> getReservationByTime(@RequestParam LocalDateTime time) {
-    Accounts accounts = authService.getAccountsInfo();
-    Institutes institutes = accounts.getInstitutes();
-    List<Reservations> reservationsList = reservationsService.getReservationByTime(institutes,time);
+    List<Reservations> reservationsList = reservationsService.getReservationByTime(time);
 
     List<GetDailyReservationsDto.Response> response = reservationsList.stream()
         .map(reservations -> GetDailyReservationsDto.Response.builder()
@@ -108,15 +93,12 @@ public class ReservationsController {
 
 
   @Operation(summary = "예약 수정")
-  @PostMapping("/updateReservation")
-  public ApiResult<UpdateReservationsDto.Response> updateReservation(
-      @Valid @RequestBody UpdateReservationsDto.Request req) {
-    Accounts accounts = authService.getAccountsInfo();
-    Institutes institutes = accounts.getInstitutes();
+  @PostMapping("/updatedReservation")
+  public ApiResult<UpdatedReservationsDto.Response> updatedReservation(
+      @Valid @RequestBody UpdatedReservationsDto.Request req) {
+    Reservations reservations = reservationsService.updateReservation(req);
 
-    Reservations reservations = reservationsService.updateReservation(req, institutes);
-
-    UpdateReservationsDto.Response response = UpdateReservationsDto.Response.builder()
+    UpdatedReservationsDto.Response response = UpdatedReservationsDto.Response.builder()
         .reservationsId(reservations.getId())
         .startTime(reservations.getStartTime().toLocalTime())
         .endTime(reservations.getEndTime().toLocalTime())
@@ -126,14 +108,26 @@ public class ReservationsController {
     return ApiResult.success(response);
   }
 
+  @Operation(summary = "좌석 번호 변경")
+  @PostMapping("/updatedSeatNumber")
+  public ApiResult<UpdatedSeatNumberDto.Response> updatedSeatNumber(
+      UpdatedSeatNumberDto.Request req
+  ) {
+    Reservations reservations = reservationsService.updatedSeatNumber(req);
+
+    UpdatedSeatNumberDto.Response response = UpdatedSeatNumberDto.Response.builder()
+        .reservationsId(reservations.getId())
+        .seatNumber(reservations.getSeatNumber())
+        .build();
+
+    return ApiResult.success(response);
+  }
 
   @Operation(summary = "예약 삭제")
   @PostMapping("/deleteReservations")
   public ApiResult<Boolean> deleteReservations(
       @Valid @RequestBody DeleteReservationsDto.Request req) {
-    Accounts accounts = authService.getAccountsInfo();
-    Institutes institutes = accounts.getInstitutes();
-    reservationsService.deleteReservations(req, institutes);
+    reservationsService.deleteReservations(req);
     return ApiResult.success(true);
   }
 }

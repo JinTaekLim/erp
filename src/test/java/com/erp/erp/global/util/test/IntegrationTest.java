@@ -2,6 +2,7 @@ package com.erp.erp.global.util.test;
 
 import com.erp.erp.global.gson.LocalDateSerializer;
 import com.erp.erp.global.gson.LocalDateTimeSerializer;
+import com.erp.erp.global.gson.LocalTimeAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
@@ -9,14 +10,11 @@ import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntr
 import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPlugin;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import org.junit.jupiter.api.AfterEach;
+import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -30,6 +28,7 @@ abstract public class IntegrationTest {
   protected Gson gson = new GsonBuilder()
       .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
       .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
+      .registerTypeAdapter(LocalTime.class, new LocalTimeAdapter())
       .setPrettyPrinting()
       .create();
 

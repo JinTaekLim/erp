@@ -1,12 +1,12 @@
 package com.erp.erp.domain.institutes.service;
 
+import com.erp.erp.domain.auth.business.AuthProvider;
 import com.erp.erp.domain.customers.business.CustomersReader;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.institutes.business.InstitutesUpdater;
 import com.erp.erp.domain.institutes.business.InstitutesValidator;
 import com.erp.erp.domain.institutes.common.dto.UpdateTotalSpotsDto;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
-import com.erp.erp.domain.institutes.common.exception.InstituteNotFoundInCustomerException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,15 +16,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class InstitutesService {
 
+  private final AuthProvider authProvider;
   private final InstitutesUpdater institutesUpdater;
   private final InstitutesValidator institutesValidator;
   private final CustomersReader customersReader;
 
-  public UpdateTotalSpotsDto.Response updateTotalSpots(
-      Institutes institutes,
-      UpdateTotalSpotsDto.Request req
-  ) {
-
+  public UpdateTotalSpotsDto.Response updateTotalSpots(UpdateTotalSpotsDto.Request req) {
+    Institutes institutes = authProvider.getCurrentInstitutes();
     int num = req.getNum();
     institutesUpdater.updateSpotsNumber(institutes, num);
 
@@ -33,10 +31,5 @@ public class InstitutesService {
         .name(institutes.getName())
         .num(institutes.getTotalSpots())
         .build();
-  }
-
-  public Customers validateCustomerBelongsToInstitute(Institutes institutes , Long customersId) {
-    Customers customers = customersReader.findById(customersId);
-    return institutesValidator.validateCustomerBelongsToInstitute(institutes,customers);
   }
 }
