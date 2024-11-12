@@ -1,4 +1,4 @@
-package com.erp.erp.domain.membership.common.dto;
+package com.erp.erp.domain.plans.common.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class AddMembershipDto {
+public class AddPlansDto {
 
   @Schema(name = "AddMembershipDto_Request" , description = "이용권 추가 요청")
   @Builder
@@ -22,6 +22,14 @@ public class AddMembershipDto {
     @Schema(description = "이용권 가격")
     @NotNull
     private int price;
+
+    @Schema(description = "이용권 시간")
+    @NotNull
+    private int availableTime;
+
+    @Schema(description = "이용권 기간")
+    @NotNull
+    private int availablePeriod;
 
   }
 

@@ -15,6 +15,8 @@ import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.customers.repository.CustomersRepository;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.institutes.repository.InstitutesRepository;
+import com.erp.erp.domain.plans.common.entity.Plans;
+import com.erp.erp.domain.plans.repository.PlansRepository;
 import com.erp.erp.global.error.ApiResult;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.util.test.IntegrationTest;
@@ -44,6 +46,9 @@ class CustomersTest extends IntegrationTest {
   @Autowired
   private AccountsRepository accountsRepository;
 
+  @Autowired
+  private PlansRepository plansRepository;
+
   @MockBean
   private PhotoUtil photoUtil;
 
@@ -66,6 +71,10 @@ class CustomersTest extends IntegrationTest {
     return institutesRepository.save(getInstitutes());
   }
 
+  private Plans createPlans() {
+    return plansRepository.save(getPlans());
+  }
+
   private Customers getCustomers() {
     Institutes institutes = createInstitutes();
 
@@ -75,13 +84,21 @@ class CustomersTest extends IntegrationTest {
         .sample();
   }
 
+  private Plans getPlans() {
+    return fixtureMonkey.giveMeBuilder(Plans.class)
+        .setNull("id")
+        .sample();
+  }
+
 
   // note. 이후 이미지 처리 필요
   @Test
   void addCustomer_성공() {
     //given
+    Plans plans = createPlans();
     AddCustomerDto.Request request = fixtureMonkey.giveMeBuilder(AddCustomerDto.Request.class)
         .set("gender","M")
+        .set("plansId", plans.getId())
         .sample();
 
     String url = "http://localhost:" + port + "/api/customers/addCustomer";
