@@ -9,6 +9,8 @@ import com.erp.erp.domain.customers.common.dto.UpdateStatusDto;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.customers.service.CustomersService;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
+import com.erp.erp.domain.payments.common.entity.Payments;
+import com.erp.erp.domain.plans.service.PlansService;
 import com.erp.erp.global.error.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -31,8 +33,10 @@ public class CustomersController {
 
   private final CustomersService customersService;
   private final AuthService authService;
+  private final PlansService plansService;
 
   // note. 이후 프로필 사진 관련 처리 필요
+  // 로직 책임 분리 필요
   @Operation(summary = "고객 추가")
   @PostMapping("/addCustomer")
   public ApiResult<AddCustomerDto.Response> addCustomer(
@@ -41,10 +45,11 @@ public class CustomersController {
     Accounts accounts = authService.getAccountsInfo();
     Institutes institutes = accounts.getInstitutes();
 
-
-    Customers customers = customersService.addCustomer(institutes,req);
+    Payments payments = customersService.addCustomer(institutes,req);
+    Customers customers = payments.getCustomers();
 
     AddCustomerDto.Response response = Response.builder()
+        .plans(payments.getPlans().getName())
         .name(customers.getName())
         .gender(customers.getGender())
         .phone(customers.getPhone())

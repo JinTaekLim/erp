@@ -1,7 +1,6 @@
 package com.erp.erp.domain.customers.service;
 
 import com.erp.erp.domain.accounts.business.PhotoUtil;
-import com.erp.erp.domain.customers.common.dto.GetCustomerDto;
 import com.erp.erp.domain.customers.common.entity.Gender;
 import com.erp.erp.domain.customers.business.CustomersCreator;
 import com.erp.erp.domain.customers.business.CustomersReader;
@@ -10,6 +9,10 @@ import com.erp.erp.domain.customers.common.dto.AddCustomerDto;
 import com.erp.erp.domain.customers.common.dto.UpdateStatusDto;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
+import com.erp.erp.domain.payments.business.PaymentsCreator;
+import com.erp.erp.domain.payments.common.entity.Payments;
+import com.erp.erp.domain.plans.business.PlansReader;
+import com.erp.erp.domain.plans.common.entity.Plans;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -27,14 +31,18 @@ public class CustomersService {
   private final CustomersCreator customersCreator;
   private final CustomersReader customersReader;
   private final CustomersUpdater customersUpdater;
+  private final PaymentsCreator paymentsCreator;
+  private final PlansReader plansReader;
   private final PhotoUtil photoUtil;
 
-  public Customers addCustomer(
+  @Transactional
+  public Payments addCustomer(
       Institutes institutes ,
       AddCustomerDto.Request req
   ) {
 
     Gender gender = Gender.getString(req.getGender());
+    Plans plans = plansReader.findById(req.getPlansId());
 
     MultipartFile photo = null;
     String photoUrl = (photo == null) ? null : photoUtil.upload(photo);
@@ -49,7 +57,17 @@ public class CustomersService {
         .birthDate(req.getBirthDate())
         .build();
 
-    return customersCreator.save(customers);
+    customersCreator.save(customers);
+
+    Payments payments = Payments.builder()
+        .plans(plans)
+        .customers(customers)
+        .status(req.isStatus())
+        .paymentsMethod(req.getPaymentsMethod())
+        .discount(req.getDiscount())
+        .build();
+
+    return paymentsCreator.save(payments);
   };
 
 
