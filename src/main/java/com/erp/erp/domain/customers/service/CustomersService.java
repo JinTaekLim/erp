@@ -40,33 +40,16 @@ public class CustomersService {
   @Transactional
   public Payments addCustomer(AddCustomerDto.Request req) {
     Institutes institutes = authProvider.getCurrentInstitutes();
-
-    Gender gender = Gender.getString(req.getGender());
     Plans plans = plansReader.findById(req.getPlansId());
 
     MultipartFile photo = null;
     String photoUrl = (photo == null) ? null : photoUtil.upload(photo);
 
-    Customers customers = Customers.builder()
-        .institutes(institutes)
-        .name(req.getName())
-        .gender(gender)
-        .phone(req.getPhone())
-        .address(req.getAddress())
-        .photoUrl(photoUrl)
-        .birthDate(req.getBirthDate())
-        .build();
 
+    Customers customers = req.toCustomers(institutes, photoUrl);
     customersCreator.save(customers);
 
-    Payments payments = Payments.builder()
-        .plans(plans)
-        .customers(customers)
-        .status(req.isStatus())
-        .paymentsMethod(req.getPaymentsMethod())
-        .discount(req.getDiscount())
-        .build();
-
+    Payments payments = req.toPayments(customers, plans);
     return paymentsCreator.save(payments);
   };
 
@@ -100,4 +83,8 @@ public class CustomersService {
     return customersPage.getContent();
   }
 
+  public List<Customers> getCurrentCustomers(){
+    Institutes institutes = authProvider.getCurrentInstitutes();
+    return customersReader.findByInstitutesIdAndStatusTrue(institutes);
+  }
 }

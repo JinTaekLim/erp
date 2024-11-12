@@ -1,7 +1,7 @@
 package com.erp.erp.domain.customers.controller;
 
 import com.erp.erp.domain.customers.common.dto.AddCustomerDto;
-import com.erp.erp.domain.customers.common.dto.AddCustomerDto.Response;
+import com.erp.erp.domain.customers.common.dto.GetAvailableCustomerNamesDto;
 import com.erp.erp.domain.customers.common.dto.GetCustomerDto;
 import com.erp.erp.domain.customers.common.dto.UpdateStatusDto;
 import com.erp.erp.domain.customers.common.entity.Customers;
@@ -12,7 +12,6 @@ import com.erp.erp.global.error.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,15 +40,7 @@ public class CustomersController {
     Payments payments = customersService.addCustomer(req);
     Customers customers = payments.getCustomers();
 
-    AddCustomerDto.Response response = Response.builder()
-        .plans(payments.getPlans().getName())
-        .name(customers.getName())
-        .gender(customers.getGender())
-        .phone(customers.getPhone())
-        .address(customers.getAddress())
-        .birthDate(customers.getBirthDate())
-        .photoUrl(customers.getPhotoUrl())
-        .build();
+    AddCustomerDto.Response response = AddCustomerDto.Response.fromEntity(payments,customers);
 
     return ApiResult.success(response);
   }
@@ -68,19 +59,8 @@ public class CustomersController {
     List<Customers> customersList = customersService.getCurrentCustomers(page);
 
     List<GetCustomerDto.Response> response = customersList.stream()
-        .map(customers -> GetCustomerDto.Response.builder()
-            .photoUrl(customers.getPhotoUrl())
-            .name(customers.getName())
-            .gender(String.valueOf(customers.getGender()))
-            .phone(customers.getPhone())
-            .plans(customers.getInstitutes().getName())
-            .remainingTime(0)
-            .usedTime(0)
-            .registrationDate(0)
-            .tardinessCount(0)
-            .absenceCount(0)
-            .build())
-        .collect(Collectors.toList());
+        .map(GetCustomerDto.Response::fromEntity)
+        .toList();
 
     return ApiResult.success(response);
   }
@@ -92,20 +72,23 @@ public class CustomersController {
     List<Customers> customersList = customersService.getExpiredCustomers(page);
 
     List<GetCustomerDto.Response> response = customersList.stream()
-        .map(customers -> GetCustomerDto.Response.builder()
-            .photoUrl(customers.getPhotoUrl())
-            .name(customers.getName())
-            .gender(String.valueOf(customers.getGender()))
-            .phone(customers.getPhone())
-            .plans(customers.getInstitutes().getName())
-            .remainingTime(0)
-            .usedTime(0)
-            .registrationDate(0)
-            .tardinessCount(0)
-            .absenceCount(0)
-            .build())
-        .collect(Collectors.toList());
+        .map(GetCustomerDto.Response::fromEntity)
+        .toList();
+
 
     return ApiResult.success(response);
   }
+
+  @Operation(summary = "이용 가능 모든 고객 이름 조회")
+  @GetMapping("getAvailableCustomerNames")
+  public ApiResult<List<GetAvailableCustomerNamesDto.Response>> getAvailableCustomerNames() {
+    List<Customers> customersList = customersService.getCurrentCustomers();
+
+    List<GetAvailableCustomerNamesDto.Response> response = customersList.stream()
+        .map(GetAvailableCustomerNamesDto.Response::fromEntity)
+        .toList();
+
+    return ApiResult.success(response);
+  }
+
 }
