@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 public class GetCustomerDto {
 
-  @Schema(name = "GetCustomerDto_Request" , description = "회원 정보 요청")
+  @Schema(name = "GetCustomerDto_Response" , description = "회원 정보 반환")
   @Getter
   @Builder
   @NoArgsConstructor
