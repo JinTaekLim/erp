@@ -112,6 +112,11 @@ public class ReservationsService {
     reservationsDelete.delete(reservations);
   }
 
+  public Reservations getReservationsForCurrentInstitute(Long reservationsId) {
+    Institutes institutes = authProvider.getCurrentInstitutes();
+    Reservations reservations = reservationsReader.findById(reservationsId);
+    return institutesValidator.validateReservationBelongsToInstitute(institutes, reservations);
+  }
 
 
 }
