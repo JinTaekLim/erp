@@ -1,9 +1,6 @@
 package com.erp.erp.domain.institutes.controller;
 
-import com.erp.erp.domain.accounts.common.entity.Accounts;
-import com.erp.erp.domain.auth.service.AuthService;
 import com.erp.erp.domain.institutes.common.dto.UpdateTotalSpotsDto;
-import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.institutes.service.InstitutesService;
 import com.erp.erp.global.error.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,17 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class InstitutesController {
 
   private final InstitutesService institutesService;
-  private final AuthService authService;
 
   @Operation(summary = "예약 가능한 총 갯수 변경")
   @PostMapping("/updateTotalSpots")
   public ApiResult<UpdateTotalSpotsDto.Response> updateTotalSpots(
       @Valid @RequestBody UpdateTotalSpotsDto.Request req
   ) {
-
-    Accounts accounts = authService.getAccountsInfo();
-    Institutes institutes = accounts.getInstitutes();
-    UpdateTotalSpotsDto.Response response = institutesService.updateTotalSpots(institutes, req);
+    UpdateTotalSpotsDto.Response response = institutesService.updateTotalSpots(req);
     return ApiResult.success(response);
 
 

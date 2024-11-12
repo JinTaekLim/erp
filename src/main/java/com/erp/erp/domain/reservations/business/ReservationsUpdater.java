@@ -13,13 +13,13 @@ import org.springframework.stereotype.Component;
 public class ReservationsUpdater {
   private final ReservationsRepository reservationsRepository;
 
-  public Reservations reservationsUpdate(
+  public Reservations updatedReservations(
       Reservations reservations,
       LocalDateTime startTime,
       LocalDateTime endTime,
       String memo
   ) {
-    reservations.update(startTime,endTime,memo);
+    reservations.updatedReservations(startTime,endTime,memo);
     return reservationsRepository.save(reservations);
   }
 }

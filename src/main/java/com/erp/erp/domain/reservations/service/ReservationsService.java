@@ -1,5 +1,6 @@
 package com.erp.erp.domain.reservations.service;
 
+import com.erp.erp.domain.auth.business.AuthProvider;
 import com.erp.erp.domain.customers.business.CustomersReader;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.institutes.business.InstitutesValidator;
@@ -11,7 +12,8 @@ import com.erp.erp.domain.reservations.business.ReservationsReader;
 import com.erp.erp.domain.reservations.business.ReservationsUpdater;
 import com.erp.erp.domain.reservations.common.dto.AddReservationsDto;
 import com.erp.erp.domain.reservations.common.dto.DeleteReservationsDto;
-import com.erp.erp.domain.reservations.common.dto.UpdateReservationsDto;
+import com.erp.erp.domain.reservations.common.dto.UpdatedReservationsDto;
+import com.erp.erp.domain.reservations.common.dto.UpdatedSeatNumberDto;
 import com.erp.erp.domain.reservations.common.entity.Reservations;
 import com.erp.erp.global.util.TimeUtil;
 import java.time.LocalDate;
@@ -26,20 +28,23 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ReservationsService {
 
+  private final AuthProvider authProvider;
+  private final InstitutesValidator institutesValidator;
   private final ReservationsReader reservationsReader;
   private final ReservationsCreator reservationsCreator;
   private final ReservationsUpdater reservationsUpdater;
   private final ReservationsDelete reservationsDelete;
   private final ReservationsValidator reservationsValidator;
   private final CustomersReader customersReader;
-  private final InstitutesValidator institutesValidator;
-
   public Reservations findById(Long reservationsId) {
     return reservationsReader.findById(reservationsId);
   }
 
-  public Reservations addReservations(AddReservationsDto.Request req, Customers customers) {
-    Institutes institutes = customers.getInstitutes();
+  public Reservations addReservations(AddReservationsDto.Request req) {
+    Institutes institutes = authProvider.getCurrentInstitutes();
+    Customers customers = customersReader.findById(req.getCustomersId());
+    institutesValidator.validateCustomerBelongsToInstitute(institutes,customers);
+
     LocalDateTime startTime = req.getStartTime();
     LocalDateTime endTime = req.getEndTime();
 
@@ -56,14 +61,14 @@ public class ReservationsService {
     return reservationsCreator.save(reservations);
   }
 
-  public List<Reservations> getDailyReservations(LocalDate date, Institutes institutes) {
+  public List<Reservations> getDailyReservations(LocalDate date) {
+    Institutes institutes = authProvider.getCurrentInstitutes();
     return reservationsReader.findByInstitutesAndStartTimeOn(institutes, date);
   }
 
-  public List<Reservations> getReservationByTime(
-      Institutes institutes,
-      LocalDateTime time
-  ) {
+  public List<Reservations> getReservationByTime(LocalDateTime time) {
+    Institutes institutes = authProvider.getCurrentInstitutes();
+
     LocalDateTime startTime = TimeUtil.roundToNearestHalfHour(time);
     LocalDateTime endTime = startTime.plusMinutes(30);
 
@@ -74,7 +79,9 @@ public class ReservationsService {
     );
   }
 
-  public Reservations updateReservation(UpdateReservationsDto.Request req, Institutes institutes) {
+  public Reservations updateReservation(UpdatedReservationsDto.Request req) {
+
+    Institutes institutes = authProvider.getCurrentInstitutes();
     long reservationsId = req.getReservationsId();
     Reservations reservations = reservationsReader.findById(reservationsId);
     Customers customers = reservations.getCustomers();
@@ -84,12 +91,14 @@ public class ReservationsService {
     LocalDateTime endTime = req.getEndTime();
     String memo = req.getMemo();
 
-    return reservationsUpdater.reservationsUpdate(reservations, startTime, endTime, memo);
+    return reservationsUpdater.updatedReservations(reservations, startTime, endTime, memo);
   }
 
 
 
-  public void deleteReservations(DeleteReservationsDto.Request req, Institutes institutes) {
+
+  public void deleteReservations(DeleteReservationsDto.Request req) {
+    Institutes institutes = authProvider.getCurrentInstitutes();
     long reservationsId = req.getReservationsId();
     Reservations reservations = reservationsReader.findById(reservationsId);
     Customers customers = reservations.getCustomers();
