@@ -16,11 +16,11 @@ public class LocalDateSerializer implements JsonSerializer<LocalDate>, JsonDeser
 
   @Override
   public JsonElement serialize(LocalDate localDate, Type srcType, JsonSerializationContext context) {
-    return new JsonPrimitive(formatter.format(localDate)); // LocalDate를 포맷팅하여 JSON 프리미티브로 반환
+    return new JsonPrimitive(formatter.format(localDate));
   }
 
   @Override
   public LocalDate deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) {
-    return LocalDate.parse(json.getAsString(), formatter); // JSON 문자열을 LocalDate로 변환
+    return LocalDate.parse(json.getAsString(), formatter);
   }
 }
