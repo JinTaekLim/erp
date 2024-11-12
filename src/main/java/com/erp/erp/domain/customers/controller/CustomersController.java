@@ -10,6 +10,7 @@ import com.erp.erp.domain.payments.common.entity.Payments;
 import com.erp.erp.domain.plans.service.PlansService;
 import com.erp.erp.global.error.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/customers")
+@Tag(name = "customers" ,description = "고객 관리")
 @RequiredArgsConstructor
 @Slf4j
 public class CustomersController {

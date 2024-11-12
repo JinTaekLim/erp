@@ -4,6 +4,7 @@ import com.erp.erp.domain.institutes.common.dto.UpdateTotalSpotsDto;
 import com.erp.erp.domain.institutes.service.InstitutesService;
 import com.erp.erp.global.error.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/institutes")
+@Tag(name = "institutes", description = "매장 관리")
 @RequiredArgsConstructor
 @Slf4j
 public class InstitutesController {
@@ -27,9 +29,6 @@ public class InstitutesController {
   ) {
     UpdateTotalSpotsDto.Response response = institutesService.updateTotalSpots(req);
     return ApiResult.success(response);
-
-
-
   }
 
 }

@@ -6,6 +6,7 @@ import com.erp.erp.domain.auth.common.dto.TokenDto;
 import com.erp.erp.domain.auth.service.TokenService;
 import com.erp.erp.global.error.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/accounts")
+@Tag(name = "account", description = "계정 관리")
 @RequiredArgsConstructor
 @Slf4j
 public class AccountsController {
