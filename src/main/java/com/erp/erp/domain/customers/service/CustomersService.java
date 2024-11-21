@@ -10,6 +10,7 @@ import com.erp.erp.domain.customers.common.dto.AddCustomerDto;
 import com.erp.erp.domain.customers.common.dto.UpdateStatusDto;
 import com.erp.erp.domain.customers.common.dto.UpdatedCustomerInfoDto;
 import com.erp.erp.domain.customers.common.entity.Customers;
+import com.erp.erp.domain.customers.common.entity.Progress;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.payments.business.PaymentsCreator;
 import com.erp.erp.domain.payments.common.entity.Payments;
@@ -35,6 +36,7 @@ public class CustomersService {
   private final CustomersCreator customersCreator;
   private final CustomersReader customersReader;
   private final CustomersUpdater customersUpdater;
+  private final ProgressCreator progressCreator;
   private final PaymentsCreator paymentsCreator;
   private final PlansReader plansReader;
   private final PhotoUtil photoUtil;
@@ -78,10 +80,13 @@ public class CustomersService {
     );
     customersCreator.save(newCustomers);
 
-//    List<Progress> progressList = req.toProgressEntities();
-//    progressCreator.saveAll(progressList);
+    Progress progress = Progress.builder()
+        .customersId(newCustomers.getId())
+        .progressList(req.getProgress())
+        .build();
+    progressCreator.save(progress);
 
-    return UpdatedCustomerInfoDto.Response.fromEntity(newCustomers);
+    return UpdatedCustomerInfoDto.Response.fromEntity(newCustomers, progress);
   }
 
   public List<Customers> getCurrentCustomers(int page) {
