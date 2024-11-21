@@ -5,8 +5,10 @@ import com.erp.erp.domain.auth.business.AuthProvider;
 import com.erp.erp.domain.customers.business.CustomersCreator;
 import com.erp.erp.domain.customers.business.CustomersReader;
 import com.erp.erp.domain.customers.business.CustomersUpdater;
+import com.erp.erp.domain.customers.business.ProgressCreator;
 import com.erp.erp.domain.customers.common.dto.AddCustomerDto;
 import com.erp.erp.domain.customers.common.dto.UpdateStatusDto;
+import com.erp.erp.domain.customers.common.dto.UpdatedCustomerInfoDto;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.payments.business.PaymentsCreator;
@@ -22,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
 
 @Service
 @RequiredArgsConstructor
@@ -61,6 +64,25 @@ public class CustomersService {
     return customersReader.findById(customersId).getStatus();
   }
 
+  @Transactional
+  public UpdatedCustomerInfoDto.Response updatedCustomerInfo(UpdatedCustomerInfoDto.Request req) {
+    Customers customers = customersReader.findById(req.getCustomerId());
+    Customers newCustomers = customersUpdater.updatedCustomers(
+        customers,
+        req.getName(),
+        req.getGender(),
+        req.getPhone(),
+        req.getAddress(),
+        req.getPhotoUrl(),
+        req.getBirthDate()
+    );
+    customersCreator.save(newCustomers);
+
+//    List<Progress> progressList = req.toProgressEntities();
+//    progressCreator.saveAll(progressList);
+
+    return UpdatedCustomerInfoDto.Response.fromEntity(newCustomers);
+  }
 
   public List<Customers> getCurrentCustomers(int page) {
     Institutes institutes = authProvider.getCurrentInstitutes();

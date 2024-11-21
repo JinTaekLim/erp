@@ -57,4 +57,16 @@ public class Customers {
     this.birthDate = birthDate;
     this.status = true;
   }
+
+
+  public Customers update(String name, Gender gender, String phone, String address, String photoUrl,
+      LocalDate birthDate) {
+    this.name = name;
+    this.gender = gender;
+    this.phone = phone;
+    this.address = address;
+    this.photoUrl = photoUrl;
+    this.birthDate = birthDate;
+    return this;
+  }
 }

@@ -4,7 +4,9 @@ import com.erp.erp.domain.customers.common.dto.AddCustomerDto;
 import com.erp.erp.domain.customers.common.dto.GetAvailableCustomerNamesDto;
 import com.erp.erp.domain.customers.common.dto.GetCustomerDto;
 import com.erp.erp.domain.customers.common.dto.UpdateStatusDto;
+import com.erp.erp.domain.customers.common.dto.UpdatedCustomerInfoDto;
 import com.erp.erp.domain.customers.common.entity.Customers;
+import com.erp.erp.domain.customers.common.entity.Progress;
 import com.erp.erp.domain.customers.service.CustomersService;
 import com.erp.erp.domain.payments.common.entity.Payments;
 import com.erp.erp.domain.plans.service.PlansService;
@@ -44,6 +46,15 @@ public class CustomersController {
 
     AddCustomerDto.Response response = AddCustomerDto.Response.fromEntity(payments,customers);
 
+    return ApiResult.success(response);
+  }
+
+  @Operation(summary = "고객 정보 수정")
+  @PostMapping("updatedCustomerInfo")
+  public ApiResult<UpdatedCustomerInfoDto.Response> updatedCustomerInfo(
+      @Valid @RequestBody UpdatedCustomerInfoDto.Request req
+  ) {
+    UpdatedCustomerInfoDto.Response response = customersService.updatedCustomerInfo(req);
     return ApiResult.success(response);
   }
 
