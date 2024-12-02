@@ -2,6 +2,7 @@ package com.erp.erp.domain.customers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -28,6 +29,8 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.time.LocalDate;
 
 class CustomersTest extends IntegrationTest {
 
@@ -151,6 +154,41 @@ class CustomersTest extends IntegrationTest {
     assertNotNull(apiResponse);
   }
 
+  @Test
+  void addCustomer_이용권_미입력() {
+    //given
+    Plans plans = createPlans();
+    AddCustomerDto.Request request = AddCustomerDto.Request.builder()
+            .plansId(plans.getId())
+            .name("name")
+            .gender("M")
+            .phone("01024214214")
+            .address("adress")
+            .birthDate(LocalDate.now())
+            .build();
+
+    String url = "http://localhost:" + port + "/api/customers/addCustomer";
+
+
+    //when
+    when(photoUtil.upload(any())).thenReturn(RandomValue.string(50).get());
+
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+            url,
+            request,
+            String.class
+    );
+
+    ApiResult<AddCustomerDto.Response> apiResponse = gson.fromJson(
+            responseEntity.getBody(),
+            new TypeToken<ApiResult<AddCustomerDto.Response>>(){}
+    );
+
+    //then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertNotNull(apiResponse);
+    assertNull(apiResponse.getData());
+  }
 
   @Test
   void updateStatus_성공() {

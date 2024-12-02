@@ -43,11 +43,11 @@ public class Payments {
 
   @Builder
   public Payments(Plans plans, Customers customers, boolean status,
-      PaymentsMethod paymentsMethod, int discount) {
+      LocalDateTime registrationAt, PaymentsMethod paymentsMethod, int discount) {
     this.plans = plans;
     this.customers = customers;
     this.status = status;
-    this.registrationAt = LocalDateTime.now();
+    this.registrationAt = registrationAt;
     this.paymentsMethod = paymentsMethod;
     this.discount = discount;
   }

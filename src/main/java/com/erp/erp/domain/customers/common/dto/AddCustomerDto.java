@@ -10,6 +10,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,20 +51,57 @@ public class AddCustomerDto {
     @NotNull(message = "생년월일을 입력해주세요")
     private LocalDate birthDate;
 
+    @Schema(description = "메모")
+    private String memo;
+
     @Schema(description = "결제 방법")
     @NotNull(message = "결제 방법을 입력해주세요")
     private PaymentsMethod paymentsMethod;
 
-    @Schema(description = "결제 여부")
-    @NotNull(message = "결제 여부를 입력해주세요")
-    private boolean status;
+    @Schema(description = "이용권 결제")
+    @NotNull(message = "이용권 결제 내용을 입력해주세요.")
+    private PlanPayment planPayment;
 
-    @Schema(description = "할인률")
-    private int discount;
+    @Schema(description = "기타 결제")
+    private OtherPayment otherPayment;
 
-//    @Schema(description = "프로필 사진")
-//    private MultipartFile file;
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    public static class PlanPayment {
 
+      @Schema(description = "결제 일자")
+      @NotNull(message = "결제 일자를 입력해주세요.")
+      private LocalDateTime registrationAt;
+
+      @Schema(description = "할인률")
+      @Positive(message = "-1 이하의 값은 입력될 수 없습니다.")
+      private int discount;
+
+      @Schema(description = "결제 여부")
+      @NotNull(message = "결제 여부를 입력해주세요")
+      private boolean status;
+    }
+
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    public static class OtherPayment {
+
+      @Schema(description = "결제 내용")
+      @NotNull(message = "결제 내용을 입력해주세요")
+      private String content;
+
+      @Schema(description = "결제 금액")
+      @Positive(message = "-1 이하의 값은 입력될 수 없습니다.")
+      private int price;
+
+      @Schema(description = "결제 여부")
+      @NotNull(message = "결제 여부를 입력해주세요")
+      private boolean status;
+    }
 
     public Customers toCustomers(Institutes institutes, String photoUrl) {
       return Customers.builder()
@@ -79,9 +119,10 @@ public class AddCustomerDto {
       return Payments.builder()
           .plans(plans)
           .customers(customers)
-          .status(this.status)
+          .status(this.planPayment.status)
           .paymentsMethod(this.paymentsMethod)
-          .discount(this.discount)
+          .discount(this.planPayment.discount)
+          .registrationAt(this.planPayment.registrationAt)
           .build();
     }
   }
@@ -106,6 +147,9 @@ public class AddCustomerDto {
 
     @Schema(description = "주소")
     private String address;
+
+    @Schema(description = "메모")
+    private String memo;
 
     @Schema(description = "프로필 사진")
     private String photoUrl;
