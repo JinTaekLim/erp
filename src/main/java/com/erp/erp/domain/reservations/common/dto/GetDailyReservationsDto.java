@@ -28,6 +28,8 @@ public class GetDailyReservationsDto {
     private LocalTime startTime;
     @Schema(description = "종료 시간")
     private LocalTime endTime;
+    @Schema(description = "좌석 번호")
+    private int seatNumber;
     @Schema(description = "이름")
     private String name;
   }

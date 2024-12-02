@@ -50,6 +50,8 @@ public class AddReservationsDto {
     private LocalDateTime startTime;
     @Schema(description = "종료 시간")
     private LocalDateTime endTime;
+    @Schema(description = "좌석 번호")
+    private int  seatNumber;
     @Schema(description = "메모")
     private String memo;
 
