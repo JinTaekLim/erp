@@ -23,13 +23,15 @@ public class adminsController {
 
   private final PlansService plansService;
 
-  @PostMapping("/addMembership")
-  public ApiResult<AddPlansDto.Response> addMembership(
+
+  @PostMapping("/addPlans")
+  public ApiResult<AddPlansDto.Response> addPlans(
       @RequestBody @Valid AddPlansDto.Request request
   ) {
-    Plans plans = plansService.addMembership(request);
+    Plans plans = plansService.addPlans(request);
 
     AddPlansDto.Response response = AddPlansDto.Response.builder()
+        .licenseType(plans.getLicenseType())
         .name(plans.getName())
         .price(plans.getPrice())
         .build();

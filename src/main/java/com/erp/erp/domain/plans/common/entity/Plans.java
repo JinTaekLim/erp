@@ -19,6 +19,9 @@ public class Plans {
   private Long id;
 
   @NotNull
+  private LicenseType licenseType;
+
+  @NotNull
   private String name;
 
   @NotNull
@@ -30,7 +33,8 @@ public class Plans {
   private int availablePeriod;
 
   @Builder
-  public Plans(String name, int price, int availableTime, int availablePeriod) {
+  public Plans(LicenseType licenseType, String name, int price, int availableTime, int availablePeriod) {
+    this.licenseType = licenseType;
     this.name = name;
     this.price = price;
     this.availableTime = availableTime;
