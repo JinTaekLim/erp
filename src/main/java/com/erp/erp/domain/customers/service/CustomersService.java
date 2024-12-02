@@ -76,6 +76,7 @@ public class CustomersService {
         req.getPhone(),
         req.getAddress(),
         req.getPhotoUrl(),
+        req.getMemo(),
         req.getBirthDate()
     );
     customersCreator.save(newCustomers);

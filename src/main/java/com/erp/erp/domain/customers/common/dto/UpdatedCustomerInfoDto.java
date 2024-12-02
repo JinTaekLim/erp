@@ -80,7 +80,7 @@ public class UpdatedCustomerInfoDto {
             .gender(customers.getGender())
             .phone(customers.getPhone())
             .address(customers.getAddress())
-            .memo(null)
+            .memo(customers.getMemo())
             .progress(progress.getProgressList())
             .build();
       }
