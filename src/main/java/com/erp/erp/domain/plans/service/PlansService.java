@@ -17,9 +17,10 @@ public class PlansService {
   private final PlansCreator plansCreator;
   private final PlansReader plansReader;
 
-  public Plans addMembership(AddPlansDto.Request request) {
+  public Plans addPlans(AddPlansDto.Request request) {
 
     Plans plans = Plans.builder()
+        .licenseType(request.getLicenseType())
         .name(request.getName())
         .price(request.getPrice())
         .availableTime(request.getAvailableTime())
