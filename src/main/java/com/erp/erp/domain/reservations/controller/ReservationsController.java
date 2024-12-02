@@ -52,6 +52,7 @@ public class ReservationsController {
         .startTime(reservations.getStartTime())
         .endTime(reservations.getEndTime())
         .memo(reservations.getMemo())
+        .seatNumber(reservations.getSeatNumber())
         .build();
 
     return ApiResult.success(response);
@@ -69,6 +70,7 @@ public class ReservationsController {
             .reservationsId(reservations.getId())
             .startTime(LocalTime.from(reservations.getStartTime()))
             .endTime(LocalTime.from(reservations.getEndTime()))
+            .seatNumber(reservations.getSeatNumber())
             .name(reservations.getCustomers().getName())
             .build()
         )
@@ -79,7 +81,7 @@ public class ReservationsController {
 
   @Operation(summary = "특정 시간 예약 조회")
   @GetMapping("/getReservationByTime")
-  public ApiResult<?> getReservationByTime(@RequestParam LocalDateTime time) {
+  public ApiResult<List<GetDailyReservationsDto.Response>> getReservationByTime(@RequestParam LocalDateTime time) {
     List<Reservations> reservationsList = reservationsService.getReservationByTime(time);
 
     List<GetDailyReservationsDto.Response> response = reservationsList.stream()
@@ -88,6 +90,7 @@ public class ReservationsController {
             .startTime(LocalTime.from(reservations.getStartTime()))
             .endTime(LocalTime.from(reservations.getEndTime()))
             .name(reservations.getCustomers().getName())
+            .seatNumber(reservations.getSeatNumber())
             .build()
         )
         .toList();
