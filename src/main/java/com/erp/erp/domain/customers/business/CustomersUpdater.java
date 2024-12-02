@@ -27,9 +27,10 @@ public class CustomersUpdater {
       String phone,
       String address,
       String photoUrl,
+      String memo,
       LocalDate birthDate
   ) {
-    return customers.update(name,gender,phone,address,photoUrl,birthDate);
+    return customers.update(name,gender,phone,address,photoUrl,memo,birthDate);
   }
 
 }

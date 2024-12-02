@@ -39,6 +39,8 @@ public class Customers {
 
   private String photoUrl;
 
+  private String memo;
+
   @NotNull
   private LocalDate birthDate;
 
@@ -47,25 +49,27 @@ public class Customers {
 
   @Builder
   public Customers(Institutes institutes, String name, Gender gender, String phone, String address,
-      String photoUrl, LocalDate birthDate) {
+      String photoUrl, String memo, LocalDate birthDate) {
     this.institutes = institutes;
     this.name = name;
     this.gender = gender;
     this.phone = phone;
     this.address = address;
     this.photoUrl = photoUrl;
+    this.memo = memo;
     this.birthDate = birthDate;
     this.status = true;
   }
 
 
   public Customers update(String name, Gender gender, String phone, String address, String photoUrl,
-      LocalDate birthDate) {
+      String memo, LocalDate birthDate) {
     this.name = name;
     this.gender = gender;
     this.phone = phone;
     this.address = address;
     this.photoUrl = photoUrl;
+    this.memo = memo;
     this.birthDate = birthDate;
     return this;
   }
