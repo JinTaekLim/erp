@@ -2,11 +2,8 @@ package com.erp.erp.domain.reservations.common.entity;
 
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -45,6 +42,17 @@ public class Reservations {
     this.memo = memo;
   }
 
+  @PrePersist
+  @PreUpdate
+  private void truncateTimes() {
+    this.startTime = truncateToSeconds(this.startTime);
+    this.endTime = truncateToSeconds(this.endTime);
+  }
+
+  private LocalDateTime truncateToSeconds(LocalDateTime dateTime) {
+    return dateTime != null ? dateTime.withNano(0) : null;
+  }
+
 
   public void updatedReservations(LocalDateTime startTime, LocalDateTime endTime, String memo) {
     this.startTime = startTime;
@@ -55,4 +63,5 @@ public class Reservations {
   public void updatedSeat(int seatNumber) {
     this.seatNumber = seatNumber;
   }
+
 }
