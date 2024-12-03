@@ -10,10 +10,8 @@ import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.customers.repository.CustomersRepository;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.institutes.repository.InstitutesRepository;
-import com.erp.erp.domain.reservations.common.dto.AddReservationsDto;
 import com.erp.erp.domain.reservations.common.dto.GetDailyReservationsDto;
 import com.erp.erp.domain.reservations.common.entity.Reservations;
-import com.erp.erp.domain.reservations.common.exception.InvalidReservationTimeException;
 import com.erp.erp.domain.reservations.common.exception.ReservationsErrorType;
 import com.erp.erp.domain.reservations.repository.ReservationsRepository;
 import com.erp.erp.global.error.ApiResult;
@@ -24,8 +22,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import org.assertj.core.api.AssertionsForClassTypes;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -170,10 +166,12 @@ class ReservationsTest extends IntegrationTest {
       int hour = RandomValue.getInt(24);
       int randomInt = RandomValue.getInt(2);
       int minute = (randomInt == 1) ? 0 : 30;
-
       LocalTime randomTime = LocalTime.of(hour, minute);
       LocalDateTime startTime = LocalDateTime.of(day, randomTime);
-      LocalDateTime endTime = startTime.plusMinutes(minute);
+
+      int multiInt = RandomValue.getInt(1,10);
+      int plusMinute = 30 * multiInt;
+      LocalDateTime endTime = startTime.plusMinutes(plusMinute);
 
 
       Reservations reservations = Reservations.builder()
@@ -203,10 +201,9 @@ class ReservationsTest extends IntegrationTest {
     );
 
     //then
-    AssertionsForClassTypes.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertNotNull(apiResponse);
-    int reservationsSize = apiResponse.getData().size();
-    assertThat(reservationsCount).isEqualTo(reservationsSize);
+    assertThat(reservationsCount).isEqualTo(apiResponse.getData().size());
 
   }
 
