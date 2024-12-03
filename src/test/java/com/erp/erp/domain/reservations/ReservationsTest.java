@@ -170,10 +170,13 @@ class ReservationsTest extends IntegrationTest {
       int hour = RandomValue.getInt(24);
       int randomInt = RandomValue.getInt(2);
       int minute = (randomInt == 1) ? 0 : 30;
-
       LocalTime randomTime = LocalTime.of(hour, minute);
       LocalDateTime startTime = LocalDateTime.of(day, randomTime);
       LocalDateTime endTime = startTime.plusMinutes(minute);
+
+      int multiInt = RandomValue.getInt(1,10);
+      int plusMinute = 30 * multiInt;
+      LocalDateTime endTime = startTime.plusMinutes(plusMinute);
 
 
       Reservations reservations = Reservations.builder()
