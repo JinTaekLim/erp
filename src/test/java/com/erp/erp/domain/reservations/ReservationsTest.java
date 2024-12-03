@@ -3,14 +3,17 @@ package com.erp.erp.domain.reservations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.erp.erp.domain.customers.common.dto.AddCustomerDto.Response;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.customers.repository.CustomersRepository;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.institutes.repository.InstitutesRepository;
+import com.erp.erp.domain.reservations.common.dto.AddReservationsDto;
 import com.erp.erp.domain.reservations.common.dto.GetDailyReservationsDto;
 import com.erp.erp.domain.reservations.common.entity.Reservations;
+import com.erp.erp.domain.reservations.common.exception.InvalidReservationTimeException;
 import com.erp.erp.domain.reservations.common.exception.ReservationsErrorType;
 import com.erp.erp.domain.reservations.repository.ReservationsRepository;
 import com.erp.erp.global.error.ApiResult;
@@ -22,6 +25,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.assertj.core.api.AssertionsForClassTypes;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -65,6 +69,92 @@ class ReservationsTest extends IntegrationTest {
     return institutesRepository.save(getInstitutes());
   }
   private Customers createCustomers(){ return customersRepository.save(getCustomers());}
+
+
+//  @Test
+//  void addReservations() {
+//    // given
+//    Customers customers = createCustomers();
+//    LocalDateTime startTime = LocalDateTime.now();
+//
+//    int randomInt = RandomValue.getInt(0,600);
+//    LocalDateTime endTime = LocalDateTime.now().plusMinutes(30+randomInt);
+//
+//    AddReservationsDto.Request request = AddReservationsDto.Request.builder()
+//            .customersId(customers.getId())
+//            .startTime(startTime)
+//            .endTime(endTime)
+//            .memo(RandomValue.string(255).get())
+//            .build();
+//
+//    // when
+//
+//    String url = "http://localhost:" + port + "/api/reservation/addReservations";
+//
+//
+//    //when
+//    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+//            url,
+//            request,
+//            String.class
+//    );
+//
+//    ApiResult<AddReservationsDto.Response> apiResponse = gson.fromJson(
+//            responseEntity.getBody(),
+//            new TypeToken<ApiResult<AddReservationsDto.Response>>() {}.getType()
+//    );
+//
+//    // then
+//    AssertionsForClassTypes.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+//    assertNotNull(apiResponse.getData());
+//    assertThat(apiResponse.getData().getCustomersId()).isEqualTo(request.getCustomersId());
+//    assertThat(apiResponse.getData().getStartTime()).isEqualTo(request.getStartTime().withNano(0));
+//    assertThat(apiResponse.getData().getEndTime()).isEqualTo(request.getEndTime().withNano(0));
+//    assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
+//  }
+//
+//  @Test
+//  @DisplayName("시작 시간이 종료 시간과 동일하거나 작은 경우")
+//  void addReservations_fail() {
+//    // given
+//    Customers customers = createCustomers();
+//    LocalDateTime startTime = LocalDateTime.now();
+//    int randomInt = RandomValue.getInt(0,600);
+//    LocalDateTime endTime = startTime.minusMinutes(randomInt);
+//
+//    AddReservationsDto.Request request = AddReservationsDto.Request.builder()
+//            .customersId(customers.getId())
+//            .startTime(startTime)
+//            .endTime(endTime)
+//            .memo(RandomValue.string(255).get())
+//            .build();
+//
+//    InvalidReservationTimeException exception = new InvalidReservationTimeException();
+//
+//    // when
+//
+//    String url = "http://localhost:" + port + "/api/reservation/addReservations";
+//
+//
+//    //when
+//    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+//            url,
+//            request,
+//            String.class
+//    );
+//
+//    ApiResult<AddReservationsDto.Response> apiResponse = gson.fromJson(
+//            responseEntity.getBody(),
+//            new TypeToken<ApiResult<AddReservationsDto.Response>>() {}.getType()
+//    );
+//
+//    // then
+//    AssertionsForClassTypes.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+//    assertNull(apiResponse.getData());
+//    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
+//    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
+//  }
+
 
   @Test
   void getDailyReservations_성공() {

@@ -48,4 +48,11 @@ public class GlobalExceptionHandler {
     log.info(ex.getMessage());
     return ApiResult.fail(ApiErrorType.BAD_REQUEST);
   }
+
+  @ExceptionHandler(BusinessException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ApiResult<?> handler(BusinessException e) {
+    return ApiResult.fail(e.getCode(), e.getMessage());
+  }
+
 }
