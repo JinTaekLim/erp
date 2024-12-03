@@ -1,6 +1,7 @@
 package com.erp.erp.global.util.test;
 
 import com.erp.erp.global.gson.LocalDateSerializer;
+import com.erp.erp.global.gson.LocalDateTimeAdapter;
 import com.erp.erp.global.gson.LocalDateTimeSerializer;
 import com.erp.erp.global.gson.LocalTimeAdapter;
 import com.google.gson.Gson;
@@ -29,6 +30,7 @@ abstract public class IntegrationTest {
       .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
       .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
       .registerTypeAdapter(LocalTime.class, new LocalTimeAdapter())
+      .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
       .setPrettyPrinting()
       .create();
 
