@@ -45,12 +45,12 @@ public class Reservations {
   @PrePersist
   @PreUpdate
   private void truncateTimes() {
-    this.startTime = truncateToSeconds(this.startTime);
-    this.endTime = truncateToSeconds(this.endTime);
+    this.startTime = truncateToMinutes(this.startTime);
+    this.endTime = truncateToMinutes(this.endTime);
   }
 
-  private LocalDateTime truncateToSeconds(LocalDateTime dateTime) {
-    return dateTime != null ? dateTime.withNano(0) : null;
+  private LocalDateTime truncateToMinutes(LocalDateTime dateTime) {
+    return dateTime != null ? dateTime.withSecond(0) : null;
   }
 
 

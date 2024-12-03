@@ -1,14 +1,8 @@
 package com.erp.erp.domain.reservations.common.dto;
 
-import com.erp.erp.domain.reservations.common.entity.Reservations;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,8 +19,10 @@ public class GetDailyReservationsDto {
     @Schema(description = "예약 번호")
     private Long reservationsId;
     @Schema(description = "시작 시간")
+    @JsonFormat(pattern = "HH:mm")
     private LocalTime startTime;
     @Schema(description = "종료 시간")
+    @JsonFormat(pattern = "HH:mm")
     private LocalTime endTime;
     @Schema(description = "좌석 번호")
     private int seatNumber;
