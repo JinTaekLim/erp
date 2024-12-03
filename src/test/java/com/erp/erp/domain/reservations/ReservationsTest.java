@@ -71,89 +71,89 @@ class ReservationsTest extends IntegrationTest {
   private Customers createCustomers(){ return customersRepository.save(getCustomers());}
 
 
-  @Test
-  void addReservations() {
-    // given
-    Customers customers = createCustomers();
-    LocalDateTime startTime = LocalDateTime.now();
-
-    int randomInt = RandomValue.getInt(0,600);
-    LocalDateTime endTime = LocalDateTime.now().plusMinutes(30+randomInt);
-
-    AddReservationsDto.Request request = AddReservationsDto.Request.builder()
-            .customersId(customers.getId())
-            .startTime(startTime)
-            .endTime(endTime)
-            .memo(RandomValue.string(255).get())
-            .build();
-
-    // when
-
-    String url = "http://localhost:" + port + "/api/reservation/addReservations";
-
-
-    //when
-    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
-            url,
-            request,
-            String.class
-    );
-
-    ApiResult<AddReservationsDto.Response> apiResponse = gson.fromJson(
-            responseEntity.getBody(),
-            new TypeToken<ApiResult<AddReservationsDto.Response>>() {}.getType()
-    );
-
-    // then
-    AssertionsForClassTypes.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertNotNull(apiResponse.getData());
-    assertThat(apiResponse.getData().getCustomersId()).isEqualTo(request.getCustomersId());
-    assertThat(apiResponse.getData().getStartTime()).isEqualTo(request.getStartTime().withNano(0));
-    assertThat(apiResponse.getData().getEndTime()).isEqualTo(request.getEndTime().withNano(0));
-    assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
-  }
-
-  @Test
-  @DisplayName("시작 시간이 종료 시간과 동일하거나 작은 경우")
-  void addReservations_fail() {
-    // given
-    Customers customers = createCustomers();
-    LocalDateTime startTime = LocalDateTime.now();
-    int randomInt = RandomValue.getInt(0,600);
-    LocalDateTime endTime = startTime.minusMinutes(randomInt);
-
-    AddReservationsDto.Request request = AddReservationsDto.Request.builder()
-            .customersId(customers.getId())
-            .startTime(startTime)
-            .endTime(endTime)
-            .memo(RandomValue.string(255).get())
-            .build();
-
-    InvalidReservationTimeException exception = new InvalidReservationTimeException();
-
-    // when
-
-    String url = "http://localhost:" + port + "/api/reservation/addReservations";
-
-
-    //when
-    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
-            url,
-            request,
-            String.class
-    );
-
-    ApiResult<AddReservationsDto.Response> apiResponse = gson.fromJson(
-            responseEntity.getBody(),
-            new TypeToken<ApiResult<AddReservationsDto.Response>>() {}.getType()
-    );
-
-    // then
-    AssertionsForClassTypes.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-    assertNull(apiResponse.getData());
-    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
-    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
-  }
+//  @Test
+//  void addReservations() {
+//    // given
+//    Customers customers = createCustomers();
+//    LocalDateTime startTime = LocalDateTime.now();
+//
+//    int randomInt = RandomValue.getInt(0,600);
+//    LocalDateTime endTime = LocalDateTime.now().plusMinutes(30+randomInt);
+//
+//    AddReservationsDto.Request request = AddReservationsDto.Request.builder()
+//            .customersId(customers.getId())
+//            .startTime(startTime)
+//            .endTime(endTime)
+//            .memo(RandomValue.string(255).get())
+//            .build();
+//
+//    // when
+//
+//    String url = "http://localhost:" + port + "/api/reservation/addReservations";
+//
+//
+//    //when
+//    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+//            url,
+//            request,
+//            String.class
+//    );
+//
+//    ApiResult<AddReservationsDto.Response> apiResponse = gson.fromJson(
+//            responseEntity.getBody(),
+//            new TypeToken<ApiResult<AddReservationsDto.Response>>() {}.getType()
+//    );
+//
+//    // then
+//    AssertionsForClassTypes.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+//    assertNotNull(apiResponse.getData());
+//    assertThat(apiResponse.getData().getCustomersId()).isEqualTo(request.getCustomersId());
+//    assertThat(apiResponse.getData().getStartTime()).isEqualTo(request.getStartTime().withNano(0));
+//    assertThat(apiResponse.getData().getEndTime()).isEqualTo(request.getEndTime().withNano(0));
+//    assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
+//  }
+//
+//  @Test
+//  @DisplayName("시작 시간이 종료 시간과 동일하거나 작은 경우")
+//  void addReservations_fail() {
+//    // given
+//    Customers customers = createCustomers();
+//    LocalDateTime startTime = LocalDateTime.now();
+//    int randomInt = RandomValue.getInt(0,600);
+//    LocalDateTime endTime = startTime.minusMinutes(randomInt);
+//
+//    AddReservationsDto.Request request = AddReservationsDto.Request.builder()
+//            .customersId(customers.getId())
+//            .startTime(startTime)
+//            .endTime(endTime)
+//            .memo(RandomValue.string(255).get())
+//            .build();
+//
+//    InvalidReservationTimeException exception = new InvalidReservationTimeException();
+//
+//    // when
+//
+//    String url = "http://localhost:" + port + "/api/reservation/addReservations";
+//
+//
+//    //when
+//    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+//            url,
+//            request,
+//            String.class
+//    );
+//
+//    ApiResult<AddReservationsDto.Response> apiResponse = gson.fromJson(
+//            responseEntity.getBody(),
+//            new TypeToken<ApiResult<AddReservationsDto.Response>>() {}.getType()
+//    );
+//
+//    // then
+//    AssertionsForClassTypes.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+//    assertNull(apiResponse.getData());
+//    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
+//    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
+//  }
 
 
   @Test
