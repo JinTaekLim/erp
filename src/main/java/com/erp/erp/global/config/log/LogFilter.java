@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -18,9 +19,15 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 @Slf4j
 public class LogFilter extends OncePerRequestFilter {
 
-  private long startTime;
-  private final String UUID_KEY = "uuid";
   private final UUID uuid = UUID.randomUUID();
+  private final String UUID_KEY = "uuid";
+
+  private final String SWAGGER_REQUEST = "swagger request";
+  private final String[] SWAGGER_URL = { "/api/swagger-ui/swagger-initializer.js", "/api-docs/swagger-config",
+          "/api/swagger-ui/favicon-32x32.png", "/api-docs", "/api/swagger-ui/index.html" };
+  private boolean isSwagger = false;
+
+  private long startTime;
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -47,6 +54,7 @@ public class LogFilter extends OncePerRequestFilter {
     String queryString = request.getQueryString();
     String uri = request.getRequestURI();
     String uriPlusQueryString = uri + "?" + queryString;
+    isSwaggerRequest(uri);
 
     printRequest(
             request.getMethod(),
@@ -62,6 +70,7 @@ public class LogFilter extends OncePerRequestFilter {
   private void logResponse(ContentCachingResponseWrapper response)
       throws IOException {
     String body = getBody(response.getContentInputStream());
+    if (isSwagger) { body = SWAGGER_REQUEST;}
     printResponse(response.getStatus(), body);
   }
 
@@ -93,5 +102,11 @@ public class LogFilter extends OncePerRequestFilter {
     }
     return clientIp;
   }
+
+  private void isSwaggerRequest(String uri) {
+    isSwagger = Arrays.asList(SWAGGER_URL).contains(uri);
+  }
+
+
 
 }
