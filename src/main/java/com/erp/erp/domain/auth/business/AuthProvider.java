@@ -17,6 +17,7 @@ public class AuthProvider {
   private final AccountsReader accountsReader;
   private final InstitutesRepository institutesRepository;
 
+  // note. 프론트엔드 토큰 작업 마무리 후 변경 예정
   @Transactional
   public Accounts getCurrentAccounts() {
 
