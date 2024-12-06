@@ -3,7 +3,6 @@ package com.erp.erp.global.config.log;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,7 +10,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingResponseWrapper;
@@ -20,6 +18,10 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 @Slf4j
 public class LogFilter extends OncePerRequestFilter {
 
+  private long startTime;
+  private final String UUID_KEY = "uuid";
+  private final UUID uuid = UUID.randomUUID();
+
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain)
@@ -27,40 +29,51 @@ public class LogFilter extends OncePerRequestFilter {
 
     CachingRequestWrapper requestWrapper = new CachingRequestWrapper(request);
     ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
-    final UUID uuid = UUID.randomUUID();
 
-    long startTime = System.currentTimeMillis();
+    startTime = System.currentTimeMillis();
+
     try {
-      MDC.put("uuid", uuid.toString()); // 로그 식별을 위한 임의의 값 추가
+      MDC.put(UUID_KEY, uuid.toString());
       logRequest(requestWrapper);
       filterChain.doFilter(requestWrapper, responseWrapper);
     } finally {
-      logResponse(responseWrapper, startTime);
+      logResponse(responseWrapper);
       responseWrapper.copyBodyToResponse();
       MDC.clear();
     }
   }
 
-  private void logRequest(HttpServletRequestWrapper request) throws IOException {
+  private void logRequest(HttpServletRequest request) throws IOException {
     String queryString = request.getQueryString();
-    String body = getBody(request.getInputStream());
+    String uri = request.getRequestURI();
+    String uriPlusQueryString = uri + "?" + queryString;
 
-    log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-    log.info("Request : {} uri=[{}] content-type=[{}], body=[{}]"
-        , request.getMethod()
-        ,
-        queryString == null ? request.getRequestURI() : request.getRequestURI() + "?" + queryString
-        , request.getContentType()
-        , body);
+    printRequest(
+            request.getMethod(),
+            queryString == null ? uri : uriPlusQueryString,
+            request.getContentType(),
+            getBody(request.getInputStream()),
+            getClientIp(request)
+    );
   }
 
-  private void logResponse(ContentCachingResponseWrapper response, long startTime)
+
+
+  private void logResponse(ContentCachingResponseWrapper response)
       throws IOException {
     String body = getBody(response.getContentInputStream());
+    printResponse(response.getStatus(), body);
+  }
 
-    log.info("Response : {} body=[{}]"
-        , response.getStatus()
-        , body);
+
+
+  private void printRequest(String method, String url, String contentType, String body, String ip) {
+    log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    log.info("Request : {} uri=[{}] content-type=[{}], body=[{}], client-ip=[{}]", method, url, contentType, body, ip);
+  }
+
+  private void printResponse(int status, String body) {
+    log.info("Response : {} body=[{}]", status, body);
     log.info("Request processed in {}ms", (System.currentTimeMillis() - startTime));
     log.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
   }
@@ -72,4 +85,13 @@ public class LogFilter extends OncePerRequestFilter {
     }
     return new String(content, StandardCharsets.UTF_8);
   }
+
+  private String getClientIp(HttpServletRequest request) {
+    String clientIp = request.getHeader("X-Forwarded-For");
+    if (clientIp == null || clientIp.isEmpty()) {
+      clientIp = request.getRemoteAddr();
+    }
+    return clientIp;
+  }
+
 }
