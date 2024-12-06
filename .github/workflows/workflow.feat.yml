@@ -37,3 +37,8 @@ jobs:
       # gradle 빌드 및 테스트
       - name: Build and test with gradle
         run: ./gradlew clean build
+
+      # 빌드 실패시 로그 출력
+      - name: Show detailed logs on failure
+        if: failure()
+        run: find build/reports/tests/test/classes/ -name "*.html" -exec cat {} \;
