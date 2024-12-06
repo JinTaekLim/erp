@@ -1,6 +1,6 @@
 package com.erp.erp.domain.customers.common.exception;
 
-import com.erp.erp.global.error.BusinessException;
+import com.erp.erp.global.error.exception.BusinessException;
 import lombok.Getter;
 
 @Getter
