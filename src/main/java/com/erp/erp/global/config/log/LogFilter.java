@@ -17,7 +17,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
 
-@Component
 @Slf4j
 public class LogFilter extends OncePerRequestFilter {
 

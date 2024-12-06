@@ -1,6 +1,8 @@
 package com.erp.erp.global.error;
 
 import java.util.Objects;
+
+import com.erp.erp.global.error.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
