@@ -56,6 +56,7 @@ dependencies {
 	testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.0.24")
 	testImplementation 'com.google.code.gson:gson:2.11.0'
 	testImplementation 'net.datafaker:datafaker:2.4.0'
+	testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring30x:4.11.0'
 }
 
 tasks.named('test') {
