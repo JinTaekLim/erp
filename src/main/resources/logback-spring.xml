@@ -24,7 +24,7 @@
   </appender>
 
   <springProfile name="local">
-    <logger name="com.bangbangbwa" level="DEBUG"/>
+    <logger name="com.erp" level="DEBUG"/>
     <root level="INFO">
       <appender-ref ref="CONSOLE"/>
     </root>
@@ -44,4 +44,10 @@
     </root>
   </springProfile>
 
+  <springProfile name="test">
+    <logger name="com.erp" level="DEBUG"/>
+    <root level="INFO">
+      <appender-ref ref="CONSOLE"/>
+    </root>
+  </springProfile>
 </configuration>
