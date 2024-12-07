@@ -3,13 +3,16 @@ package com.erp.erp.domain.reservations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.erp.erp.domain.customers.common.dto.AddCustomerDto.Response;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.customers.repository.CustomersRepository;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.institutes.repository.InstitutesRepository;
+import com.erp.erp.domain.payments.common.entity.OtherPayments;
+import com.erp.erp.domain.payments.common.entity.PlanPayment;
+import com.erp.erp.domain.plans.common.entity.Plans;
+import com.erp.erp.domain.plans.repository.PlansRepository;
 import com.erp.erp.domain.reservations.common.dto.GetDailyReservationsDto;
 import com.erp.erp.domain.reservations.common.entity.Reservations;
 import com.erp.erp.domain.reservations.common.exception.ReservationsErrorType;
@@ -41,9 +44,10 @@ class ReservationsTest extends IntegrationTest {
   private InstitutesRepository institutesRepository;
   @Autowired
   private CustomersRepository customersRepository;
-
   @Autowired
   private ReservationsRepository reservationsRepository;
+  @Autowired
+  private PlansRepository plansRepository;
 
 
   private Institutes getInstitutes() {
@@ -52,20 +56,53 @@ class ReservationsTest extends IntegrationTest {
         .sample();
   }
 
-  private Customers getCustomers() {
-    Institutes institutes = createInstitutes();
+  private Customers getCustomers(Institutes institutes) {
+    Plans plans = createPlans();
+    PlanPayment planPayment = getPlanPayment(plans);
+    List<OtherPayments> otherPaymentList = getRandomOtherPaymentList(plans);
 
     return fixtureMonkey.giveMeBuilder(Customers.class)
-        .setNull("id")
-        .set("institutes", institutes)
-        .sample();
+            .setNull("id")
+            .set("plans", plans)
+            .set("institutes", institutes)
+            .set("planPayment", planPayment)
+            .set("otherPayments", otherPaymentList)
+            .set("progress", null)
+            .sample();
   }
 
   private Institutes createInstitutes() {
     return institutesRepository.save(getInstitutes());
   }
-  private Customers createCustomers(){ return customersRepository.save(getCustomers());}
+  private Customers createCustomers(Institutes institutes){
+    Customers customers = getCustomers(institutes);
+    return customersRepository.save(customers);
+  }
 
+  private PlanPayment getPlanPayment(Plans plans) {
+    return fixtureMonkey.giveMeBuilder(PlanPayment.class)
+            .setNull("id")
+            .set("plans", plans)
+            .sample();
+  }
+
+  private List<OtherPayments> getRandomOtherPaymentList(Plans plans) {
+    int randomInt = RandomValue.getInt(0, 5);
+    return fixtureMonkey.giveMeBuilder(OtherPayments.class)
+            .setNull("id")
+            .set("plans", plans)
+            .sampleList(randomInt);
+  }
+
+  private Plans getPlans() {
+    return fixtureMonkey.giveMeBuilder(Plans.class)
+            .setNull("id")
+            .sample();
+  }
+
+  private Plans createPlans() {
+    return plansRepository.save(getPlans());
+  }
 
 //  @Test
 //  void addReservations() {
@@ -155,9 +192,8 @@ class ReservationsTest extends IntegrationTest {
   @Test
   void getDailyReservations_성공() {
     //given
-
-    Customers customers = createCustomers();
-    Institutes institutes = customers.getInstitutes();
+    Institutes institutes = createInstitutes();
+    Customers customers = createCustomers(institutes);
     LocalDate day = RandomValue.getRandomLocalDate();
 
     int reservationsCount = RandomValue.getInt(1,20);
