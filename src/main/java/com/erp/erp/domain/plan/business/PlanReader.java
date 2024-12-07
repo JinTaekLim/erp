@@ -1,5 +1,6 @@
 package com.erp.erp.domain.plan.business;
 
+import com.erp.erp.domain.plan.common.entity.LicenseType;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.common.exception.NotFoundPlanException;
 import com.erp.erp.domain.plan.repository.PlanRepository;
@@ -19,5 +20,9 @@ public class PlanReader {
 
   public Plan findById(Long id) {
     return planRepository.findById(id).orElseThrow(NotFoundPlanException::new);
+  }
+
+  public List<Plan> findByLicensType(LicenseType licensType) {
+    return planRepository.findByLicenseType(licensType);
   }
 }

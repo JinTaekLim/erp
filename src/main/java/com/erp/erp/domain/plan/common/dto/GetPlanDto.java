@@ -9,7 +9,17 @@ import lombok.NoArgsConstructor;
 
 public class GetPlanDto {
 
-  @Schema(name = "GetMembershipDto_Response" , description = "이용권 조회 반환")
+  @Schema(name = "GetPlans_Request" , description = "이용권 조회 요청")
+  @Builder
+  @Getter
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class Request {
+    @Schema(description = "이용권 구분", example = "null, TYPE_1, TYPE_2")
+    private LicenseType licenseType;
+  }
+
+  @Schema(name = "GetPlans_Response" , description = "이용권 조회 반환")
   @Builder
   @Getter
   @NoArgsConstructor

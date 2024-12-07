@@ -3,6 +3,7 @@ package com.erp.erp.domain.plan.service;
 import com.erp.erp.domain.plan.business.PlanCreator;
 import com.erp.erp.domain.plan.business.PlanReader;
 import com.erp.erp.domain.plan.common.dto.AddPlanDto;
+import com.erp.erp.domain.plan.common.entity.LicenseType;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +31,8 @@ public class PlanService {
     return planCreator.save(plan);
   }
 
-  public List<Plan> getAllPlans() {
-    return planReader.findAll();
+  public List<Plan> getPlans(LicenseType licenseType) {
+    return planReader.findByLicensType(licenseType);
   }
 
   public Plan findById(Long id) {
