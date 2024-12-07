@@ -3,7 +3,7 @@ package com.erp.erp.domain.customers.common.dto;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.customers.common.entity.Gender;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
-import com.erp.erp.domain.payments.common.entity.Payments;
+import com.erp.erp.domain.payments.common.entity.OtherPayments;
 import com.erp.erp.domain.payments.common.entity.PaymentsMethod;
 import com.erp.erp.domain.plans.common.entity.Plans;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -63,7 +64,7 @@ public class AddCustomerDto {
     private PlanPayment planPayment;
 
     @Schema(description = "기타 결제")
-    private OtherPayment otherPayment;
+    private List<OtherPayment> otherPayment;
 
     @Builder
     @NoArgsConstructor
@@ -90,6 +91,10 @@ public class AddCustomerDto {
     @Getter
     public static class OtherPayment {
 
+      @Schema(description = "결제 일자")
+      @NotNull(message = "결제 일자를 입력해주세요.")
+      private LocalDateTime registrationAt;
+
       @Schema(description = "결제 내용")
       @NotNull(message = "결제 내용을 입력해주세요")
       private String content;
@@ -103,7 +108,10 @@ public class AddCustomerDto {
       private boolean status;
     }
 
-    public Customers toCustomers(Institutes institutes, String photoUrl) {
+    public Customers toCustomers(Institutes institutes, Plans plans, String photoUrl) {
+      com.erp.erp.domain.payments.common.entity.PlanPayment planPayment = getPayments(plans);
+      List<OtherPayments> otherPayments = getOtherPayments();
+
       return Customers.builder()
           .institutes(institutes)
           .name(this.name)
@@ -111,14 +119,28 @@ public class AddCustomerDto {
           .phone(this.phone)
           .address(this.address)
           .photoUrl(photoUrl)
+          .memo(this.memo)
           .birthDate(this.birthDate)
+          .planPayment(planPayment)
+          .otherPayments(otherPayments)
           .build();
     }
 
-    public Payments toPayments(Customers customers, Plans plans) {
-      return Payments.builder()
+    private List<OtherPayments> getOtherPayments() {
+      return this.otherPayment.stream()
+              .map(o -> OtherPayments.builder()
+                      .status(o.status)
+                      .registrationAt(o.registrationAt)
+                      .content(o.content)
+                      .price(o.price)
+                      .build())
+              .toList();
+    }
+
+
+    private com.erp.erp.domain.payments.common.entity.PlanPayment getPayments(Plans plans) {
+      return com.erp.erp.domain.payments.common.entity.PlanPayment.builder()
           .plans(plans)
-          .customers(customers)
           .status(this.planPayment.status)
           .paymentsMethod(this.paymentsMethod)
           .discount(this.planPayment.discount)
@@ -157,9 +179,9 @@ public class AddCustomerDto {
     @Schema(description = "생년월일")
     private LocalDate birthDate;
 
-    public static Response fromEntity(Payments payments, Customers customers) {
+    public static Response fromEntity(Customers customers) {
       return Response.builder()
-          .plans(payments.getPlans().getName())
+          .plans(customers.getPlanPayment().getPlans().getName())
           .name(customers.getName())
           .gender(customers.getGender())
           .phone(customers.getPhone())

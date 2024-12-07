@@ -1,14 +1,6 @@
 package com.erp.erp.domain.reservations.controller;
 
-import com.erp.erp.domain.institutes.service.InstitutesService;
-import com.erp.erp.domain.payments.common.entity.Payments;
-import com.erp.erp.domain.payments.service.PaymentsService;
-import com.erp.erp.domain.reservations.common.dto.AddReservationsDto;
-import com.erp.erp.domain.reservations.common.dto.DeleteReservationsDto;
-import com.erp.erp.domain.reservations.common.dto.GetDailyReservationsDto;
-import com.erp.erp.domain.reservations.common.dto.GetReservationCustomerDetailsDto;
-import com.erp.erp.domain.reservations.common.dto.UpdatedReservationsDto;
-import com.erp.erp.domain.reservations.common.dto.UpdatedSeatNumberDto;
+import com.erp.erp.domain.reservations.common.dto.*;
 import com.erp.erp.domain.reservations.common.entity.Reservations;
 import com.erp.erp.domain.reservations.service.ReservationsService;
 import com.erp.erp.global.error.ApiResult;
@@ -21,13 +13,7 @@ import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/reservation")
@@ -37,8 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReservationsController {
 
   private final ReservationsService reservationsService;
-  private final PaymentsService paymentsService;
-  private final InstitutesService institutesService;
 
   @Operation(summary = "예약 추가")
   @PostMapping("/addReservations")
@@ -144,15 +128,9 @@ public class ReservationsController {
   public ApiResult<GetReservationCustomerDetailsDto.Response> getReservationCustomerDetails(
       @PathVariable long reservationsId
   ) {
-    Reservations reservations = reservationsService.getReservationsForCurrentInstitute(
+    GetReservationCustomerDetailsDto.Response response = reservationsService.getReservationsForCurrentInstitute(
         reservationsId
     );
-    Long customersId = reservations.getCustomers().getId();
-    Payments payments = paymentsService.getCustomersPayments(customersId);
-
-    GetReservationCustomerDetailsDto.Response response = GetReservationCustomerDetailsDto
-        .Response
-        .fromEntity(reservations, payments);
 
     return ApiResult.success(response);
   }

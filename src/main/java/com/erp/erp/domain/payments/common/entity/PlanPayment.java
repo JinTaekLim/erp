@@ -1,6 +1,5 @@
 package com.erp.erp.domain.payments.common.entity;
 
-import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.plans.common.entity.Plans;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Payments {
+public class PlanPayment {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,10 +24,6 @@ public class Payments {
   @ManyToOne
   @NotNull
   private Plans plans;
-
-  @ManyToOne
-  @NotNull
-  private Customers customers;
 
   @NotNull
   private boolean status;
@@ -42,11 +37,10 @@ public class Payments {
   private int discount;
 
   @Builder
-  public Payments(Plans plans, Customers customers, boolean status,
-      LocalDateTime registrationAt, PaymentsMethod paymentsMethod, int discount) {
-    this.plans = plans;
-    this.customers = customers;
+  public PlanPayment(boolean status, Plans plans,
+                     LocalDateTime registrationAt, PaymentsMethod paymentsMethod, int discount) {
     this.status = status;
+    this.plans = plans;
     this.registrationAt = registrationAt;
     this.paymentsMethod = paymentsMethod;
     this.discount = discount;

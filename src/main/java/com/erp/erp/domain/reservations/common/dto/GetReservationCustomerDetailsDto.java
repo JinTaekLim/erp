@@ -2,7 +2,7 @@ package com.erp.erp.domain.reservations.common.dto;
 
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.customers.common.entity.Gender;
-import com.erp.erp.domain.payments.common.entity.Payments;
+import com.erp.erp.domain.payments.common.entity.PlanPayment;
 import com.erp.erp.domain.plans.common.entity.Plans;
 import com.erp.erp.domain.reservations.common.entity.Reservations;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -49,13 +49,13 @@ public class GetReservationCustomerDetailsDto {
     private List<LessonProgress> lessonProgressList;
 
     public static Response fromEntity(
-        Reservations reservations,
-        Payments payments
+        Reservations reservations
     ) {
       Customers customers = reservations.getCustomers();
-      Plans plans = payments.getPlans();
+      PlanPayment planPayment = customers.getPlanPayment();
+      Plans plans = planPayment.getPlans();
 
-      LocalDateTime registrationAt = payments.getRegistrationAt();
+      LocalDateTime registrationAt = planPayment.getRegistrationAt();
       int availablePeriod = plans.getAvailablePeriod();
 
       LocalDate endDate = registrationAt.plusDays(availablePeriod).toLocalDate();

@@ -4,12 +4,9 @@ import com.erp.erp.domain.customers.common.dto.AddCustomerDto;
 import com.erp.erp.domain.customers.common.dto.GetAvailableCustomerNamesDto;
 import com.erp.erp.domain.customers.common.dto.GetCustomerDto;
 import com.erp.erp.domain.customers.common.dto.UpdateStatusDto;
-import com.erp.erp.domain.customers.common.dto.UpdatedCustomerInfoDto;
+import com.erp.erp.domain.customers.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customers.common.entity.Customers;
-import com.erp.erp.domain.customers.common.entity.Progress;
 import com.erp.erp.domain.customers.service.CustomersService;
-import com.erp.erp.domain.payments.common.entity.Payments;
-import com.erp.erp.domain.plans.service.PlansService;
 import com.erp.erp.global.error.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,7 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class CustomersController {
 
   private final CustomersService customersService;
-  private final PlansService plansService;
 
   // note. 이후 프로필 사진 관련 처리 필요
   // 로직 책임 분리 필요
@@ -41,20 +37,16 @@ public class CustomersController {
   public ApiResult<AddCustomerDto.Response> addCustomer(
       @Valid @RequestBody AddCustomerDto.Request req
       ) {
-    Payments payments = customersService.addCustomer(req);
-    Customers customers = payments.getCustomers();
-
-    AddCustomerDto.Response response = AddCustomerDto.Response.fromEntity(payments,customers);
-
+    AddCustomerDto.Response response = customersService.addCustomer(req);
     return ApiResult.success(response);
   }
 
   @Operation(summary = "고객 정보 수정")
-  @PostMapping("updatedCustomerInfo")
-  public ApiResult<UpdatedCustomerInfoDto.Response> updatedCustomerInfo(
-      @Valid @RequestBody UpdatedCustomerInfoDto.Request req
+  @PostMapping("/updateCustomer")
+  public ApiResult<UpdateCustomerDto.Response> updatedCustomerInfo(
+      @Valid @RequestBody UpdateCustomerDto.Request req
   ) {
-    UpdatedCustomerInfoDto.Response response = customersService.updatedCustomerInfo(req);
+    UpdateCustomerDto.Response response = customersService.updateCustomer(req);
     return ApiResult.success(response);
   }
 

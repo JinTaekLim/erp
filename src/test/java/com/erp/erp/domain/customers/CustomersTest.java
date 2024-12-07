@@ -11,11 +11,15 @@ import com.erp.erp.domain.accounts.common.entity.Accounts;
 import com.erp.erp.domain.accounts.repository.AccountsRepository;
 import com.erp.erp.domain.customers.common.dto.AddCustomerDto;
 
+import com.erp.erp.domain.customers.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customers.common.dto.UpdateStatusDto;
 import com.erp.erp.domain.customers.common.entity.Customers;
+import com.erp.erp.domain.customers.common.entity.Progress;
 import com.erp.erp.domain.customers.repository.CustomersRepository;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.institutes.repository.InstitutesRepository;
+import com.erp.erp.domain.payments.common.entity.OtherPayments;
+import com.erp.erp.domain.payments.common.entity.PlanPayment;
 import com.erp.erp.domain.plans.common.entity.Plans;
 import com.erp.erp.domain.plans.repository.PlansRepository;
 import com.erp.erp.global.error.ApiResult;
@@ -31,6 +35,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.IntStream;
 
 class CustomersTest extends IntegrationTest {
 
@@ -78,19 +84,45 @@ class CustomersTest extends IntegrationTest {
     return plansRepository.save(getPlans());
   }
 
-  private Customers getCustomers() {
-    Institutes institutes = createInstitutes();
-
+  private Customers getCustomers(
+          Plans plans, Institutes institutes, PlanPayment planPayment,
+          List<OtherPayments> otherPaymentList
+  ) {
     return fixtureMonkey.giveMeBuilder(Customers.class)
-        .setNull("id")
-        .set("institutes", institutes)
-        .sample();
+            .setNull("id")
+            .set("plans", plans)
+            .set("institutes", institutes)
+            .set("planPayment", planPayment)
+            .set("otherPayments", otherPaymentList)
+            .set("progress", null)
+            .sample();
+  }
+
+  private Customers createCustomers(Plans plans, Institutes institutes) {
+    PlanPayment planPayment = getPlanPayment(plans);
+    List<OtherPayments> otherPaymentList = getRandomOtherPaymentList(plans);
+    Customers customers = getCustomers(plans, institutes, planPayment, otherPaymentList);
+    return customersRepository.save(customers);
   }
 
   private Plans getPlans() {
     return fixtureMonkey.giveMeBuilder(Plans.class)
         .setNull("id")
         .sample();
+  }
+
+  private PlanPayment getPlanPayment(Plans plans) {
+    return fixtureMonkey.giveMeBuilder(PlanPayment.class)
+            .setNull("id")
+            .set("plans", plans)
+            .sample();
+  }
+  private List<OtherPayments> getRandomOtherPaymentList(Plans plans) {
+    int randomInt = RandomValue.getInt(0, 5);
+    return fixtureMonkey.giveMeBuilder(OtherPayments.class)
+            .setNull("id")
+            .set("plans", plans)
+            .sampleList(randomInt);
   }
 
 
@@ -191,11 +223,70 @@ class CustomersTest extends IntegrationTest {
   }
 
   @Test
+  void updateCustomer() {
+    // given
+    Plans plans = createPlans();
+    Institutes institutes = createInstitutes();
+
+    Customers customers = createCustomers(plans, institutes);
+    UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
+            .set("customerId", customers.getId())
+            .sample();
+
+    String url = "http://localhost:" + port + "/api/customers/updateCustomer";
+
+    // then
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+            url,
+            request,
+            String.class
+    );
+
+    ApiResult<UpdateCustomerDto.Response> apiResponse = gson.fromJson(
+            responseEntity.getBody(),
+            new TypeToken<ApiResult<UpdateCustomerDto.Response>>(){}
+    );
+
+    // when
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertNotNull(apiResponse.getData());
+    assertThat(apiResponse.getData().getCustomerId()).isEqualTo(request.getCustomerId());
+    assertThat(apiResponse.getData().getPhotoUrl()).isEqualTo(request.getPhotoUrl());
+    assertThat(apiResponse.getData().getName()).isEqualTo(request.getName());
+    assertThat(apiResponse.getData().getGender()).isEqualTo(request.getGender());
+    assertThat(apiResponse.getData().getBirthDate()).isEqualTo(request.getBirthDate());
+    assertThat(apiResponse.getData().getPhone()).isEqualTo(request.getPhone());
+    assertThat(apiResponse.getData().getAddress()).isEqualTo(request.getAddress());
+    assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
+
+    List<Progress.ProgressItem> actualProgress = apiResponse.getData().getProgress();
+    List<Progress.ProgressItem> expectedProgress = request.getProgress();
+    assertThat(actualProgress).hasSameSizeAs(expectedProgress);
+    IntStream.range(0, actualProgress.size())
+            .forEach(i -> assertThat(actualProgress.get(i))
+                    .usingRecursiveComparison()
+                    .isEqualTo(expectedProgress.get(i)));
+
+
+
+    List<UpdateCustomerDto.OtherPayment> actualPayments = apiResponse.getData().getOtherPayment();
+    List<UpdateCustomerDto.OtherPayment> expectedPayments = request.getOtherPayment();
+    assertThat(actualPayments).hasSameSizeAs(expectedPayments);
+    IntStream.range(0, actualPayments.size())
+            .forEach(i -> assertThat(actualPayments.get(i))
+                    .usingRecursiveComparison()
+                    .isEqualTo(expectedPayments.get(i)));
+
+
+
+  }
+
+  @Test
   void updateStatus_성공() {
     //given
-
-    Customers customers = getCustomers();
-    customersRepository.save(customers);
+    Plans plans = createPlans();
+    Institutes institutes = createInstitutes();
+    Customers customers = createCustomers(plans, institutes);
 
     boolean status = !customers.getStatus();
 
