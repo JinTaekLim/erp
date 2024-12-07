@@ -3,7 +3,7 @@ package com.erp.erp.domain.reservations.common.dto;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.customers.common.entity.Gender;
 import com.erp.erp.domain.payments.common.entity.PlanPayment;
-import com.erp.erp.domain.plans.common.entity.Plans;
+import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.reservations.common.entity.Reservations;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
@@ -53,10 +53,10 @@ public class GetReservationCustomerDetailsDto {
     ) {
       Customers customers = reservations.getCustomers();
       PlanPayment planPayment = customers.getPlanPayment();
-      Plans plans = planPayment.getPlans();
+      Plan plan = planPayment.getPlan();
 
       LocalDateTime registrationAt = planPayment.getRegistrationAt();
-      int availablePeriod = plans.getAvailablePeriod();
+      int availablePeriod = plan.getAvailablePeriod();
 
       LocalDate endDate = registrationAt.plusDays(availablePeriod).toLocalDate();
 
@@ -68,7 +68,7 @@ public class GetReservationCustomerDetailsDto {
           .name(customers.getName())
           .gender(customers.getGender())
           .phone(customers.getPhone())
-          .plans(plans.getName())
+          .plans(plan.getName())
           .endDate(endDate)
           .remainingTime(0)
           .usedTime(0)

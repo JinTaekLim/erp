@@ -11,8 +11,8 @@ import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.institutes.repository.InstitutesRepository;
 import com.erp.erp.domain.payments.common.entity.OtherPayments;
 import com.erp.erp.domain.payments.common.entity.PlanPayment;
-import com.erp.erp.domain.plans.common.entity.Plans;
-import com.erp.erp.domain.plans.repository.PlansRepository;
+import com.erp.erp.domain.plan.common.entity.Plan;
+import com.erp.erp.domain.plan.repository.PlanRepository;
 import com.erp.erp.domain.reservations.common.dto.GetDailyReservationsDto;
 import com.erp.erp.domain.reservations.common.entity.Reservations;
 import com.erp.erp.domain.reservations.common.exception.ReservationsErrorType;
@@ -47,7 +47,7 @@ class ReservationsTest extends IntegrationTest {
   @Autowired
   private ReservationsRepository reservationsRepository;
   @Autowired
-  private PlansRepository plansRepository;
+  private PlanRepository planRepository;
 
 
   private Institutes getInstitutes() {
@@ -57,13 +57,12 @@ class ReservationsTest extends IntegrationTest {
   }
 
   private Customers getCustomers(Institutes institutes) {
-    Plans plans = createPlans();
-    PlanPayment planPayment = getPlanPayment(plans);
-    List<OtherPayments> otherPaymentList = getRandomOtherPaymentList(plans);
+    Plan plan = createPlans();
+    PlanPayment planPayment = getPlanPayment(plan);
+    List<OtherPayments> otherPaymentList = getRandomOtherPaymentList(plan);
 
     return fixtureMonkey.giveMeBuilder(Customers.class)
             .setNull("id")
-            .set("plans", plans)
             .set("institutes", institutes)
             .set("planPayment", planPayment)
             .set("otherPayments", otherPaymentList)
@@ -79,29 +78,29 @@ class ReservationsTest extends IntegrationTest {
     return customersRepository.save(customers);
   }
 
-  private PlanPayment getPlanPayment(Plans plans) {
+  private PlanPayment getPlanPayment(Plan plan) {
     return fixtureMonkey.giveMeBuilder(PlanPayment.class)
             .setNull("id")
-            .set("plans", plans)
+            .set("plan", plan)
             .sample();
   }
 
-  private List<OtherPayments> getRandomOtherPaymentList(Plans plans) {
+  private List<OtherPayments> getRandomOtherPaymentList(Plan plan) {
     int randomInt = RandomValue.getInt(0, 5);
     return fixtureMonkey.giveMeBuilder(OtherPayments.class)
             .setNull("id")
-            .set("plans", plans)
+            .set("plan", plan)
             .sampleList(randomInt);
   }
 
-  private Plans getPlans() {
-    return fixtureMonkey.giveMeBuilder(Plans.class)
+  private Plan getPlans() {
+    return fixtureMonkey.giveMeBuilder(Plan.class)
             .setNull("id")
             .sample();
   }
 
-  private Plans createPlans() {
-    return plansRepository.save(getPlans());
+  private Plan createPlans() {
+    return planRepository.save(getPlans());
   }
 
 //  @Test

@@ -1,8 +1,7 @@
 package com.erp.erp.domain.admins;
 
-import com.erp.erp.domain.plans.common.dto.AddPlansDto;
-import com.erp.erp.domain.plans.common.entity.LicenseType;
-import com.erp.erp.domain.plans.repository.PlansRepository;
+import com.erp.erp.domain.plan.common.dto.AddPlanDto;
+import com.erp.erp.domain.plan.common.entity.LicenseType;
 import com.erp.erp.global.error.ApiResult;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.util.test.IntegrationTest;
@@ -30,7 +29,7 @@ class adminsTest extends IntegrationTest {
     @Test
     void addPlans() {
         //given
-        AddPlansDto.Request request = fixtureMonkey.giveMeBuilder(AddPlansDto.Request.class)
+        AddPlanDto.Request request = fixtureMonkey.giveMeBuilder(AddPlanDto.Request.class)
                 .set("licenseType", RandomValue.getRandomEnum(LicenseType.class))
                 .sample();
 
@@ -43,9 +42,9 @@ class adminsTest extends IntegrationTest {
                 String.class
         );
 
-        ApiResult<AddPlansDto.Response> apiResponse = gson.fromJson(
+        ApiResult<AddPlanDto.Response> apiResponse = gson.fromJson(
                 responseEntity.getBody(),
-                new TypeToken<ApiResult<AddPlansDto.Response>>(){}
+                new TypeToken<ApiResult<AddPlanDto.Response>>(){}
         );
 
         //then

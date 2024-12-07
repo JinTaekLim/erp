@@ -5,7 +5,7 @@ import com.erp.erp.domain.customers.common.entity.Gender;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.payments.common.entity.OtherPayments;
 import com.erp.erp.domain.payments.common.entity.PaymentsMethod;
-import com.erp.erp.domain.plans.common.entity.Plans;
+import com.erp.erp.domain.plan.common.entity.Plan;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -108,8 +108,8 @@ public class AddCustomerDto {
       private boolean status;
     }
 
-    public Customers toCustomers(Institutes institutes, Plans plans, String photoUrl) {
-      com.erp.erp.domain.payments.common.entity.PlanPayment planPayment = getPayments(plans);
+    public Customers toCustomers(Institutes institutes, Plan plan, String photoUrl) {
+      com.erp.erp.domain.payments.common.entity.PlanPayment planPayment = getPayments(plan);
       List<OtherPayments> otherPayments = getOtherPayments();
 
       return Customers.builder()
@@ -138,9 +138,9 @@ public class AddCustomerDto {
     }
 
 
-    private com.erp.erp.domain.payments.common.entity.PlanPayment getPayments(Plans plans) {
+    private com.erp.erp.domain.payments.common.entity.PlanPayment getPayments(Plan plan) {
       return com.erp.erp.domain.payments.common.entity.PlanPayment.builder()
-          .plans(plans)
+          .plan(plan)
           .status(this.planPayment.status)
           .paymentsMethod(this.paymentsMethod)
           .discount(this.planPayment.discount)
@@ -181,7 +181,7 @@ public class AddCustomerDto {
 
     public static Response fromEntity(Customers customers) {
       return Response.builder()
-          .plans(customers.getPlanPayment().getPlans().getName())
+          .plans(customers.getPlanPayment().getPlan().getName())
           .name(customers.getName())
           .gender(customers.getGender())
           .phone(customers.getPhone())

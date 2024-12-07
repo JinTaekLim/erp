@@ -1,4 +1,4 @@
-package com.erp.erp.domain.plans.common.entity;
+package com.erp.erp.domain.plan.common.entity;
 
 public enum LicenseType {
     TYPE_1,

@@ -1,9 +1,6 @@
-package com.erp.erp.domain.plans.common.entity;
+package com.erp.erp.domain.plan.common.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +9,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Plans {
+@Table(name = "plans")
+public class Plan {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +31,7 @@ public class Plans {
   private int availablePeriod;
 
   @Builder
-  public Plans(LicenseType licenseType, String name, int price, int availableTime, int availablePeriod) {
+  public Plan(LicenseType licenseType, String name, int price, int availableTime, int availablePeriod) {
     this.licenseType = licenseType;
     this.name = name;
     this.price = price;
