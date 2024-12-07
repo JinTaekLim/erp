@@ -8,12 +8,10 @@ import com.erp.erp.domain.customers.business.CustomersUpdater;
 import com.erp.erp.domain.customers.business.ProgressCreator;
 import com.erp.erp.domain.customers.common.dto.AddCustomerDto;
 import com.erp.erp.domain.customers.common.dto.UpdateStatusDto;
-import com.erp.erp.domain.customers.common.dto.UpdatedCustomerInfoDto;
+import com.erp.erp.domain.customers.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.customers.common.entity.Progress;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
-import com.erp.erp.domain.payments.business.PaymentsCreator;
-import com.erp.erp.domain.payments.common.entity.Payments;
 import com.erp.erp.domain.plans.business.PlansReader;
 import com.erp.erp.domain.plans.common.entity.Plans;
 import java.util.List;
@@ -37,24 +35,20 @@ public class CustomersService {
   private final CustomersReader customersReader;
   private final CustomersUpdater customersUpdater;
   private final ProgressCreator progressCreator;
-  private final PaymentsCreator paymentsCreator;
   private final PlansReader plansReader;
   private final PhotoUtil photoUtil;
 
   @Transactional
-  public Payments addCustomer(AddCustomerDto.Request req) {
+  public AddCustomerDto.Response addCustomer(AddCustomerDto.Request req) {
     Institutes institutes = authProvider.getCurrentInstitutes();
     Plans plans = plansReader.findById(req.getPlansId());
-
     MultipartFile photo = null;
     String photoUrl = (photo == null) ? null : photoUtil.upload(photo);
 
-
-    Customers customers = req.toCustomers(institutes, photoUrl);
+    Customers customers = req.toCustomers(institutes, plans, photoUrl);
     customersCreator.save(customers);
 
-    Payments payments = req.toPayments(customers, plans);
-    return paymentsCreator.save(payments);
+    return AddCustomerDto.Response.fromEntity(customers);
   };
 
 
@@ -67,27 +61,14 @@ public class CustomersService {
   }
 
   @Transactional
-  public UpdatedCustomerInfoDto.Response updatedCustomerInfo(UpdatedCustomerInfoDto.Request req) {
+  public UpdateCustomerDto.Response updateCustomer(UpdateCustomerDto.Request req) {
     Customers customers = customersReader.findById(req.getCustomerId());
-    Customers newCustomers = customersUpdater.updatedCustomers(
-        customers,
-        req.getName(),
-        req.getGender(),
-        req.getPhone(),
-        req.getAddress(),
-        req.getPhotoUrl(),
-        req.getMemo(),
-        req.getBirthDate()
-    );
-    customersCreator.save(newCustomers);
-
-    Progress progress = Progress.builder()
-        .customersId(newCustomers.getId())
-        .progressList(req.getProgress())
-        .build();
+    Customers updateCustomers = req.updatedCustomers(customers);
+    customersCreator.save(updateCustomers);
+    Progress progress = req.toProgress();
     progressCreator.save(progress);
 
-    return UpdatedCustomerInfoDto.Response.fromEntity(newCustomers, progress);
+    return UpdateCustomerDto.Response.fromEntity(updateCustomers, progress);
   }
 
   public List<Customers> getCurrentCustomers(int page) {

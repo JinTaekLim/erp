@@ -2,6 +2,9 @@ package com.erp.erp.domain.customers.common.entity;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,8 +23,13 @@ public class Progress {
 
   @Getter
   @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
   public static class ProgressItem {
+
+    @NotNull
     private LocalDate date;
+    @NotNull
     private String content;
   }
 

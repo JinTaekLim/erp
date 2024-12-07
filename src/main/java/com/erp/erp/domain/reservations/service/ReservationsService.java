@@ -10,10 +10,7 @@ import com.erp.erp.domain.reservations.business.ReservationsValidator;
 import com.erp.erp.domain.reservations.business.ReservationsCreator;
 import com.erp.erp.domain.reservations.business.ReservationsReader;
 import com.erp.erp.domain.reservations.business.ReservationsUpdater;
-import com.erp.erp.domain.reservations.common.dto.AddReservationsDto;
-import com.erp.erp.domain.reservations.common.dto.DeleteReservationsDto;
-import com.erp.erp.domain.reservations.common.dto.UpdatedReservationsDto;
-import com.erp.erp.domain.reservations.common.dto.UpdatedSeatNumberDto;
+import com.erp.erp.domain.reservations.common.dto.*;
 import com.erp.erp.domain.reservations.common.entity.Reservations;
 import com.erp.erp.global.util.TimeUtil;
 import java.time.LocalDate;
@@ -112,10 +109,11 @@ public class ReservationsService {
     reservationsDelete.delete(reservations);
   }
 
-  public Reservations getReservationsForCurrentInstitute(Long reservationsId) {
+  public GetReservationCustomerDetailsDto.Response getReservationsForCurrentInstitute(Long reservationsId) {
     Institutes institutes = authProvider.getCurrentInstitutes();
     Reservations reservations = reservationsReader.findById(reservationsId);
-    return institutesValidator.validateReservationBelongsToInstitute(institutes, reservations);
+    institutesValidator.validateReservationBelongsToInstitute(institutes, reservations);
+    return GetReservationCustomerDetailsDto.Response.fromEntity(reservations);
   }
 
 
