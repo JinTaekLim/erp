@@ -29,14 +29,10 @@ public class PlanController {
 
     List<Plan> planList = planService.getAllPlans();
 
-    List<GetPlansDto.Response> responses = plansList.stream()
-        .map(membership -> GetPlansDto.Response.builder()
-            .id(membership.getId())
-            .name(membership.getName())
-            .price(membership.getPrice())
     List<GetPlanDto.Response> responses = planList.stream()
         .map(plan -> GetPlanDto.Response.builder()
             .id(plan.getId())
+            .licenseType(plan.getLicenseType())
             .name(plan.getName())
             .price(plan.getPrice())
             .build()

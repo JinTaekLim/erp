@@ -1,12 +1,13 @@
-package com.erp.erp.domain.plans.common.dto;
+package com.erp.erp.domain.plan.common.dto;
 
+import com.erp.erp.domain.plan.common.entity.LicenseType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class GetPlansDto {
+public class GetPlanDto {
 
   @Schema(name = "GetMembershipDto_Response" , description = "이용권 조회 반환")
   @Builder
@@ -17,6 +18,8 @@ public class GetPlansDto {
 
     @Schema(description = "이용권 ID")
     private Long id;
+    @Schema(description = "이용권 구분")
+    private LicenseType licenseType;
     @Schema(description = "이용권 이름")
     private String name;
     @Schema(description = "이용권 가격")
