@@ -20,8 +20,8 @@ import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.institutes.repository.InstitutesRepository;
 import com.erp.erp.domain.payments.common.entity.OtherPayments;
 import com.erp.erp.domain.payments.common.entity.PlanPayment;
-import com.erp.erp.domain.plans.common.entity.Plans;
-import com.erp.erp.domain.plans.repository.PlansRepository;
+import com.erp.erp.domain.plan.common.entity.Plan;
+import com.erp.erp.domain.plan.repository.PlanRepository;
 import com.erp.erp.global.error.ApiResult;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.util.test.IntegrationTest;
@@ -56,7 +56,7 @@ class CustomersTest extends IntegrationTest {
   private AccountsRepository accountsRepository;
 
   @Autowired
-  private PlansRepository plansRepository;
+  private PlanRepository planRepository;
 
   @MockBean
   private PhotoUtil photoUtil;
@@ -80,17 +80,13 @@ class CustomersTest extends IntegrationTest {
     return institutesRepository.save(getInstitutes());
   }
 
-  private Plans createPlans() {
-    return plansRepository.save(getPlans());
+  private Plan createPlans() {
+    return planRepository.save(getPlans());
   }
 
-  private Customers getCustomers(
-          Plans plans, Institutes institutes, PlanPayment planPayment,
-          List<OtherPayments> otherPaymentList
-  ) {
+  private Customers getCustomers(Institutes institutes, PlanPayment planPayment, List<OtherPayments> otherPaymentList) {
     return fixtureMonkey.giveMeBuilder(Customers.class)
             .setNull("id")
-            .set("plans", plans)
             .set("institutes", institutes)
             .set("planPayment", planPayment)
             .set("otherPayments", otherPaymentList)
@@ -98,30 +94,30 @@ class CustomersTest extends IntegrationTest {
             .sample();
   }
 
-  private Customers createCustomers(Plans plans, Institutes institutes) {
-    PlanPayment planPayment = getPlanPayment(plans);
-    List<OtherPayments> otherPaymentList = getRandomOtherPaymentList(plans);
-    Customers customers = getCustomers(plans, institutes, planPayment, otherPaymentList);
+  private Customers createCustomers(Plan plan, Institutes institutes) {
+    PlanPayment planPayment = getPlanPayment(plan);
+    List<OtherPayments> otherPaymentList = getRandomOtherPaymentList(plan);
+    Customers customers = getCustomers(institutes, planPayment, otherPaymentList);
     return customersRepository.save(customers);
   }
 
-  private Plans getPlans() {
-    return fixtureMonkey.giveMeBuilder(Plans.class)
+  private Plan getPlans() {
+    return fixtureMonkey.giveMeBuilder(Plan.class)
         .setNull("id")
         .sample();
   }
 
-  private PlanPayment getPlanPayment(Plans plans) {
+  private PlanPayment getPlanPayment(Plan plan) {
     return fixtureMonkey.giveMeBuilder(PlanPayment.class)
             .setNull("id")
-            .set("plans", plans)
+            .set("plan", plan)
             .sample();
   }
-  private List<OtherPayments> getRandomOtherPaymentList(Plans plans) {
+  private List<OtherPayments> getRandomOtherPaymentList(Plan plan) {
     int randomInt = RandomValue.getInt(0, 5);
     return fixtureMonkey.giveMeBuilder(OtherPayments.class)
             .setNull("id")
-            .set("plans", plans)
+            .set("plans", plan)
             .sampleList(randomInt);
   }
 
@@ -130,10 +126,10 @@ class CustomersTest extends IntegrationTest {
   @Test
   void addCustomer_성공() {
     //given
-    Plans plans = createPlans();
+    Plan plan = createPlans();
     AddCustomerDto.Request request = fixtureMonkey.giveMeBuilder(AddCustomerDto.Request.class)
         .set("gender","M")
-        .set("plansId", plans.getId())
+        .set("plansId", plan.getId())
         .sample();
 
     String url = "http://localhost:" + port + "/api/customers/addCustomer";
@@ -189,9 +185,9 @@ class CustomersTest extends IntegrationTest {
   @Test
   void addCustomer_이용권_미입력() {
     //given
-    Plans plans = createPlans();
+    Plan plan = createPlans();
     AddCustomerDto.Request request = AddCustomerDto.Request.builder()
-            .plansId(plans.getId())
+            .plansId(plan.getId())
             .name("name")
             .gender("M")
             .phone("01024214214")
@@ -225,10 +221,10 @@ class CustomersTest extends IntegrationTest {
   @Test
   void updateCustomer() {
     // given
-    Plans plans = createPlans();
+    Plan plan = createPlans();
     Institutes institutes = createInstitutes();
 
-    Customers customers = createCustomers(plans, institutes);
+    Customers customers = createCustomers(plan, institutes);
     UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
             .set("customerId", customers.getId())
             .sample();
@@ -284,9 +280,9 @@ class CustomersTest extends IntegrationTest {
   @Test
   void updateStatus_성공() {
     //given
-    Plans plans = createPlans();
+    Plan plan = createPlans();
     Institutes institutes = createInstitutes();
-    Customers customers = createCustomers(plans, institutes);
+    Customers customers = createCustomers(plan, institutes);
 
     boolean status = !customers.getStatus();
 

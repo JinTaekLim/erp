@@ -1,6 +1,6 @@
 package com.erp.erp.domain.payments.common.entity;
 
-import com.erp.erp.domain.plans.common.entity.Plans;
+import com.erp.erp.domain.plan.common.entity.Plan;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,7 +23,7 @@ public class PlanPayment {
 
   @ManyToOne
   @NotNull
-  private Plans plans;
+  private Plan plan;
 
   @NotNull
   private boolean status;
@@ -37,10 +37,10 @@ public class PlanPayment {
   private int discount;
 
   @Builder
-  public PlanPayment(boolean status, Plans plans,
+  public PlanPayment(boolean status, Plan plan,
                      LocalDateTime registrationAt, PaymentsMethod paymentsMethod, int discount) {
     this.status = status;
-    this.plans = plans;
+    this.plan = plan;
     this.registrationAt = registrationAt;
     this.paymentsMethod = paymentsMethod;
     this.discount = discount;

@@ -1,9 +1,9 @@
-package com.erp.erp.domain.plans.controller;
+package com.erp.erp.domain.plan.controller;
 
 
-import com.erp.erp.domain.plans.common.dto.GetPlansDto;
-import com.erp.erp.domain.plans.common.entity.Plans;
-import com.erp.erp.domain.plans.service.PlansService;
+import com.erp.erp.domain.plan.common.dto.GetPlanDto;
+import com.erp.erp.domain.plan.common.entity.Plan;
+import com.erp.erp.domain.plan.service.PlanService;
 import com.erp.erp.global.error.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,21 +19,26 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "plans", description = "이용권 관리")
 @RequiredArgsConstructor
 @Slf4j
-public class PlansController {
+public class PlanController {
 
-  private final PlansService plansService;
+  private final PlanService planService;
 
   @Operation(summary = "이용권 전체 조회")
-  @GetMapping("/getAllMemberships")
-  public ApiResult<List<GetPlansDto.Response>> getAllMemberships() {
+  @GetMapping("/getAllPlans")
+  public ApiResult<List<GetPlanDto.Response>> getAllPlans() {
 
-    List<Plans> plansList = plansService.getAllMemberships();
+    List<Plan> planList = planService.getAllPlans();
 
     List<GetPlansDto.Response> responses = plansList.stream()
         .map(membership -> GetPlansDto.Response.builder()
             .id(membership.getId())
             .name(membership.getName())
             .price(membership.getPrice())
+    List<GetPlanDto.Response> responses = planList.stream()
+        .map(plan -> GetPlanDto.Response.builder()
+            .id(plan.getId())
+            .name(plan.getName())
+            .price(plan.getPrice())
             .build()
         ).toList();
 

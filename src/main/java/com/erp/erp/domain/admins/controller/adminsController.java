@@ -1,9 +1,9 @@
 package com.erp.erp.domain.admins.controller;
 
 
-import com.erp.erp.domain.plans.common.dto.AddPlansDto;
-import com.erp.erp.domain.plans.common.entity.Plans;
-import com.erp.erp.domain.plans.service.PlansService;
+import com.erp.erp.domain.plan.common.dto.AddPlanDto;
+import com.erp.erp.domain.plan.common.entity.Plan;
+import com.erp.erp.domain.plan.service.PlanService;
 import com.erp.erp.global.error.ApiResult;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -21,19 +21,19 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class adminsController {
 
-  private final PlansService plansService;
+  private final PlanService planService;
 
 
   @PostMapping("/addPlans")
-  public ApiResult<AddPlansDto.Response> addPlans(
-      @RequestBody @Valid AddPlansDto.Request request
+  public ApiResult<AddPlanDto.Response> addPlans(
+      @RequestBody @Valid AddPlanDto.Request request
   ) {
-    Plans plans = plansService.addPlans(request);
+    Plan plan = planService.addPlans(request);
 
-    AddPlansDto.Response response = AddPlansDto.Response.builder()
-        .licenseType(plans.getLicenseType())
-        .name(plans.getName())
-        .price(plans.getPrice())
+    AddPlanDto.Response response = AddPlanDto.Response.builder()
+        .licenseType(plan.getLicenseType())
+        .name(plan.getName())
+        .price(plan.getPrice())
         .build();
 
     return ApiResult.success(response);

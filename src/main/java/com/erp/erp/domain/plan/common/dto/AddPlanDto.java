@@ -1,6 +1,6 @@
-package com.erp.erp.domain.plans.common.dto;
+package com.erp.erp.domain.plan.common.dto;
 
-import com.erp.erp.domain.plans.common.entity.LicenseType;
+import com.erp.erp.domain.plan.common.entity.LicenseType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class AddPlansDto {
+public class AddPlanDto {
 
   @Schema(name = "AddMembershipDto_Request" , description = "이용권 추가 요청")
   @Builder

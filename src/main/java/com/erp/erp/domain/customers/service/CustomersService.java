@@ -12,8 +12,8 @@ import com.erp.erp.domain.customers.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.customers.common.entity.Progress;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
-import com.erp.erp.domain.plans.business.PlansReader;
-import com.erp.erp.domain.plans.common.entity.Plans;
+import com.erp.erp.domain.plan.business.PlanReader;
+import com.erp.erp.domain.plan.common.entity.Plan;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,17 +35,17 @@ public class CustomersService {
   private final CustomersReader customersReader;
   private final CustomersUpdater customersUpdater;
   private final ProgressCreator progressCreator;
-  private final PlansReader plansReader;
+  private final PlanReader planReader;
   private final PhotoUtil photoUtil;
 
   @Transactional
   public AddCustomerDto.Response addCustomer(AddCustomerDto.Request req) {
     Institutes institutes = authProvider.getCurrentInstitutes();
-    Plans plans = plansReader.findById(req.getPlansId());
+    Plan plan = planReader.findById(req.getPlansId());
     MultipartFile photo = null;
     String photoUrl = (photo == null) ? null : photoUtil.upload(photo);
 
-    Customers customers = req.toCustomers(institutes, plans, photoUrl);
+    Customers customers = req.toCustomers(institutes, plan, photoUrl);
     customersCreator.save(customers);
 
     return AddCustomerDto.Response.fromEntity(customers);
