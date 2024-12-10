@@ -1,8 +1,10 @@
 package com.erp.erp.domain.institutes.service;
 
+import com.erp.erp.domain.admins.common.dto.AddInstituteDto;
 import com.erp.erp.domain.auth.business.AuthProvider;
 import com.erp.erp.domain.customers.business.CustomersReader;
 import com.erp.erp.domain.customers.common.entity.Customers;
+import com.erp.erp.domain.institutes.business.InstitutesCreator;
 import com.erp.erp.domain.institutes.business.InstitutesUpdater;
 import com.erp.erp.domain.institutes.business.InstitutesValidator;
 import com.erp.erp.domain.institutes.common.dto.UpdateTotalSpotsDto;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 public class InstitutesService {
 
   private final AuthProvider authProvider;
+  private final InstitutesCreator institutesCreator;
   private final InstitutesUpdater institutesUpdater;
   private final InstitutesValidator institutesValidator;
   private final CustomersReader customersReader;
@@ -31,5 +34,11 @@ public class InstitutesService {
         .name(institutes.getName())
         .num(institutes.getTotalSpots())
         .build();
+  }
+
+  public AddInstituteDto.Response addInstitute(AddInstituteDto.Request req) {
+    Institutes institutes = req.toEntity();
+    institutesCreator.save(institutes);
+    return AddInstituteDto.Response.fromEntity(institutes);
   }
 }
