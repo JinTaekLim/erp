@@ -1,4 +1,4 @@
-package com.erp.erp.domain.plan.common.dto;
+package com.erp.erp.domain.admins.common.dto;
 
 import com.erp.erp.domain.plan.common.entity.LicenseType;
 import io.swagger.v3.oas.annotations.media.Schema;

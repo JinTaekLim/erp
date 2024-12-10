@@ -1,10 +1,14 @@
 package com.erp.erp.domain.admins.controller;
 
 
-import com.erp.erp.domain.plan.common.dto.AddPlanDto;
+import com.erp.erp.domain.accounts.service.AccountsService;
+import com.erp.erp.domain.admins.common.dto.AddInstituteDto;
+import com.erp.erp.domain.admins.common.dto.AddPlanDto;
+import com.erp.erp.domain.institutes.service.InstitutesService;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.service.PlanService;
 import com.erp.erp.global.error.ApiResult;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +26,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class adminsController {
 
   private final PlanService planService;
+  private final InstitutesService instituteService;
 
 
+  @Operation(summary = "이용권 등록")
   @PostMapping("/addPlans")
   public ApiResult<AddPlanDto.Response> addPlans(
       @RequestBody @Valid AddPlanDto.Request request
@@ -36,6 +42,15 @@ public class adminsController {
         .price(plan.getPrice())
         .build();
 
+    return ApiResult.success(response);
+  }
+
+  @Operation(summary = "매장 등록")
+  @PostMapping("/addInstitute")
+  public ApiResult<AddInstituteDto.Response> addInstitute(
+      @RequestBody @Valid AddInstituteDto.Request req
+  ) {
+    AddInstituteDto.Response response = instituteService.addInstitute(req);
     return ApiResult.success(response);
   }
 

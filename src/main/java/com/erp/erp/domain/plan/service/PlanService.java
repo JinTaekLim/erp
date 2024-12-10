@@ -2,7 +2,7 @@ package com.erp.erp.domain.plan.service;
 
 import com.erp.erp.domain.plan.business.PlanCreator;
 import com.erp.erp.domain.plan.business.PlanReader;
-import com.erp.erp.domain.plan.common.dto.AddPlanDto;
+import com.erp.erp.domain.admins.common.dto.AddPlanDto;
 import com.erp.erp.domain.plan.common.entity.LicenseType;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import java.util.List;
