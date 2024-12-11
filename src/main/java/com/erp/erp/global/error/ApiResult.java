@@ -1,5 +1,6 @@
 package com.erp.erp.global.error;
 
+import com.erp.erp.global.error.exception.type.ApiErrorType;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 

@@ -1,6 +1,6 @@
 package com.erp.erp.global.error.exception;
 
-import com.erp.erp.global.error.ApiErrorType;
+import com.erp.erp.global.error.exception.type.ApiErrorType;
 import lombok.Getter;
 
 @Getter

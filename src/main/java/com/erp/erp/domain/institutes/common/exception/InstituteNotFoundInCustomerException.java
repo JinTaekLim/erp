@@ -1,9 +1,10 @@
 package com.erp.erp.domain.institutes.common.exception;
 
+import com.erp.erp.global.error.exception.BusinessException;
 import lombok.Getter;
 
 @Getter
-public class InstituteNotFoundInCustomerException extends RuntimeException{
+public class InstituteNotFoundInCustomerException extends BusinessException {
 
   private final String code;
   public InstituteNotFoundInCustomerException() {

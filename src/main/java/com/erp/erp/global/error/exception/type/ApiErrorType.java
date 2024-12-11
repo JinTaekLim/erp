@@ -1,4 +1,4 @@
-package com.erp.erp.global.error;
+package com.erp.erp.global.error.exception.type;
 
 import lombok.Getter;
 

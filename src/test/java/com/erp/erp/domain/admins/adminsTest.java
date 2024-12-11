@@ -1,8 +1,10 @@
 package com.erp.erp.domain.admins;
 
+import com.erp.erp.domain.admins.common.dto.AddAccountDto;
 import com.erp.erp.domain.admins.common.dto.AddInstituteDto;
 import com.erp.erp.domain.admins.common.dto.AddPlanDto;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
+import com.erp.erp.domain.institutes.common.exception.NotFoundInstituteException;
 import com.erp.erp.domain.institutes.repository.InstitutesRepository;
 import com.erp.erp.domain.plan.common.entity.LicenseType;
 import com.erp.erp.global.error.ApiResult;
@@ -98,6 +100,65 @@ class adminsTest extends IntegrationTest {
     assertThat(apiResponse.getData().getTotalSpots()).isEqualTo(req.getTotalSpots());
   }
 
+
+    @Test()
+    void addAccount() {
+        // given
+        Institutes institutes = createInstitute();
+        AddAccountDto.Request req = fixtureMonkey.giveMeBuilder(AddAccountDto.Request.class)
+            .set("instituteId", institutes.getId())
+            .sample();
+
+        String url = "http://localhost:" + port + "/api/admin/addAccount";
+
+        // when
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+            url,
+            req,
+            String.class
+        );
+
+        ApiResult<AddAccountDto.Response> apiResponse = gson.fromJson(
+            responseEntity.getBody(),
+            new TypeToken<ApiResult<AddAccountDto.Response>>() {
+            }
+        );
+
+        // then
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertNotNull(apiResponse.getData());
+//        assertThat(apiResponse.getData().getName()).isEqualTo(req.getName());
+//        assertThat(apiResponse.getData().getTotalSpots()).isEqualTo(req.getTotalSpots());
+    }
+
+
+    @Test()
+    void addAccount_fail() {
+        // given
+        AddAccountDto.Request req = fixtureMonkey.giveMeOne(AddAccountDto.Request.class);
+
+        NotFoundInstituteException exception = new NotFoundInstituteException();
+        String url = "http://localhost:" + port + "/api/admin/addAccount";
+
+        // when
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+            url,
+            req,
+            String.class
+        );
+
+        ApiResult<AddAccountDto.Response> apiResponse = gson.fromJson(
+            responseEntity.getBody(),
+            new TypeToken<ApiResult<AddAccountDto.Response>>() {
+            }
+        );
+
+        // then
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertNull(apiResponse.getData());
+        assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
+        assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
+    }
 
 
 

@@ -1,5 +1,7 @@
 package com.erp.erp.global.error;
 
+import com.erp.erp.global.error.exception.UnAuthenticatedException;
+import com.erp.erp.global.error.exception.type.ApiErrorType;
 import java.util.Objects;
 
 import com.erp.erp.global.error.exception.BusinessException;
@@ -58,4 +60,9 @@ public class GlobalExceptionHandler {
     return ApiResult.fail(e.getCode(), e.getMessage());
   }
 
+  @ExceptionHandler(UnAuthenticatedException.class)
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  public ApiResult<?> handler(UnAuthenticatedException e) {
+    return ApiResult.fail(e.getCode(), e.getMessage());
+  }
 }
