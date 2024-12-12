@@ -35,7 +35,7 @@ public class AuthProvider {
     Accounts accounts = accountsReader.findOptionalById(1L)
         .orElseGet(() -> {
           Accounts newAccount = Accounts.builder()
-              .accountId("test")
+              .account("test")
               .password("test")
               .institutes(institutes)
               .build();

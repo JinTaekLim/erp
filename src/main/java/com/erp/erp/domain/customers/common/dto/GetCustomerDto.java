@@ -2,6 +2,7 @@ package com.erp.erp.domain.customers.common.dto;
 
 import com.erp.erp.domain.customers.common.entity.Customers;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,26 +28,33 @@ public class GetCustomerDto {
     @Schema(description = "이용권")
     private String plans;
     @Schema(description = "남은 시간")
-    private int remainingTime;
+    private double remainingTime;
     @Schema(description = "사용 시간")
-    private int usedTime;
+    private double usedTime;
     @Schema(description = "등록 날짜")
-    private int registrationDate;
+    private LocalDateTime registrationDate;
     @Schema(description = "지각 횟수")
     private int tardinessCount;
     @Schema(description = "결석 횟수")
     private int absenceCount;
 
     public static Response fromEntity(Customers customers) {
+
+      LocalDateTime registrationDate = customers.getPlanPayment().getRegistrationAt();
+
+      double usedTime = 0;
+      double remainingTime = 0;
+
+
       return Response.builder()
           .photoUrl(customers.getPhotoUrl())
           .name(customers.getName())
           .gender(String.valueOf(customers.getGender()))
           .phone(customers.getPhone())
           .plans(customers.getInstitutes().getName())
-          .remainingTime(0)
-          .usedTime(0)
-          .registrationDate(0)
+          .remainingTime(remainingTime)
+          .usedTime(usedTime)
+          .registrationDate(registrationDate)
           .tardinessCount(0)
           .absenceCount(0)
           .build();

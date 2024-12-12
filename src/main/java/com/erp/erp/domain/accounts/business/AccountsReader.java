@@ -1,6 +1,7 @@
 package com.erp.erp.domain.accounts.business;
 
 import com.erp.erp.domain.accounts.common.entity.Accounts;
+import com.erp.erp.domain.accounts.common.exception.InvalidCredentialsException;
 import com.erp.erp.domain.accounts.repository.AccountsRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -17,4 +18,9 @@ public class AccountsReader {
   public Optional<Accounts> findOptionalById(Long id) {
     return accountsRepository.findById(id);
   }
+
+  public Accounts findByAccountAndPassword(String account, String password) {
+    return accountsRepository.findByAccountAndPassword(account, password)
+        .orElseThrow(InvalidCredentialsException::new);
+  };
 }

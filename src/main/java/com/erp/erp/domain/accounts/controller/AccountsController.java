@@ -3,7 +3,6 @@ package com.erp.erp.domain.accounts.controller;
 import com.erp.erp.domain.accounts.common.dto.AccountsLoginDto;
 import com.erp.erp.domain.accounts.service.AccountsService;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
-import com.erp.erp.domain.auth.service.TokenService;
 import com.erp.erp.global.error.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,15 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class AccountsController {
 
   private final AccountsService accountsService;
-  private final TokenService tokenService;
 
 
   @Operation(summary = "로그인")
   @PostMapping("/login")
   public ApiResult<TokenDto> login(@Valid @RequestBody AccountsLoginDto.Request request) {
-    TokenDto response = tokenService.getToken();
+    TokenDto response = accountsService.login(request);
     return ApiResult.success(response);
-
-
   }
 }

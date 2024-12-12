@@ -12,6 +12,7 @@ import javax.crypto.SecretKey;
 @Component
 public class TokenProvider {
     private final TokenExtractor tokenExtractor;
+    private final TokenCreator tokenCreator;
     private final AuthenticationProvider authenticationProvider;
     private final TokenGenerator tokenGenerator;
     private final SecretKey ACCESS_SECRET;
@@ -19,11 +20,13 @@ public class TokenProvider {
 
     public TokenProvider(
             TokenProperties tokenProperties,
+            TokenCreator tokenCreator,
             TokenExtractor tokenExtractor,
             AuthenticationProvider authenticationProvider,
             TokenGenerator tokenGenerator
     ) {
         this.tokenExtractor = tokenExtractor;
+        this.tokenCreator = tokenCreator;
         this.authenticationProvider = authenticationProvider;
         this.tokenGenerator = tokenGenerator;
         this.ACCESS_SECRET = tokenProperties.getAccessSecretKey();
@@ -44,7 +47,13 @@ public class TokenProvider {
         return authenticationProvider.getAuthentication(claims);
     }
 
-    public TokenDto getToken(Accounts accounts) {
+    public TokenDto createToken(Accounts accounts) {
+        TokenDto tokenDto = getToken(accounts);
+        tokenCreator.saveRefreshToken(tokenDto.getRefreshToken());
+        return tokenDto;
+    }
+
+    private TokenDto getToken(Accounts accounts) {
         Authentication authentication = authenticationProvider.getAuthentication(accounts);
         return tokenGenerator.generateToken(authentication);
     }
