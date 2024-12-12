@@ -5,11 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.erp.erp.domain.accounts.common.dto.AccountsLoginDto;
-import com.erp.erp.domain.accounts.common.dto.AccountsLoginDto.Request;
+import com.erp.erp.domain.accounts.common.entity.Accounts;
+import com.erp.erp.domain.accounts.repository.AccountsRepository;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
+import com.erp.erp.domain.institutes.common.entity.Institutes;
+import com.erp.erp.domain.institutes.repository.InstitutesRepository;
 import com.erp.erp.global.error.ApiResult;
 import com.erp.erp.global.util.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -27,14 +31,38 @@ public class AccountsTest extends IntegrationTest {
   @Autowired
   private TestRestTemplate restTemplate;
 
+  @Autowired
+  private InstitutesRepository institutesRepository;
+  @Autowired
+  private AccountsRepository accountsRepository;
+
+  private Institutes getInstitutes() {
+    return fixtureMonkey.giveMeOne(Institutes.class);
+  }
+
+  private Institutes createInstitutes() {
+    return institutesRepository.save(getInstitutes());
+  }
+
+  private Accounts getAccount(Institutes institutes) {
+    return fixtureMonkey.giveMeBuilder(Accounts.class)
+        .set("institutes", institutes)
+        .sample();
+  }
+
+  private Accounts createAccount(Institutes institutes) {
+    return accountsRepository.save(getAccount(institutes));
+  }
+
   @Test
   void login_성공() {
     //given
-    AccountsLoginDto.Request request = fixtureMonkey.giveMeOne(
-        AccountsLoginDto.Request.class
-    );
-
-    TokenDto tokenDto = fixtureMonkey.giveMeOne(TokenDto.class);
+    Institutes institutes = createInstitutes();
+    Accounts accounts = createAccount(institutes);
+    AccountsLoginDto.Request request = AccountsLoginDto.Request.builder()
+        .account(accounts.getAccount())
+        .password(accounts.getPassword())
+        .build();
 
     String url = "http://localhost:" + port + "/api/accounts/login";
 
@@ -45,10 +73,10 @@ public class AccountsTest extends IntegrationTest {
         String.class
     );
 
-
     ApiResult<TokenDto> apiResponse = gson.fromJson(
         responseEntity.getBody(),
-        new TypeToken<ApiResult<TokenDto>>() {}.getType()
+        new TypeToken<ApiResult<TokenDto>>() {
+        }.getType()
     );
 
     //then
@@ -62,11 +90,10 @@ public class AccountsTest extends IntegrationTest {
 
 
   @Test
-  void login_실패() {
+  @DisplayName("필수값 미전달")
+  void login_fail_1() {
     //given
-    AccountsLoginDto.Request request = new Request();
-
-    TokenDto tokenDto = fixtureMonkey.giveMeOne(TokenDto.class);
+    AccountsLoginDto.Request request = AccountsLoginDto.Request.builder().build();
 
     String url = "http://localhost:" + port + "/api/accounts/login";
 
@@ -77,10 +104,10 @@ public class AccountsTest extends IntegrationTest {
         String.class
     );
 
-
     ApiResult<TokenDto> apiResponse = gson.fromJson(
         responseEntity.getBody(),
-        new TypeToken<ApiResult<TokenDto>>() {}.getType()
+        new TypeToken<ApiResult<TokenDto>>() {
+        }.getType()
     );
 
     //then
@@ -89,4 +116,23 @@ public class AccountsTest extends IntegrationTest {
     assertNull(apiResponse.getData());
   }
 
+  @Test
+  @DisplayName("존재하지 않거나 잘못된 아이디 혹은 비밀번호")
+  void login_fail_2() {
+    //given
+    AccountsLoginDto.Request request = fixtureMonkey.giveMeOne(AccountsLoginDto.Request.class);
+
+    String url = "http://localhost:" + port + "/api/accounts/login";
+
+    //when
+    ResponseEntity<String> responseEntity;
+    try {
+      responseEntity = restTemplate.postForEntity(url, request, String.class);
+    } catch (Exception e) {
+      responseEntity = new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    //then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+  }
 }
