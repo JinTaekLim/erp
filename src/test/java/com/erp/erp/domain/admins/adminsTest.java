@@ -35,7 +35,9 @@ class adminsTest extends IntegrationTest {
   private InstitutesRepository institutesRepository;
 
   private Institutes getInstitutes() {
-      return fixtureMonkey.giveMeOne(Institutes.class);
+      return fixtureMonkey.giveMeBuilder(Institutes.class)
+          .setNull("id")
+          .sample();
   }
 
   private Institutes createInstitute() {
