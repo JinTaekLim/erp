@@ -1,5 +1,6 @@
 package com.erp.erp.domain.customers.repository;
 
+import com.erp.erp.domain.customers.common.entity.CustomerStatus;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -11,14 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface CustomersRepository extends JpaRepository<Customers, Long> {
 
-  Page<Customers> findByInstitutesIdAndStatus(Long institutesId, Boolean status, Pageable pageable);
-  List<Customers> findByInstitutesIdAndStatus(Long institutesId, Boolean status);
+  Page<Customers> findByInstitutesIdAndStatus(Long institutesId, CustomerStatus status, Pageable pageable);
+  List<Customers> findByInstitutesIdAndStatus(Long institutesId, CustomerStatus status);
 
 
   @Modifying
   @Transactional
   @Query("UPDATE Customers c SET c.status = :newStatus WHERE c.id = :customerId")
-  void updateStatusById(Long customerId, Boolean newStatus);
+  void updateStatusById(Long customerId, CustomerStatus newStatus);
 
 
 }

@@ -1,5 +1,6 @@
 package com.erp.erp.domain.customers.business;
 
+import com.erp.erp.domain.customers.common.entity.CustomerStatus;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.customers.common.exception.NotFoundCustomersException;
 import com.erp.erp.domain.customers.repository.CustomersRepository;
@@ -22,15 +23,15 @@ public class CustomersReader {
     return customersRepository.findById(customersId).orElseThrow(NotFoundCustomersException::new);
   }
 
-  public Page<Customers> findByInstitutesIdAndStatusTrue(Institutes institutes, Pageable page) {
-    return customersRepository.findByInstitutesIdAndStatus(institutes.getId(), true, page);
+  public Page<Customers> findByInstitutesIdAndStatusActive(Institutes institutes, Pageable page) {
+    return customersRepository.findByInstitutesIdAndStatus(institutes.getId(), CustomerStatus.ACTIVE, page);
   }
 
-  public List<Customers> findByInstitutesIdAndStatusTrue(Institutes institutes) {
-    return customersRepository.findByInstitutesIdAndStatus(institutes.getId(), true);
+  public List<Customers> findByInstitutesIdAndStatusActive(Institutes institutes) {
+    return customersRepository.findByInstitutesIdAndStatus(institutes.getId(), CustomerStatus.ACTIVE);
   }
 
-  public Page<Customers> findByInstitutesIdAndStatusFalse(Institutes institutes, Pageable page) {
-    return customersRepository.findByInstitutesIdAndStatus(institutes.getId(), false, page);
+  public Page<Customers> findByInstitutesIdAndStatusInactive(Institutes institutes, Pageable page) {
+    return customersRepository.findByInstitutesIdAndStatus(institutes.getId(), CustomerStatus.INACTIVE, page);
   }
 }

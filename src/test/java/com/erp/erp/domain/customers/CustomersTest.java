@@ -13,6 +13,7 @@ import com.erp.erp.domain.customers.common.dto.AddCustomerDto;
 
 import com.erp.erp.domain.customers.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customers.common.dto.UpdateStatusDto;
+import com.erp.erp.domain.customers.common.entity.CustomerStatus;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.customers.common.entity.Progress;
 import com.erp.erp.domain.customers.repository.CustomersRepository;
@@ -26,6 +27,7 @@ import com.erp.erp.global.error.ApiResult;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.util.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
+import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -284,7 +286,10 @@ class CustomersTest extends IntegrationTest {
     Institutes institutes = createInstitutes();
     Customers customers = createCustomers(plan, institutes);
 
-    boolean status = !customers.getStatus();
+    CustomerStatus status = Arrays.stream(CustomerStatus.values())
+        .filter(s -> s != customers.getStatus())
+        .findAny()
+        .orElseThrow(IllegalStateException::new);
 
     UpdateStatusDto.Request request = UpdateStatusDto.Request.builder()
         .customersId(customers.getId())

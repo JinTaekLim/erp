@@ -7,13 +7,16 @@ import com.erp.erp.domain.customers.business.CustomersReader;
 import com.erp.erp.domain.customers.business.CustomersUpdater;
 import com.erp.erp.domain.customers.business.ProgressCreator;
 import com.erp.erp.domain.customers.common.dto.AddCustomerDto;
+import com.erp.erp.domain.customers.common.dto.SearchCustomerNameDto;
 import com.erp.erp.domain.customers.common.dto.UpdateStatusDto;
 import com.erp.erp.domain.customers.common.dto.UpdateCustomerDto;
+import com.erp.erp.domain.customers.common.entity.CustomerStatus;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.customers.common.entity.Progress;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.plan.business.PlanReader;
 import com.erp.erp.domain.plan.common.entity.Plan;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,9 +56,9 @@ public class CustomersService {
 
 
   // note. 본인 매장의 고객 정보만 변경할 수 있도록 별도의 처리 필요
-  public Boolean updateStatus(UpdateStatusDto.Request req) {
+  public CustomerStatus updateStatus(UpdateStatusDto.Request req) {
     Long customersId = req.getCustomersId();
-    Boolean status = req.getStatus();
+    CustomerStatus status = req.getStatus();
     customersUpdater.updateStatus(customersId, status);
     return customersReader.findById(customersId).getStatus();
   }
@@ -74,7 +77,7 @@ public class CustomersService {
   public List<Customers> getCurrentCustomers(int page) {
     Institutes institutes = authProvider.getCurrentInstitutes();
     Pageable pageable = PageRequest.of(page, 4);
-    Page<Customers> customersPage = customersReader.findByInstitutesIdAndStatusTrue(
+    Page<Customers> customersPage = customersReader.findByInstitutesIdAndStatusActive(
         institutes,
         pageable
     );
@@ -84,7 +87,7 @@ public class CustomersService {
   public List<Customers> getExpiredCustomers(int page) {
     Institutes institutes = authProvider.getCurrentInstitutes();
     Pageable pageable = PageRequest.of(page, 4);
-    Page<Customers> customersPage = customersReader.findByInstitutesIdAndStatusFalse(
+    Page<Customers> customersPage = customersReader.findByInstitutesIdAndStatusInactive(
         institutes,
         pageable
     );
@@ -93,6 +96,6 @@ public class CustomersService {
 
   public List<Customers> getCurrentCustomers(){
     Institutes institutes = authProvider.getCurrentInstitutes();
-    return customersReader.findByInstitutesIdAndStatusTrue(institutes);
+    return customersReader.findByInstitutesIdAndStatusActive(institutes);
   }
 }

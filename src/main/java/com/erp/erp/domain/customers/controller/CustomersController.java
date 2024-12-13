@@ -52,8 +52,8 @@ public class CustomersController {
 
   @Operation(summary = "고객 상태 값 변경")
   @PostMapping("/updateStatus")
-  public ApiResult<Boolean> updateStatus(@RequestBody UpdateStatusDto.Request req) {
-    boolean status = customersService.updateStatus(req);
+  public ApiResult<CustomerStatus> updateStatus(@RequestBody UpdateStatusDto.Request req) {
+    CustomerStatus status = customersService.updateStatus(req);
     return ApiResult.success(status);
   }
 
