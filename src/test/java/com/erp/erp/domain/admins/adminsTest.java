@@ -35,13 +35,13 @@ class adminsTest extends IntegrationTest {
   private InstitutesRepository institutesRepository;
 
   private Institutes getInstitutes() {
-      return fixtureMonkey.giveMeBuilder(Institutes.class)
-          .setNull("id")
-          .sample();
+    return fixtureMonkey.giveMeBuilder(Institutes.class)
+        .setNull("id")
+        .sample();
   }
 
   private Institutes createInstitute() {
-      return institutesRepository.saveAndFlush(getInstitutes());
+    return institutesRepository.saveAndFlush(getInstitutes());
   }
 
 
@@ -103,65 +103,67 @@ class adminsTest extends IntegrationTest {
   }
 
 
-    @Test()
-    void addAccount() {
-        // given
-        Institutes institutes = createInstitute();
-        AddAccountDto.Request req = fixtureMonkey.giveMeBuilder(AddAccountDto.Request.class)
-            .set("instituteId", institutes.getId())
-            .sample();
+  @Test()
+  void addAccount() {
+    // given
+    Institutes institutes = createInstitute();
+    AddAccountDto.Request req = fixtureMonkey.giveMeBuilder(AddAccountDto.Request.class)
+        .set("instituteId", institutes.getId())
+        .sample();
 
-        String url = "http://localhost:" + port + "/api/admin/addAccount";
+    String url = "http://localhost:" + port + "/api/admin/addAccount";
 
-        // when
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity(
-            url,
-            req,
-            String.class
-        );
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+        url,
+        req,
+        String.class
+    );
 
-        ApiResult<AddAccountDto.Response> apiResponse = gson.fromJson(
-            responseEntity.getBody(),
-            new TypeToken<ApiResult<AddAccountDto.Response>>() {
-            }
-        );
+    ApiResult<AddAccountDto.Response> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<AddAccountDto.Response>>() {
+        }
+    );
 
-        // then
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertNotNull(apiResponse.getData());
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertNotNull(apiResponse.getData());
 //        assertThat(apiResponse.getData().getName()).isEqualTo(req.getName());
 //        assertThat(apiResponse.getData().getTotalSpots()).isEqualTo(req.getTotalSpots());
-    }
+  }
 
 
-    @Test()
-    void addAccount_fail() {
-        // given
-        AddAccountDto.Request req = fixtureMonkey.giveMeOne(AddAccountDto.Request.class);
+  @Test
+  void addAccount_fail() {
+    // given
+    long randomLong = RandomValue.getRandomLong(0, 9999);
+    AddAccountDto.Request req = fixtureMonkey.giveMeBuilder(AddAccountDto.Request.class)
+        .set("instituteId", randomLong)
+        .sample();
 
-        NotFoundInstituteException exception = new NotFoundInstituteException();
-        String url = "http://localhost:" + port + "/api/admin/addAccount";
+    NotFoundInstituteException exception = new NotFoundInstituteException();
+    String url = "http://localhost:" + port + "/api/admin/addAccount";
 
-        // when
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity(
-            url,
-            req,
-            String.class
-        );
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+        url,
+        req,
+        String.class
+    );
 
-        ApiResult<AddAccountDto.Response> apiResponse = gson.fromJson(
-            responseEntity.getBody(),
-            new TypeToken<ApiResult<AddAccountDto.Response>>() {
-            }
-        );
+    ApiResult<AddAccountDto.Response> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<AddAccountDto.Response>>() {
+        }
+    );
 
-        // then
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertNull(apiResponse.getData());
-        assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
-        assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
-    }
-
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertNull(apiResponse.getData());
+    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
+    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
+  }
 
 
 }
