@@ -12,6 +12,7 @@ import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPl
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,6 +27,12 @@ abstract public class IntegrationTest {
 
   protected MockMvc mvc;
 
+  @Autowired
+  private WebApplicationContext context;
+
+  @Autowired
+  private DatabaseCleaner databaseCleaner;
+
   protected Gson gson = new GsonBuilder()
       .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
       .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
@@ -39,12 +46,12 @@ abstract public class IntegrationTest {
       .plugin(new JakartaValidationPlugin())
       .build();
 
-  @Autowired
-  private WebApplicationContext context;
-
   @BeforeEach
-  void setUp() {
-    mvc = MockMvcBuilders.webAppContextSetup(context).build();
+  void setUp() {mvc = MockMvcBuilders.webAppContextSetup(context).build();}
+
+  @AfterEach
+  void tearDown() {
+    databaseCleaner.execute();
   }
 
 }

@@ -1,5 +1,6 @@
 package com.erp.erp.domain.customers.business;
 
+import com.erp.erp.domain.customers.common.entity.CustomerStatus;
 import com.erp.erp.domain.customers.repository.CustomersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,7 @@ public class CustomersUpdater {
   private final CustomersRepository customersRepository;
 
 
-  public void updateStatus(Long customersId, boolean status) {
+  public void updateStatus(Long customersId, CustomerStatus status) {
     customersRepository.updateStatusById(customersId, status);
   }
 }

@@ -11,8 +11,10 @@ import com.erp.erp.domain.accounts.common.entity.Accounts;
 import com.erp.erp.domain.accounts.repository.AccountsRepository;
 import com.erp.erp.domain.customers.common.dto.AddCustomerDto;
 
+import com.erp.erp.domain.customers.common.dto.SearchCustomerNameDto;
 import com.erp.erp.domain.customers.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customers.common.dto.UpdateStatusDto;
+import com.erp.erp.domain.customers.common.entity.CustomerStatus;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.customers.common.entity.Progress;
 import com.erp.erp.domain.customers.repository.CustomersRepository;
@@ -23,20 +25,24 @@ import com.erp.erp.domain.payments.common.entity.PlanPayment;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.repository.PlanRepository;
 import com.erp.erp.global.error.ApiResult;
+import com.erp.erp.global.util.randomValue.Language;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.util.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
+import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.IntStream;
+import org.springframework.transaction.annotation.Transactional;
 
 class CustomersTest extends IntegrationTest {
 
@@ -100,6 +106,24 @@ class CustomersTest extends IntegrationTest {
     Customers customers = getCustomers(institutes, planPayment, otherPaymentList);
     return customersRepository.save(customers);
   }
+
+  private Customers createCustomers(Institutes institutes, Plan plan, CustomerStatus status, String name) {
+    PlanPayment planPayment = getPlanPayment(plan);
+    List<OtherPayments> otherPaymentList = getRandomOtherPaymentList(plan);
+    Customers customers = fixtureMonkey.giveMeBuilder(Customers.class)
+        .setNull("id")
+        .set("institutes", institutes)
+        .set("planPayment", planPayment)
+        .set("otherPayments", otherPaymentList)
+        .set("progress", null)
+        .set("status", status)
+        .set("name", name)
+        .sample();
+    customersRepository.save(customers);
+    return customers;
+  }
+
+
 
   private Plan getPlans() {
     return fixtureMonkey.giveMeBuilder(Plan.class)
@@ -284,7 +308,10 @@ class CustomersTest extends IntegrationTest {
     Institutes institutes = createInstitutes();
     Customers customers = createCustomers(plan, institutes);
 
-    boolean status = !customers.getStatus();
+    CustomerStatus status = Arrays.stream(CustomerStatus.values())
+        .filter(s -> s != customers.getStatus())
+        .findAny()
+        .orElseThrow(IllegalStateException::new);
 
     UpdateStatusDto.Request request = UpdateStatusDto.Request.builder()
         .customersId(customers.getId())
@@ -312,6 +339,43 @@ class CustomersTest extends IntegrationTest {
     assertNotNull(apiResponse);
     assertThat(customers.getStatus()).isNotEqualTo(status);
   }
+
+
+  @Test()
+  void searchCustomerName_성공() {
+    //given
+    Plan plan = createPlans();
+    Institutes institutes = createInstitutes();
+    CustomerStatus status = ( RandomValue.getInt(0,2) == 0 ) ? CustomerStatus.INACTIVE : CustomerStatus.ACTIVE;
+    String name = RandomValue.string(10,20).setNullable(false).setLanguages(Language.ENGLISH).get();
+    Customers customers = createCustomers(institutes, plan, status, name);
+////    String keyword = ( name.length() < 2 ) ? name : String.valueOf(name.charAt(0));
+
+
+    String url = "http://localhost:" + port + "/api/customers/searchCustomerName/" + customers.getName();
+
+
+    //when
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
+        url,
+        HttpMethod.GET,
+        null,
+        String.class
+    );
+    ApiResult<List<SearchCustomerNameDto.Response>> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<List<SearchCustomerNameDto.Response>>>(){}
+    );
+
+    //then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertNotNull(apiResponse);
+//    assertThat(apiResponse.getData().get(0).getCustomerId()).isEqualTo(customers.getId());
+//    assertThat(apiResponse.getData().get(0).getName()).isEqualTo(customers.getName());
+//    assertThat(apiResponse.getData().get(0).getStatus()).isEqualTo(status);
+  }
+
+
 
 
 

@@ -46,7 +46,7 @@ public class Customers {
   private LocalDate birthDate;
 
   @NotNull
-  private Boolean status;
+  private CustomerStatus status;
 
   @OneToOne(cascade = CascadeType.ALL)
   @NotNull
@@ -68,7 +68,7 @@ public class Customers {
     this.photoUrl = photoUrl;
     this.memo = memo;
     this.birthDate = birthDate;
-    this.status = true;
+    this.status = CustomerStatus.ACTIVE;
     this.planPayment = planPayment;
     this.otherPayments = otherPayments;
   }

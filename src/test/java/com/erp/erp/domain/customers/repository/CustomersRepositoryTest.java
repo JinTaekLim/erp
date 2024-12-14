@@ -2,6 +2,7 @@ package com.erp.erp.domain.customers.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.erp.erp.domain.customers.common.entity.CustomerStatus;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.institutes.repository.InstitutesRepository;
@@ -11,6 +12,7 @@ import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.repository.PlanRepository;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.util.test.JpaTest;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
@@ -127,9 +129,11 @@ class CustomersRepositoryTest extends JpaTest {
     List<OtherPayments> otherPaymentList = getRandomOtherPaymentList(plan);
     Customers customers = getCustomers(institutes, planPayment, otherPaymentList);
     customersRepository.save(customers);
-
     long customersId = customers.getId();
-    boolean status = !customers.getStatus();
+    CustomerStatus status = Arrays.stream(CustomerStatus.values())
+        .filter(s -> s != customers.getStatus())
+        .findAny()
+        .orElseThrow(IllegalStateException::new);
 
     // Then
     customersRepository.updateStatusById(customersId, status);
@@ -137,7 +141,7 @@ class CustomersRepositoryTest extends JpaTest {
     Customers testCustomers = customersRepository.findById(customersId)
         .orElseThrow(AssertionError::new);
 
-    boolean testStatus = testCustomers.getStatus();
+    CustomerStatus testStatus = testCustomers.getStatus();
 
     // When
     assertThat(status).isNotEqualTo(testStatus);
