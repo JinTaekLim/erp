@@ -15,6 +15,15 @@ public interface CustomersRepository extends JpaRepository<Customers, Long> {
   Page<Customers> findByInstitutesIdAndStatus(Long institutesId, CustomerStatus status, Pageable pageable);
   List<Customers> findByInstitutesIdAndStatus(Long institutesId, CustomerStatus status);
 
+  @Query(value = "SELECT * FROM customers c WHERE c.institutes_id = :institutesId " +
+      "AND c.name LIKE CONCAT(:name, '%') " +
+      "AND c.status IN (:statuses)",
+      nativeQuery = true)
+  List<Customers> findByInstitutesIdAndNameStartingWithAndStatusIn(
+      Long institutesId, String name, List<CustomerStatus> statuses);
+
+
+
 
   @Modifying
   @Transactional

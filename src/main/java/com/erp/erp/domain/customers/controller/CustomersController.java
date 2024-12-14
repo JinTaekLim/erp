@@ -3,8 +3,10 @@ package com.erp.erp.domain.customers.controller;
 import com.erp.erp.domain.customers.common.dto.AddCustomerDto;
 import com.erp.erp.domain.customers.common.dto.GetAvailableCustomerNamesDto;
 import com.erp.erp.domain.customers.common.dto.GetCustomerDto;
+import com.erp.erp.domain.customers.common.dto.SearchCustomerNameDto;
 import com.erp.erp.domain.customers.common.dto.UpdateStatusDto;
 import com.erp.erp.domain.customers.common.dto.UpdateCustomerDto;
+import com.erp.erp.domain.customers.common.entity.CustomerStatus;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.customers.service.CustomersService;
 import com.erp.erp.global.error.ApiResult;
@@ -85,7 +87,7 @@ public class CustomersController {
   }
 
   @Operation(summary = "이용 가능 모든 고객 이름 조회")
-  @GetMapping("getAvailableCustomerNames")
+  @GetMapping("/getAvailableCustomerNames")
   public ApiResult<List<GetAvailableCustomerNamesDto.Response>> getAvailableCustomerNames() {
     List<Customers> customersList = customersService.getCurrentCustomers();
 
@@ -93,6 +95,15 @@ public class CustomersController {
         .map(GetAvailableCustomerNamesDto.Response::fromEntity)
         .toList();
 
+    return ApiResult.success(response);
+  }
+
+  @Operation(summary = "고객 이름 검색 ( 글자 기준, 초성X )")
+  @GetMapping("/searchCustomerName/{keyword}")
+  public ApiResult<List<SearchCustomerNameDto.Response>> searchCustomerName(
+      @PathVariable String keyword
+  ) {
+    List<SearchCustomerNameDto.Response> response = customersService.searchCustomerName(keyword);
     return ApiResult.success(response);
   }
 

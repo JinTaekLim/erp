@@ -16,7 +16,6 @@ import com.erp.erp.domain.customers.common.entity.Progress;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.plan.business.PlanReader;
 import com.erp.erp.domain.plan.common.entity.Plan;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -97,5 +96,16 @@ public class CustomersService {
   public List<Customers> getCurrentCustomers(){
     Institutes institutes = authProvider.getCurrentInstitutes();
     return customersReader.findByInstitutesIdAndStatusActive(institutes);
+  }
+
+  public List<SearchCustomerNameDto.Response> searchCustomerName(String keyword) {
+    Institutes institutesId = authProvider.getCurrentInstitutes();
+    List<Customers> customers = customersReader.findByInstitutesIdAndNameStartingWithAndStatusIn(
+        institutesId,
+        keyword
+    );
+    return customers.stream()
+        .map(SearchCustomerNameDto.Response::fromEntity)
+        .toList();
   }
 }
