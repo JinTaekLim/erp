@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,8 +51,8 @@ public class ReservationsController {
     List<GetDailyReservationsDto.Response> response = reservationsList.stream()
         .map(reservations -> GetDailyReservationsDto.Response.builder()
             .reservationsId(reservations.getId())
-            .startTime(LocalTime.from(reservations.getStartTime()))
-            .endTime(LocalTime.from(reservations.getEndTime()))
+            .startTime(reservations.getStartTime())
+            .endTime(reservations.getEndTime())
             .seatNumber(reservations.getSeatNumber())
             .name(reservations.getCustomers().getName())
             .build()
@@ -71,8 +70,8 @@ public class ReservationsController {
     List<GetDailyReservationsDto.Response> response = reservationsList.stream()
         .map(reservations -> GetDailyReservationsDto.Response.builder()
             .reservationsId(reservations.getId())
-            .startTime(LocalTime.from(reservations.getStartTime()))
-            .endTime(LocalTime.from(reservations.getEndTime()))
+            .startTime(reservations.getStartTime())
+            .endTime(reservations.getEndTime())
             .name(reservations.getCustomers().getName())
             .seatNumber(reservations.getSeatNumber())
             .build()
