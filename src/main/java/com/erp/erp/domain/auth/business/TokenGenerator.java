@@ -1,5 +1,6 @@
 package com.erp.erp.domain.auth.business;
 
+import com.erp.erp.domain.accounts.common.entity.Accounts;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +17,15 @@ import java.util.stream.Collectors;
 public class TokenGenerator {
 
     private final TokenProperties tokenProperties;
+    private final AuthenticationProvider authenticationProvider;
 
-    public String generateToken(Authentication authentication, SecretKey secret, Long exp) {
+
+    public TokenDto getToken(Accounts accounts) {
+        Authentication authentication = authenticationProvider.getAuthentication(accounts);
+        return generateToken(authentication);
+    }
+
+    private String generateToken(Authentication authentication, SecretKey secret, Long exp) {
         Date now = new Date();
         Date expiredDate = new Date(now.getTime() + exp);
         String authorities = authentication.getAuthorities()
@@ -34,7 +42,7 @@ public class TokenGenerator {
                 .compact();
     }
 
-    public TokenDto generateToken(Authentication authentication) {
+    private TokenDto generateToken(Authentication authentication) {
         String accessToken = generateAccessToken(authentication);
         String refreshToken = generateRefreshToken(authentication);
         return new TokenDto(accessToken, refreshToken);

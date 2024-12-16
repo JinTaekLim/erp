@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import com.erp.erp.domain.accounts.common.dto.AccountsLoginDto;
 import com.erp.erp.domain.accounts.common.entity.Accounts;
 import com.erp.erp.domain.accounts.repository.AccountsRepository;
-import com.erp.erp.domain.auth.business.TokenProvider;
+import com.erp.erp.domain.auth.business.TokenManager;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.institutes.repository.InstitutesRepository;
@@ -37,7 +37,7 @@ public class AccountsTest extends IntegrationTest {
   @Autowired
   private AccountsRepository accountsRepository;
   @Autowired
-  private TokenProvider tokenProvider;
+  private TokenManager tokenManager;
 
   private Institutes getInstitutes() {
     return fixtureMonkey.giveMeOne(Institutes.class);
@@ -144,7 +144,7 @@ public class AccountsTest extends IntegrationTest {
     //given
     Institutes institutes = createInstitutes();
     Accounts accounts = createAccount(institutes);
-    TokenDto tokenDto = tokenProvider.createToken(accounts);
+    TokenDto tokenDto = tokenManager.createToken(accounts);
 
     String url = "http://localhost:" + port + "/api/accounts/reissueToken?refreshToken=" + tokenDto.getRefreshToken();
 
