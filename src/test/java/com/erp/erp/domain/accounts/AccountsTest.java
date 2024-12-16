@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import com.erp.erp.domain.accounts.common.dto.AccountsLoginDto;
 import com.erp.erp.domain.accounts.common.entity.Accounts;
 import com.erp.erp.domain.accounts.repository.AccountsRepository;
+import com.erp.erp.domain.auth.business.TokenProvider;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.institutes.repository.InstitutesRepository;
@@ -35,6 +36,8 @@ public class AccountsTest extends IntegrationTest {
   private InstitutesRepository institutesRepository;
   @Autowired
   private AccountsRepository accountsRepository;
+  @Autowired
+  private TokenProvider tokenProvider;
 
   private Institutes getInstitutes() {
     return fixtureMonkey.giveMeOne(Institutes.class);
@@ -135,4 +138,37 @@ public class AccountsTest extends IntegrationTest {
     //then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
   }
+
+  @Test
+  void reissueToken() {
+    //given
+    Institutes institutes = createInstitutes();
+    Accounts accounts = createAccount(institutes);
+    TokenDto tokenDto = tokenProvider.createToken(accounts);
+
+    String url = "http://localhost:" + port + "/api/accounts/reissueToken?refreshToken=" + tokenDto.getRefreshToken();
+
+
+    //when
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+        url,
+        null,
+        String.class
+    );
+
+    ApiResult<TokenDto> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<TokenDto>>() {
+        }.getType()
+    );
+
+    //then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertNotNull(apiResponse);
+
+    TokenDto response = apiResponse.getData();
+    assertNotNull(response.getAccessToken());
+    assertNotNull(response.getRefreshToken());
+  }
+
 }

@@ -5,6 +5,7 @@ import com.erp.erp.domain.accounts.business.AccountsReader;
 import com.erp.erp.domain.accounts.common.dto.AccountsLoginDto;
 import com.erp.erp.domain.accounts.common.entity.Accounts;
 import com.erp.erp.domain.admins.common.dto.AddAccountDto;
+import com.erp.erp.domain.auth.business.AuthProvider;
 import com.erp.erp.domain.auth.business.TokenProvider;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
 import com.erp.erp.domain.institutes.business.InstitutesReader;
@@ -36,5 +37,11 @@ public class AccountsService {
         req.getPassword()
     );
     return tokenProvider.createToken(accounts);
+  }
+
+  public TokenDto reissueToken(String refreshToken) {
+    Long memberId = tokenProvider.extractMemberIdFromRefreshToken(refreshToken);
+    Accounts accounts = accountsReader.findById(memberId);
+    return tokenProvider.reissueToken(accounts, refreshToken);
   }
 }

@@ -19,6 +19,10 @@ public class AccountsReader {
     return accountsRepository.findById(id);
   }
 
+  public Accounts findById(Long accountId) {
+    return accountsRepository.findById(accountId).orElse(null);
+  }
+
   public Accounts findByAccountAndPassword(String account, String password) {
     return accountsRepository.findByAccountAndPassword(account, password)
         .orElseThrow(InvalidCredentialsException::new);
