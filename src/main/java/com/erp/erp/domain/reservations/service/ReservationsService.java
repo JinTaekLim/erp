@@ -36,7 +36,7 @@ public class ReservationsService {
 
 
   public Reservations addReservations(AddReservationsDto.Request req) {
-    Institutes institutes = authProvider.getCurrentInstitutes();
+    Institutes institutes = authProvider.getCurrentInstitute();
     Customers customers = customersReader.findById(req.getCustomersId());
     institutesValidator.validateCustomerBelongsToInstitute(institutes,customers);
 
@@ -57,12 +57,12 @@ public class ReservationsService {
   }
 
   public List<Reservations> getDailyReservations(LocalDate date) {
-    Institutes institutes = authProvider.getCurrentInstitutes();
+    Institutes institutes = authProvider.getCurrentInstitute();
     return reservationsReader.findByInstitutesAndStartTimeOn(institutes, date);
   }
 
   public List<Reservations> getReservationByTime(LocalDateTime time) {
-    Institutes institutes = authProvider.getCurrentInstitutes();
+    Institutes institutes = authProvider.getCurrentInstitute();
 
     LocalDateTime startTime = TimeUtil.roundToNearestHalfHour(time);
     LocalDateTime endTime = startTime.plusMinutes(30);
@@ -76,7 +76,7 @@ public class ReservationsService {
 
   public Reservations updateReservation(UpdatedReservationsDto.Request req) {
 
-    Institutes institutes = authProvider.getCurrentInstitutes();
+    Institutes institutes = authProvider.getCurrentInstitute();
     long reservationsId = req.getReservationsId();
     Reservations reservations = reservationsReader.findById(reservationsId);
     Customers customers = reservations.getCustomers();
@@ -90,7 +90,7 @@ public class ReservationsService {
   }
 
   public Reservations updatedSeatNumber(UpdatedSeatNumberDto.Request req) {
-    Institutes institutes = authProvider.getCurrentInstitutes();
+    Institutes institutes = authProvider.getCurrentInstitute();
     long reservationsId = req.getReservationsId();
     Reservations reservations = reservationsReader.findById(reservationsId);
     Customers customers = reservations.getCustomers();
@@ -101,7 +101,7 @@ public class ReservationsService {
 
 
   public void deleteReservations(DeleteReservationsDto.Request req) {
-    Institutes institutes = authProvider.getCurrentInstitutes();
+    Institutes institutes = authProvider.getCurrentInstitute();
     long reservationsId = req.getReservationsId();
     Reservations reservations = reservationsReader.findById(reservationsId);
     Customers customers = reservations.getCustomers();
@@ -110,7 +110,7 @@ public class ReservationsService {
   }
 
   public GetReservationCustomerDetailsDto.Response getReservationsForCurrentInstitute(Long reservationsId) {
-    Institutes institutes = authProvider.getCurrentInstitutes();
+    Institutes institutes = authProvider.getCurrentInstitute();
     Reservations reservations = reservationsReader.findById(reservationsId);
     institutesValidator.validateReservationBelongsToInstitute(institutes, reservations);
     return GetReservationCustomerDetailsDto.Response.fromEntity(reservations);

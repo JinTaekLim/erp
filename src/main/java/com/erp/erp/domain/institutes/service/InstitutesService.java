@@ -21,11 +21,9 @@ public class InstitutesService {
   private final AuthProvider authProvider;
   private final InstitutesCreator institutesCreator;
   private final InstitutesUpdater institutesUpdater;
-  private final InstitutesValidator institutesValidator;
-  private final CustomersReader customersReader;
 
   public UpdateTotalSpotsDto.Response updateTotalSpots(UpdateTotalSpotsDto.Request req) {
-    Institutes institutes = authProvider.getCurrentInstitutes();
+    Institutes institutes = authProvider.getCurrentInstitute();
     int num = req.getNum();
     institutesUpdater.updateSpotsNumber(institutes, num);
 

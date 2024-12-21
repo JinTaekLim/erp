@@ -1,60 +1,50 @@
 package com.erp.erp.domain.auth.business;
 
-import com.erp.erp.domain.accounts.business.AccountsCreator;
 import com.erp.erp.domain.accounts.business.AccountsReader;
-import com.erp.erp.domain.accounts.common.entity.Accounts;
+import com.erp.erp.domain.auth.common.exception.AuthenticationNameNullException;
+import com.erp.erp.domain.auth.common.exception.AuthenticationNullException;
+import com.erp.erp.domain.auth.common.exception.NotParsedValueException;
+import com.erp.erp.domain.auth.common.exception.UnAuthenticationAccountException;
+import com.erp.erp.domain.auth.common.exception.type.TokenErrorType;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
-import com.erp.erp.domain.institutes.repository.InstitutesRepository;
-import jakarta.transaction.Transactional;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component
 @RequiredArgsConstructor
 public class AuthProvider {
 
-  private final AccountsCreator accountsCreator;
   private final AccountsReader accountsReader;
-  private final InstitutesRepository institutesRepository;
 
-  // note. 프론트엔드 토큰 작업 마무리 후 변경 예정
-  @Transactional
-  public Accounts getCurrentAccounts() {
+  private final String GUEST = "anonymousUser";
 
-    /* 임시 설정 */
-    Institutes institutes = institutesRepository.findById(1L)
-        .orElseGet(()-> {
-          Institutes newInstitutes = Institutes.builder()
-              .name("test")
-              .totalSpots(4)
-              .build();
-
-          return institutesRepository.save(newInstitutes);
-        });
-
-    Accounts accounts = accountsReader.findOptionalById(1L)
-        .orElseGet(() -> {
-          Accounts newAccount = Accounts.builder()
-              .account("test")
-              .password("test")
-              .institutes(institutes)
-              .build();
-
-          return accountsCreator.save(newAccount);
-        });
-
-    return accounts;
+  private Long getCurrentAccountId() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (Objects.isNull(authentication)) {
+      throw new AuthenticationNullException();
+    }
+    if (authentication.getPrincipal().equals(GUEST)) {
+      throw new UnAuthenticationAccountException();
+    }
+    String name = authentication.getName();
+    if (!StringUtils.hasText(name)) {
+      throw new AuthenticationNameNullException();
+    }
+    try {
+      return Long.valueOf(name);
+    } catch (NumberFormatException e) {
+      throw new NotParsedValueException(
+          TokenErrorType.NOT_PARSED_VALUE_ERROR.getMessage() + " : " + name);
+    }
   }
 
-  public Institutes getCurrentInstitutes() {
-    return institutesRepository.findById(1L)
-        .orElseGet(()-> {
-          Institutes newInstitutes = Institutes.builder()
-              .name("test")
-              .totalSpots(4)
-              .build();
-
-          return institutesRepository.save(newInstitutes);
-        });
+  public Institutes getCurrentInstitute() {
+    Long accountId = getCurrentAccountId();
+    return accountsReader.findInstitutesByAccountId(accountId);
   }
+
 }
