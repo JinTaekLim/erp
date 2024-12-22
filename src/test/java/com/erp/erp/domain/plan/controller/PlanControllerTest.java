@@ -7,7 +7,7 @@ import com.erp.erp.domain.plan.common.dto.GetPlanDto;
 import com.erp.erp.domain.plan.common.entity.LicenseType;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.repository.PlanRepository;
-import com.erp.erp.global.error.ApiResult;
+import com.erp.erp.global.response.ApiResult;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.util.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
@@ -119,6 +119,7 @@ class PlanControllerTest extends IntegrationTest {
     IntStream.range(0,size).forEach(i -> {
       GetPlanDto.Response actualList = apiResponse.getData().get(i);
       Plan expectedList = plans.get(i);
+      assertThat(actualList.getPlanType()).isEqualTo(expectedList.getPlanType());
       assertThat(actualList.getLicenseType()).isEqualTo(expectedList.getLicenseType());
       assertThat(actualList.getId()).isEqualTo(expectedList.getId());
       assertThat(actualList.getName()).isEqualTo(expectedList.getName());

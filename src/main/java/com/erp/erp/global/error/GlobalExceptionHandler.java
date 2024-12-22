@@ -2,6 +2,7 @@ package com.erp.erp.global.error;
 
 import com.erp.erp.global.error.exception.UnAuthenticatedException;
 import com.erp.erp.global.error.exception.type.ApiErrorType;
+import com.erp.erp.global.response.ApiResult;
 import java.util.Objects;
 
 import com.erp.erp.global.error.exception.BusinessException;

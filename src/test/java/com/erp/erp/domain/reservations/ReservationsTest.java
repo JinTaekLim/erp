@@ -19,7 +19,7 @@ import com.erp.erp.domain.reservations.common.entity.Reservations;
 import com.erp.erp.domain.reservations.common.exception.InvalidReservationTimeException;
 import com.erp.erp.domain.reservations.common.exception.ReservationsErrorType;
 import com.erp.erp.domain.reservations.repository.ReservationsRepository;
-import com.erp.erp.global.error.ApiResult;
+import com.erp.erp.global.response.ApiResult;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.util.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;

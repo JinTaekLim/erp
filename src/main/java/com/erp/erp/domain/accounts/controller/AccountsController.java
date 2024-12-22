@@ -4,7 +4,7 @@ import com.erp.erp.domain.accounts.common.dto.AccountsLoginDto;
 import com.erp.erp.domain.accounts.service.AccountsService;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
 import com.erp.erp.global.annotation.authentication.PermitAll;
-import com.erp.erp.global.error.ApiResult;
+import com.erp.erp.global.response.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

@@ -24,7 +24,7 @@ import com.erp.erp.domain.payments.common.entity.OtherPayments;
 import com.erp.erp.domain.payments.common.entity.PlanPayment;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.repository.PlanRepository;
-import com.erp.erp.global.error.ApiResult;
+import com.erp.erp.global.response.ApiResult;
 import com.erp.erp.global.util.randomValue.Language;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.util.test.IntegrationTest;
@@ -42,7 +42,6 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.IntStream;
-import org.springframework.transaction.annotation.Transactional;
 
 class CustomersTest extends IntegrationTest {
 
@@ -377,23 +376,33 @@ class CustomersTest extends IntegrationTest {
 
 
 
-
-
-//  @Test
-//  void getCurrentCustomers_4명_반환() {
+//
+//  @Test()
+//  void getCurrentCustomers() {
 //    //given
 //    Accounts accounts = createAccounts();
 //    Institutes institutes = accounts.getInstitutes();
 //
-//    int randomInt = RandomValue.getInt(4,20);
-//    int page = Math.max(0, (randomInt / 4) - 1 );
+//    Plan plan = createPlans();
+//    PlanPayment planPayment = getPlanPayment(plan);
+//    List<OtherPayments> otherPayments = getRandomOtherPaymentList(plan);
+//
+//    int randomInt = RandomValue.getInt(0,4);
+//    int page = 0;
 //
 //    for(int i = 0; i<randomInt; i++) {
-//      Customers customers = fixtureMonkey.giveMeBuilder(Customers.class)
-//          .setNull("id")
-//          .set("institutes" , institutes)
-//          .set("status", true)
-//          .sample();
+//      Customers customers = Customers.builder()
+//          .institutes(institutes)
+//          .name("name")
+//          .gender(Gender.MALE)
+//          .phone("phone")
+//          .address("address")
+//          .photoUrl("photoUrl")
+//          .memo("memo")
+//          .birthDate(LocalDate.now())
+//          .planPayment(planPayment)
+//          .otherPayments(otherPayments)
+//          .build();
 //      customersRepository.save(customers);
 //    }
 //
@@ -406,9 +415,58 @@ class CustomersTest extends IntegrationTest {
 //        String.class
 //    );
 //
-//    ApiResult<List<Response>> apiResponse = gson.fromJson(
+//    ApiResult<List<GetCustomerDto.Response>> apiResponse = gson.fromJson(
 //        responseEntity.getBody(),
-//        new TypeToken<ApiResult<List<Response>>>(){}.getType()
+//        new TypeToken<ApiResult<List<GetCustomerDto.Response>>>(){}.getType()
+//    );
+//
+//    // then
+//    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+//    assertNotNull(apiResponse);
+//
+//    int dataSize = apiResponse.getData().size();
+//    assertThat(dataSize).isEqualTo(randomInt);
+//  }
+//
+//
+//
+//  @Test
+//  void getCurrentCustomers_4명_반환() {
+//    //given
+//    Accounts accounts = createAccounts();
+//    Institutes institutes = accounts.getInstitutes();
+//    Plan plan = createPlans();
+//    PlanPayment planPayment = getPlanPayment(plan);
+//    List<OtherPayments> otherPayments = getRandomOtherPaymentList(plan);
+//
+//    int randomInt = RandomValue.getInt(4,20);
+//    int page = Math.max(0, (randomInt / 4) - 1 );
+//
+//
+//    for(int i = 0; i<randomInt; i++) {
+//      Customers customers = fixtureMonkey.giveMeBuilder(Customers.class)
+//          .setNull("id")
+//          .set("institutes" , institutes)
+//          .set("status", CustomerStatus.ACTIVE)
+//          .set("planPayment" , planPayment)
+//          .set("otherPayments" , otherPayments)
+//          .sample();
+//      customersRepository.save(customers);
+//    }
+//
+//
+//    String url = "http://localhost:" + port + "/api/customers/currentCustomers/" + page;
+//
+//
+//    // when
+//    ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+//        url,
+//        String.class
+//    );
+//
+//    ApiResult<List<GetCustomerDto.Response>> apiResponse = gson.fromJson(
+//        responseEntity.getBody(),
+//        new TypeToken<ApiResult<List<GetCustomerDto.Response>>>(){}.getType()
 //    );
 //
 //    // then
