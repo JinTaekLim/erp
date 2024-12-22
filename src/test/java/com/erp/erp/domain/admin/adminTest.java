@@ -3,9 +3,9 @@ package com.erp.erp.domain.admin;
 import com.erp.erp.domain.admin.common.dto.AddAccountDto;
 import com.erp.erp.domain.admin.common.dto.AddInstituteDto;
 import com.erp.erp.domain.admin.common.dto.AddPlanDto;
-import com.erp.erp.domain.institutes.common.entity.Institutes;
-import com.erp.erp.domain.institutes.common.exception.NotFoundInstituteException;
-import com.erp.erp.domain.institutes.repository.InstitutesRepository;
+import com.erp.erp.domain.institute.common.entity.Institute;
+import com.erp.erp.domain.institute.common.exception.NotFoundInstituteException;
+import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.domain.plan.common.entity.LicenseType;
 import com.erp.erp.global.response.ApiResult;
 import com.erp.erp.global.util.randomValue.RandomValue;
@@ -14,8 +14,6 @@ import com.google.gson.reflect.TypeToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -34,16 +32,16 @@ class adminTest extends IntegrationTest {
   }
 
   @Autowired
-  private InstitutesRepository institutesRepository;
+  private InstituteRepository instituteRepository;
 
-  private Institutes getInstitutes() {
-    return fixtureMonkey.giveMeBuilder(Institutes.class)
+  private Institute getInstitutes() {
+    return fixtureMonkey.giveMeBuilder(Institute.class)
         .setNull("id")
         .sample();
   }
 
-  private Institutes createInstitute() {
-    return institutesRepository.saveAndFlush(getInstitutes());
+  private Institute createInstitute() {
+    return instituteRepository.saveAndFlush(getInstitutes());
   }
 
 
@@ -108,9 +106,9 @@ class adminTest extends IntegrationTest {
   @Test()
   void addAccount() {
     // given
-    Institutes institutes = createInstitute();
+    Institute institute = createInstitute();
     AddAccountDto.Request req = fixtureMonkey.giveMeBuilder(AddAccountDto.Request.class)
-        .set("instituteId", institutes.getId())
+        .set("instituteId", institute.getId())
         .sample();
 
     String url = BASE_URL + "/addAccount";

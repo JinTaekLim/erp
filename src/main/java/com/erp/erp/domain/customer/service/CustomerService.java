@@ -13,7 +13,7 @@ import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.Progress;
-import com.erp.erp.domain.institutes.common.entity.Institutes;
+import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.plan.business.PlanReader;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import java.util.List;
@@ -42,12 +42,12 @@ public class CustomerService {
 
   @Transactional
   public AddCustomerDto.Response addCustomer(AddCustomerDto.Request req) {
-    Institutes institutes = authProvider.getCurrentInstitute();
+    Institute institute = authProvider.getCurrentInstitute();
     Plan plan = planReader.findById(req.getPlanId());
     MultipartFile photo = null;
     String photoUrl = (photo == null) ? null : photoUtil.upload(photo);
 
-    Customer customer = req.toCustomers(institutes, plan, photoUrl);
+    Customer customer = req.toCustomers(institute, plan, photoUrl);
     customerCreator.save(customer);
 
     return AddCustomerDto.Response.fromEntity(customer);
@@ -74,34 +74,34 @@ public class CustomerService {
   }
 
   public List<Customer> getCurrentCustomers(int page) {
-    Institutes institutes = authProvider.getCurrentInstitute();
+    Institute institute = authProvider.getCurrentInstitute();
     Pageable pageable = PageRequest.of(page, 4);
     Page<Customer> customersPage = customerReader.findByInstitutesIdAndStatusActive(
-        institutes,
+        institute,
         pageable
     );
     return customersPage.getContent();
   }
 
   public List<Customer> getExpiredCustomers(int page) {
-    Institutes institutes = authProvider.getCurrentInstitute();
+    Institute institute = authProvider.getCurrentInstitute();
     Pageable pageable = PageRequest.of(page, 4);
     Page<Customer> customersPage = customerReader.findByInstitutesIdAndStatusInactive(
-        institutes,
+        institute,
         pageable
     );
     return customersPage.getContent();
   }
 
   public List<Customer> getCurrentCustomers(){
-    Institutes institutes = authProvider.getCurrentInstitute();
-    return customerReader.findByInstitutesIdAndStatusActive(institutes);
+    Institute institute = authProvider.getCurrentInstitute();
+    return customerReader.findByInstitutesIdAndStatusActive(institute);
   }
 
   public List<SearchCustomerNameDto.Response> searchCustomerName(String keyword) {
-    Institutes institutesId = authProvider.getCurrentInstitute();
+    Institute instituteId = authProvider.getCurrentInstitute();
     List<Customer> customers = customerReader.findByInstitutesIdAndNameStartingWithAndStatusIn(
-        institutesId,
+        instituteId,
         keyword
     );
     return customers.stream()

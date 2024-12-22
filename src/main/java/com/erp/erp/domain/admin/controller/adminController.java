@@ -5,7 +5,7 @@ import com.erp.erp.domain.account.service.AccountService;
 import com.erp.erp.domain.admin.common.dto.AddAccountDto;
 import com.erp.erp.domain.admin.common.dto.AddInstituteDto;
 import com.erp.erp.domain.admin.common.dto.AddPlanDto;
-import com.erp.erp.domain.institutes.service.InstitutesService;
+import com.erp.erp.domain.institute.service.InstituteService;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.service.PlanService;
 import com.erp.erp.global.response.ApiResult;
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class adminController {
 
   private final PlanService planService;
-  private final InstitutesService instituteService;
+  private final InstituteService instituteService;
   private final AccountService accountService;
 
 

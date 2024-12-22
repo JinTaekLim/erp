@@ -18,8 +18,8 @@ import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.Progress;
 import com.erp.erp.domain.customer.repository.CustomerRepository;
-import com.erp.erp.domain.institutes.common.entity.Institutes;
-import com.erp.erp.domain.institutes.repository.InstitutesRepository;
+import com.erp.erp.domain.institute.common.entity.Institute;
+import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.domain.payments.common.entity.OtherPayments;
 import com.erp.erp.domain.payments.common.entity.PlanPayment;
 import com.erp.erp.domain.plan.common.entity.Plan;
@@ -34,8 +34,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,7 +56,7 @@ class CustomerTest extends IntegrationTest {
   private CustomerRepository customerRepository;
 
   @Autowired
-  private InstitutesRepository institutesRepository;
+  private InstituteRepository instituteRepository;
 
   @Autowired
   private AccountRepository accountRepository;
@@ -71,50 +69,51 @@ class CustomerTest extends IntegrationTest {
 
 
   private Account getAccounts() {
-    Institutes institutes = createInstitutes();
+    Institute institute = createInstitutes();
     return fixtureMonkey.giveMeBuilder(Account.class)
         .setNull("id")
-        .set("institutes", institutes)
+        .set("institute", institute)
         .sample();
   }
-  private Institutes getInstitutes() {
-    return fixtureMonkey.giveMeBuilder(Institutes.class)
+  private Institute getInstitutes() {
+    return fixtureMonkey.giveMeBuilder(Institute.class)
         .setNull("id")
         .sample();
   }
 
   private Account createAccounts() { return accountRepository.save(getAccounts()); }
-  private Institutes createInstitutes() {
-    return institutesRepository.save(getInstitutes());
+
+  private Institute createInstitutes() {
+    return instituteRepository.save(getInstitutes());
   }
 
   private Plan createPlans() {
     return planRepository.save(getPlans());
   }
 
-  private Customer getCustomers(Institutes institutes, PlanPayment planPayment, List<OtherPayments> otherPaymentList) {
+  private Customer getCustomers(Institute institute, PlanPayment planPayment, List<OtherPayments> otherPaymentList) {
     return fixtureMonkey.giveMeBuilder(Customer.class)
             .setNull("id")
-            .set("institutes", institutes)
+            .set("institute", institute)
             .set("planPayment", planPayment)
             .set("otherPayments", otherPaymentList)
             .set("progress", null)
             .sample();
   }
 
-  private Customer createCustomers(Plan plan, Institutes institutes) {
+  private Customer createCustomers(Plan plan, Institute institute) {
     PlanPayment planPayment = getPlanPayment(plan);
     List<OtherPayments> otherPaymentList = getRandomOtherPaymentList(plan);
-    Customer customer = getCustomers(institutes, planPayment, otherPaymentList);
+    Customer customer = getCustomers(institute, planPayment, otherPaymentList);
     return customerRepository.save(customer);
   }
 
-  private Customer createCustomers(Institutes institutes, Plan plan, CustomerStatus status, String name) {
+  private Customer createCustomers(Institute institute, Plan plan, CustomerStatus status, String name) {
     PlanPayment planPayment = getPlanPayment(plan);
     List<OtherPayments> otherPaymentList = getRandomOtherPaymentList(plan);
     Customer customer = fixtureMonkey.giveMeBuilder(Customer.class)
         .setNull("id")
-        .set("institutes", institutes)
+        .set("institute", institute)
         .set("planPayment", planPayment)
         .set("otherPayments", otherPaymentList)
         .set("progress", null)
@@ -143,7 +142,7 @@ class CustomerTest extends IntegrationTest {
     int randomInt = RandomValue.getInt(0, 5);
     return fixtureMonkey.giveMeBuilder(OtherPayments.class)
             .setNull("id")
-            .set("plans", plan)
+            .set("plan", plan)
             .sampleList(randomInt);
   }
 
@@ -248,9 +247,9 @@ class CustomerTest extends IntegrationTest {
   void updateCustomer() {
     // given
     Plan plan = createPlans();
-    Institutes institutes = createInstitutes();
+    Institute institute = createInstitutes();
 
-    Customer customer = createCustomers(plan, institutes);
+    Customer customer = createCustomers(plan, institute);
     UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
             .set("customerId", customer.getId())
             .sample();
@@ -307,8 +306,8 @@ class CustomerTest extends IntegrationTest {
   void updateStatus_성공() {
     //given
     Plan plan = createPlans();
-    Institutes institutes = createInstitutes();
-    Customer customer = createCustomers(plan, institutes);
+    Institute institute = createInstitutes();
+    Customer customer = createCustomers(plan, institute);
 
     CustomerStatus status = Arrays.stream(CustomerStatus.values())
         .filter(s -> s != customer.getStatus())
@@ -347,10 +346,10 @@ class CustomerTest extends IntegrationTest {
   void searchCustomerName_성공() {
     //given
     Plan plan = createPlans();
-    Institutes institutes = createInstitutes();
+    Institute institute = createInstitutes();
     CustomerStatus status = ( RandomValue.getInt(0,2) == 0 ) ? CustomerStatus.INACTIVE : CustomerStatus.ACTIVE;
     String name = RandomValue.string(10,20).setNullable(false).setLanguages(Language.ENGLISH).get();
-    Customer customer = createCustomers(institutes, plan, status, name);
+    Customer customer = createCustomers(institute, plan, status, name);
 ////    String keyword = ( name.length() < 2 ) ? name : String.valueOf(name.charAt(0));
 
 

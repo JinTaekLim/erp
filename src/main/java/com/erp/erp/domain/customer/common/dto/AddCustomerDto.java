@@ -2,7 +2,7 @@ package com.erp.erp.domain.customer.common.dto;
 
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.Gender;
-import com.erp.erp.domain.institutes.common.entity.Institutes;
+import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.payments.common.entity.OtherPayments;
 import com.erp.erp.domain.payments.common.entity.PaymentsMethod;
 import com.erp.erp.domain.plan.common.entity.Plan;
@@ -108,12 +108,12 @@ public class AddCustomerDto {
       private boolean status;
     }
 
-    public Customer toCustomers(Institutes institutes, Plan plan, String photoUrl) {
+    public Customer toCustomers(Institute institute, Plan plan, String photoUrl) {
       com.erp.erp.domain.payments.common.entity.PlanPayment planPayment = getPayments(plan);
       List<OtherPayments> otherPayments = getOtherPayments();
 
       return Customer.builder()
-          .institutes(institutes)
+          .institute(institute)
           .name(this.name)
           .gender(Gender.getString(this.gender))
           .phone(this.phone)

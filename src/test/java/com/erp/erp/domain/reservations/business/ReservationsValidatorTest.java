@@ -3,7 +3,7 @@ package com.erp.erp.domain.reservations.business;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-import com.erp.erp.domain.institutes.common.entity.Institutes;
+import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.reservations.common.entity.Reservations;
 import com.erp.erp.domain.reservations.common.exception.InvalidReservationTimeException;
 import com.erp.erp.domain.reservations.common.exception.NoAvailableSpotsException;
@@ -28,8 +28,8 @@ class ReservationsValidatorTest extends ServiceTest {
   void isTimeSlotAvailable_성공() {
     // given
     int randomSpots = RandomValue.getInt(1, 8);
-    Institutes institutes = Institutes.builder()
-        .totalSpots(randomSpots)
+    Institute institute = Institute.builder()
+        .totalSeat(randomSpots)
         .build();
 
     int randomInt = RandomValue.getInt(2, 10);
@@ -47,20 +47,20 @@ class ReservationsValidatorTest extends ServiceTest {
     }
 
     // when
-    when(reservationsRepository.findByInstitutesAndTimeRange(institutes, startTime, endTime))
+    when(reservationsRepository.findByInstitutesAndTimeRange(institute, startTime, endTime))
         .thenReturn(reservationsList);
 
 
     // then
-    reservationsValidator.isTimeSlotAvailable(institutes,startTime,endTime);
+    reservationsValidator.isTimeSlotAvailable(institute,startTime,endTime);
   }
 
   @Test
   void isTimeSlotAvailable_실패() {
     // given
     int randomSpots = RandomValue.getInt(1, 8);
-    Institutes institutes = Institutes.builder()
-        .totalSpots(randomSpots)
+    Institute institute = Institute.builder()
+        .totalSeat(randomSpots)
         .build();
 
     int randomInt = RandomValue.getInt(2, 10);
@@ -79,14 +79,14 @@ class ReservationsValidatorTest extends ServiceTest {
 
 
     // when
-    when(reservationsRepository.findByInstitutesAndTimeRange(institutes, startTime, endTime))
+    when(reservationsRepository.findByInstitutesAndTimeRange(institute, startTime, endTime))
         .thenReturn(reservationsList);
 
 
     // then
     assertThrows(
         NoAvailableSpotsException.class,
-        () -> reservationsValidator.isTimeSlotAvailable(institutes, startTime, endTime)
+        () -> reservationsValidator.isTimeSlotAvailable(institute, startTime, endTime)
     );
   }
 

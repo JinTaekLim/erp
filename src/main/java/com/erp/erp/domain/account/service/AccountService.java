@@ -8,8 +8,8 @@ import com.erp.erp.domain.admin.common.dto.AddAccountDto;
 import com.erp.erp.domain.auth.business.TokenExtractor;
 import com.erp.erp.domain.auth.business.TokenManager;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
-import com.erp.erp.domain.institutes.business.InstitutesReader;
-import com.erp.erp.domain.institutes.common.entity.Institutes;
+import com.erp.erp.domain.institute.business.InstituteReader;
+import com.erp.erp.domain.institute.common.entity.Institute;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,13 +21,13 @@ public class AccountService {
 
   private final AccountCreator accountCreator;
   private final AccountReader accountReader;
-  private final InstitutesReader institutesReader;
+  private final InstituteReader instituteReader;
   private final TokenManager tokenManager;
   private final TokenExtractor tokenExtractor;
 
   public AddAccountDto.Response addAccount(AddAccountDto.Request req) {
-    Institutes institutes = institutesReader.findById(req.getInstituteId());
-    Account account = req.toEntityWithInstitute(institutes);
+    Institute institute = instituteReader.findById(req.getInstituteId());
+    Account account = req.toEntityWithInstitute(institute);
     accountCreator.save(account);
     return AddAccountDto.Response.fromEntity(account);
   }

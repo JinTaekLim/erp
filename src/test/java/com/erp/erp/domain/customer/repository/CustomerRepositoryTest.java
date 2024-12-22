@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import com.erp.erp.domain.customer.common.entity.Customer;
-import com.erp.erp.domain.institutes.common.entity.Institutes;
-import com.erp.erp.domain.institutes.repository.InstitutesRepository;
+import com.erp.erp.domain.institute.common.entity.Institute;
+import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.domain.payments.common.entity.OtherPayments;
 import com.erp.erp.domain.payments.common.entity.PlanPayment;
 import com.erp.erp.domain.plan.common.entity.Plan;
@@ -23,25 +23,25 @@ class CustomerRepositoryTest extends JpaTest {
   @Autowired
   private CustomerRepository customerRepository;
   @Autowired
-  private InstitutesRepository institutesRepository;
+  private InstituteRepository instituteRepository;
   @Autowired
   private PlanRepository planRepository;
 
 
-  private Institutes getInstitutes() {
-    return fixtureMonkey.giveMeBuilder(Institutes.class)
+  private Institute getInstitutes() {
+    return fixtureMonkey.giveMeBuilder(Institute.class)
         .setNull("id")
         .sample();
   }
 
-  private Institutes createInstitutes() {
-    return institutesRepository.save(getInstitutes());
+  private Institute createInstitutes() {
+    return instituteRepository.save(getInstitutes());
   }
 
-  private Customer getCustomers(Institutes institutes, PlanPayment planPayment, List<OtherPayments> otherPaymentList) {
+  private Customer getCustomers(Institute institute, PlanPayment planPayment, List<OtherPayments> otherPaymentList) {
     return fixtureMonkey.giveMeBuilder(Customer.class)
             .setNull("id")
-            .set("institutes", institutes)
+            .set("institute", institute)
             .set("planPayment", planPayment)
             .set("otherPayments", otherPaymentList)
             .set("progress", null)
@@ -81,12 +81,12 @@ class CustomerRepositoryTest extends JpaTest {
 
     List<Customer> customerToSave = IntStream.range(0, randomInt)
             .mapToObj(i -> {
-              Institutes institutes = createInstitutes();
+              Institute institute = createInstitutes();
               Plan plan = createPlans();
               PlanPayment planPayment = getPlanPayment(plan);
               List<OtherPayments> otherPaymentList = getRandomOtherPaymentList(plan);
 
-              return getCustomers(institutes, planPayment, otherPaymentList);
+              return getCustomers(institute, planPayment, otherPaymentList);
             })
             .toList();
 
@@ -103,11 +103,11 @@ class CustomerRepositoryTest extends JpaTest {
   @Test
   void save() {
     // Given
-    Institutes institutes = createInstitutes();
+    Institute institute = createInstitutes();
     Plan plan = createPlans();
     PlanPayment planPayment = getPlanPayment(plan);
     List<OtherPayments> otherPaymentList = getRandomOtherPaymentList(plan);
-    Customer customer = getCustomers(institutes, planPayment, otherPaymentList);
+    Customer customer = getCustomers(institute, planPayment, otherPaymentList);
     customerRepository.save(customer);
 
     // Then
@@ -123,11 +123,11 @@ class CustomerRepositoryTest extends JpaTest {
   @Test
   void updateStatusById() {
     // Given
-    Institutes institutes = createInstitutes();
+    Institute institute = createInstitutes();
     Plan plan = createPlans();
     PlanPayment planPayment = getPlanPayment(plan);
     List<OtherPayments> otherPaymentList = getRandomOtherPaymentList(plan);
-    Customer customer = getCustomers(institutes, planPayment, otherPaymentList);
+    Customer customer = getCustomers(institute, planPayment, otherPaymentList);
     customerRepository.save(customer);
     long customersId = customer.getId();
     CustomerStatus status = Arrays.stream(CustomerStatus.values())

@@ -1,4 +1,4 @@
-package com.erp.erp.domain.institutes;
+package com.erp.erp.domain.institute;
 
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -8,13 +8,14 @@ import static org.mockito.Mockito.when;
 
 import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.auth.business.AuthProvider;
-import com.erp.erp.domain.institutes.common.dto.UpdateTotalSpotsDto;
-import com.erp.erp.domain.institutes.common.dto.UpdateTotalSpotsDto.Request;
-import com.erp.erp.domain.institutes.common.entity.Institutes;
+import com.erp.erp.domain.institute.common.dto.UpdateTotalSeatDto;
+import com.erp.erp.domain.institute.common.dto.UpdateTotalSeatDto.Request;
+import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.global.response.ApiResult;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.util.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -27,13 +28,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 
-public class InstitutesTest extends IntegrationTest {
+public class InstituteTest extends IntegrationTest {
 
-  @LocalServerPort
-  private int port;
+  private String BASE_URL;
 
-  @Autowired
-  private TestRestTemplate restTemplate;
+  @BeforeEach
+  void setUp() {
+    BASE_URL = "http://localhost:" + port + "/api/institute";
+  }
+
 
   @MockBean
   private AuthProvider authProvider;
@@ -44,15 +47,16 @@ public class InstitutesTest extends IntegrationTest {
     /* 인증 관련 코드 추가 작성 필요*/
     Account account = fixtureMonkey.giveMeOne(Account.class);
     
-    Institutes institutes = account.getInstitutes();
+    Institute institute = account.getInstitute();
 
-    UpdateTotalSpotsDto.Request request = fixtureMonkey.giveMeOne(
-        UpdateTotalSpotsDto.Request.class
+    UpdateTotalSeatDto.Request request = fixtureMonkey.giveMeOne(
+        UpdateTotalSeatDto.Request.class
     );;
-    String url = "http://localhost:" + port + "/api/institutes/updateTotalSpots";
+
+    String url = BASE_URL + "/updateTotalSeat";
 
     //when
-    when(authProvider.getCurrentInstitute()).thenReturn(institutes);
+    when(authProvider.getCurrentInstitute()).thenReturn(institute);
 
 
     ResponseEntity<String> responseEntity = restTemplate.postForEntity(
@@ -62,19 +66,19 @@ public class InstitutesTest extends IntegrationTest {
     );
 
 
-    ApiResult<UpdateTotalSpotsDto.Response> apiResponse = gson.fromJson(
+    ApiResult<UpdateTotalSeatDto.Response> apiResponse = gson.fromJson(
         responseEntity.getBody(),
-        new TypeToken<ApiResult<UpdateTotalSpotsDto.Response>>(){}
+        new TypeToken<ApiResult<UpdateTotalSeatDto.Response>>(){}
     );
 
     // then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertNotNull(apiResponse);
 
-    UpdateTotalSpotsDto.Response response = apiResponse.getData();
-    assertThat(institutes.getId()).isEqualTo(response.getId());
-    assertThat(institutes.getName()).isEqualTo(response.getName());
-    assertThat(institutes.getTotalSpots()).isEqualTo(response.getNum());
+    UpdateTotalSeatDto.Response response = apiResponse.getData();
+    assertThat(institute.getId()).isEqualTo(response.getId());
+    assertThat(institute.getName()).isEqualTo(response.getName());
+    assertThat(institute.getTotalSeat()).isEqualTo(response.getNum());
   }
 
 
@@ -84,16 +88,16 @@ public class InstitutesTest extends IntegrationTest {
     /* 인증 관련 코드 추가 작성 필요*/
     Account account = fixtureMonkey.giveMeOne(Account.class);
 
-    Institutes institutes = account.getInstitutes();
+    Institute institute = account.getInstitute();
 
-    UpdateTotalSpotsDto.Request request = UpdateTotalSpotsDto.Request.builder()
+    UpdateTotalSeatDto.Request request = UpdateTotalSeatDto.Request.builder()
         .num(RandomValue.getInt(-999,-1))
         .build();
 
-    String url = "http://localhost:" + port + "/api/institutes/updateTotalSpots";
+    String url = BASE_URL + "/updateTotalSeat";
 
     //when
-    when(authProvider.getCurrentInstitute()).thenReturn(institutes);
+    when(authProvider.getCurrentInstitute()).thenReturn(institute);
 
     ResponseEntity<String> responseEntity = restTemplate.postForEntity(
         url,
@@ -102,9 +106,9 @@ public class InstitutesTest extends IntegrationTest {
     );
 
 
-    ApiResult<UpdateTotalSpotsDto.Response> apiResponse = gson.fromJson(
+    ApiResult<UpdateTotalSeatDto.Response> apiResponse = gson.fromJson(
         responseEntity.getBody(),
-        new TypeToken<ApiResult<UpdateTotalSpotsDto.Response>>(){}
+        new TypeToken<ApiResult<UpdateTotalSeatDto.Response>>(){}
     );
 
 
@@ -122,13 +126,13 @@ public class InstitutesTest extends IntegrationTest {
     /* 인증 관련 코드 추가 작성 필요*/
     Account account = fixtureMonkey.giveMeOne(Account.class);
 
-    Institutes institutes = account.getInstitutes();
+    Institute institute = account.getInstitute();
 
 
-    String url = "http://localhost:" + port + "/api/institutes/updateTotalSpots";
+    String url = BASE_URL + "/updateTotalSeat";
 
     //when
-    when(authProvider.getCurrentInstitute()).thenReturn(institutes);
+    when(authProvider.getCurrentInstitute()).thenReturn(institute);
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
@@ -144,9 +148,9 @@ public class InstitutesTest extends IntegrationTest {
     );
 
 
-    ApiResult<UpdateTotalSpotsDto.Response> apiResponse = gson.fromJson(
+    ApiResult<UpdateTotalSeatDto.Response> apiResponse = gson.fromJson(
         responseEntity.getBody(),
-        new TypeToken<ApiResult<UpdateTotalSpotsDto.Response>>(){}
+        new TypeToken<ApiResult<UpdateTotalSeatDto.Response>>(){}
     );
 
 

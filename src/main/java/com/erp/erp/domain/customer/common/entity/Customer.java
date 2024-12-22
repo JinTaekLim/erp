@@ -1,6 +1,6 @@
 package com.erp.erp.domain.customer.common.entity;
 
-import com.erp.erp.domain.institutes.common.entity.Institutes;
+import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.payments.common.entity.OtherPayments;
 import com.erp.erp.domain.payments.common.entity.PlanPayment;
 import jakarta.persistence.*;
@@ -25,7 +25,7 @@ public class Customer {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @NotNull
-  private Institutes institutes;
+  private Institute institute;
 
   @NotNull
   private String name;
@@ -59,9 +59,9 @@ public class Customer {
 
 
   @Builder
-  public Customer(Institutes institutes, String name, Gender gender, String phone, String address, String photoUrl,
+  public Customer(Institute institute, String name, Gender gender, String phone, String address, String photoUrl,
                    String memo, LocalDate birthDate, PlanPayment planPayment, List<OtherPayments> otherPayments) {
-    this.institutes = institutes;
+    this.institute = institute;
     this.name = name;
     this.gender = gender;
     this.phone = phone;

@@ -4,7 +4,7 @@ import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.exception.NotFoundCustomerException;
 import com.erp.erp.domain.customer.repository.CustomerRepository;
-import com.erp.erp.domain.institutes.common.entity.Institutes;
+import com.erp.erp.domain.institute.common.entity.Institute;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,20 +24,20 @@ public class CustomerReader {
     return customerRepository.findById(customersId).orElseThrow(NotFoundCustomerException::new);
   }
 
-  public Page<Customer> findByInstitutesIdAndStatusActive(Institutes institutes, Pageable page) {
-    return customerRepository.findByInstitutesIdAndStatus(institutes.getId(), CustomerStatus.ACTIVE, page);
+  public Page<Customer> findByInstitutesIdAndStatusActive(Institute institute, Pageable page) {
+    return customerRepository.findByInstituteIdAndStatus(institute.getId(), CustomerStatus.ACTIVE, page);
   }
 
-  public List<Customer> findByInstitutesIdAndStatusActive(Institutes institutes) {
-    return customerRepository.findByInstitutesIdAndStatus(institutes.getId(), CustomerStatus.ACTIVE);
+  public List<Customer> findByInstitutesIdAndStatusActive(Institute institute) {
+    return customerRepository.findByInstituteIdAndStatus(institute.getId(), CustomerStatus.ACTIVE);
   }
 
-  public List<Customer> findByInstitutesIdAndNameStartingWithAndStatusIn(Institutes institutes, String name) {
+  public List<Customer> findByInstitutesIdAndNameStartingWithAndStatusIn(Institute institute, String name) {
     List<CustomerStatus> status = Arrays.asList(CustomerStatus.ACTIVE, CustomerStatus.INACTIVE);
-    return customerRepository.findByInstitutesIdAndNameStartingWithAndStatusIn(institutes.getId(), name, status);
+    return customerRepository.findByInstituteIdAndNameStartingWithAndStatusIn(institute.getId(), name, status);
   }
 
-  public Page<Customer> findByInstitutesIdAndStatusInactive(Institutes institutes, Pageable page) {
-    return customerRepository.findByInstitutesIdAndStatus(institutes.getId(), CustomerStatus.INACTIVE, page);
+  public Page<Customer> findByInstitutesIdAndStatusInactive(Institute institute, Pageable page) {
+    return customerRepository.findByInstituteIdAndStatus(institute.getId(), CustomerStatus.INACTIVE, page);
   }
 }

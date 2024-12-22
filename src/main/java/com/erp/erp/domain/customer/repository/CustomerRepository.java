@@ -12,15 +12,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
-  Page<Customer> findByInstitutesIdAndStatus(Long institutesId, CustomerStatus status, Pageable pageable);
-  List<Customer> findByInstitutesIdAndStatus(Long institutesId, CustomerStatus status);
+  Page<Customer> findByInstituteIdAndStatus(Long instituteId, CustomerStatus status, Pageable pageable);
+  List<Customer> findByInstituteIdAndStatus(Long instituteId, CustomerStatus status);
 
-  @Query(value = "SELECT * FROM customers c WHERE c.institutes_id = :institutesId " +
+  @Query(value = "SELECT * FROM customers c WHERE c.institute_id = :instituteId " +
       "AND c.name LIKE CONCAT(:name, '%') " +
       "AND c.status IN (:statuses)",
       nativeQuery = true)
-  List<Customer> findByInstitutesIdAndNameStartingWithAndStatusIn(
-      Long institutesId, String name, List<CustomerStatus> statuses);
+  List<Customer> findByInstituteIdAndNameStartingWithAndStatusIn(
+      Long instituteId, String name, List<CustomerStatus> statuses);
 
 
 

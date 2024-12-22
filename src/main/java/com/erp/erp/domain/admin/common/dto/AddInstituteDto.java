@@ -1,6 +1,6 @@
 package com.erp.erp.domain.admin.common.dto;
 
-import com.erp.erp.domain.institutes.common.entity.Institutes;
+import com.erp.erp.domain.institute.common.entity.Institute;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -26,8 +26,8 @@ public class AddInstituteDto {
     @Positive
     private int totalSpots;
 
-    public Institutes toEntity() {
-      return Institutes.builder().name(name).totalSpots(totalSpots).build();
+    public Institute toEntity() {
+      return Institute.builder().name(name).totalSeat(totalSpots).build();
     }
   }
 
@@ -44,10 +44,10 @@ public class AddInstituteDto {
     @Schema(description = "좌석 갯수")
     private int totalSpots;
 
-    public static AddInstituteDto.Response fromEntity(Institutes institutes) {
+    public static AddInstituteDto.Response fromEntity(Institute institute) {
       return Response.builder()
-          .name(institutes.getName())
-          .totalSpots(institutes.getTotalSpots())
+          .name(institute.getName())
+          .totalSpots(institute.getTotalSeat())
           .build();
     }
   }

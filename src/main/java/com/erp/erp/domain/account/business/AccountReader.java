@@ -3,7 +3,7 @@ package com.erp.erp.domain.account.business;
 import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.account.common.exception.InvalidCredentialsException;
 import com.erp.erp.domain.account.repository.AccountRepository;
-import com.erp.erp.domain.institutes.common.entity.Institutes;
+import com.erp.erp.domain.institute.common.entity.Institute;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ public class AccountReader {
         .orElseThrow(InvalidCredentialsException::new);
   };
 
-  public Institutes findInstitutesByAccountId(Long accountId) {
+  public Institute findInstitutesByAccountId(Long accountId) {
     return accountRepository.findInstitutesByAccountId(accountId).orElseThrow();
   }
 }

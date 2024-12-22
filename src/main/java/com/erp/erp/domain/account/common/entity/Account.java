@@ -1,7 +1,7 @@
 package com.erp.erp.domain.account.common.entity;
 
 
-import com.erp.erp.domain.institutes.common.entity.Institutes;
+import com.erp.erp.domain.institute.common.entity.Institute;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,7 +25,7 @@ public class Account {
 
   @OneToOne
   @NotNull
-  private Institutes institutes;
+  private Institute institute;
 
   @NotNull
   private String account;
@@ -37,8 +37,8 @@ public class Account {
 
 
   @Builder
-  public Account(Institutes institutes, String account, String password) {
-    this.institutes = institutes;
+  public Account(Institute institute, String account, String password) {
+    this.institute = institute;
     this.account = account;
     this.password = password;
   }

@@ -3,8 +3,8 @@ package com.erp.erp.domain.reservations.service;
 import com.erp.erp.domain.auth.business.AuthProvider;
 import com.erp.erp.domain.customer.business.CustomerReader;
 import com.erp.erp.domain.customer.common.entity.Customer;
-import com.erp.erp.domain.institutes.business.InstitutesValidator;
-import com.erp.erp.domain.institutes.common.entity.Institutes;
+import com.erp.erp.domain.institute.business.InstituteValidator;
+import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.reservations.business.ReservationsDelete;
 import com.erp.erp.domain.reservations.business.ReservationsValidator;
 import com.erp.erp.domain.reservations.business.ReservationsCreator;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 public class ReservationsService {
 
   private final AuthProvider authProvider;
-  private final InstitutesValidator institutesValidator;
+  private final InstituteValidator instituteValidator;
   private final ReservationsReader reservationsReader;
   private final ReservationsCreator reservationsCreator;
   private final ReservationsUpdater reservationsUpdater;
@@ -36,17 +36,17 @@ public class ReservationsService {
 
 
   public Reservations addReservations(AddReservationsDto.Request req) {
-    Institutes institutes = authProvider.getCurrentInstitute();
+    Institute institute = authProvider.getCurrentInstitute();
     Customer customer = customerReader.findById(req.getCustomersId());
-    institutesValidator.validateCustomerBelongsToInstitute(institutes, customer);
+    instituteValidator.validateCustomerBelongsToInstitute(institute, customer);
 
     LocalDateTime startTime = req.getStartTime();
     LocalDateTime endTime = req.getEndTime();
 
-    reservationsValidator.isTimeSlotAvailable(institutes, startTime, endTime);
+    reservationsValidator.isTimeSlotAvailable(institute, startTime, endTime);
 
     Reservations reservations = Reservations.builder()
-        .institutes(institutes)
+        .institute(institute)
         .customer(customer)
         .startTime(startTime)
         .endTime(endTime)
@@ -57,18 +57,18 @@ public class ReservationsService {
   }
 
   public List<Reservations> getDailyReservations(LocalDate date) {
-    Institutes institutes = authProvider.getCurrentInstitute();
-    return reservationsReader.findByInstitutesAndStartTimeOn(institutes, date);
+    Institute institute = authProvider.getCurrentInstitute();
+    return reservationsReader.findByInstitutesAndStartTimeOn(institute, date);
   }
 
   public List<Reservations> getReservationByTime(LocalDateTime time) {
-    Institutes institutes = authProvider.getCurrentInstitute();
+    Institute institute = authProvider.getCurrentInstitute();
 
     LocalDateTime startTime = TimeUtil.roundToNearestHalfHour(time);
     LocalDateTime endTime = startTime.plusMinutes(30);
 
     return reservationsReader.findByInstitutesAndReservationTimeBetween(
-        institutes,
+        institute,
         startTime,
         endTime
     );
@@ -76,11 +76,11 @@ public class ReservationsService {
 
   public Reservations updateReservation(UpdatedReservationsDto.Request req) {
 
-    Institutes institutes = authProvider.getCurrentInstitute();
+    Institute institute = authProvider.getCurrentInstitute();
     long reservationsId = req.getReservationsId();
     Reservations reservations = reservationsReader.findById(reservationsId);
     Customer customer = reservations.getCustomer();
-    institutesValidator.validateCustomerBelongsToInstitute(institutes, customer);
+    instituteValidator.validateCustomerBelongsToInstitute(institute, customer);
 
     LocalDateTime startTime = req.getStartTime();
     LocalDateTime endTime = req.getEndTime();
@@ -90,29 +90,29 @@ public class ReservationsService {
   }
 
   public Reservations updatedSeatNumber(UpdatedSeatNumberDto.Request req) {
-    Institutes institutes = authProvider.getCurrentInstitute();
+    Institute institute = authProvider.getCurrentInstitute();
     long reservationsId = req.getReservationsId();
     Reservations reservations = reservationsReader.findById(reservationsId);
     Customer customer = reservations.getCustomer();
-    institutesValidator.validateCustomerBelongsToInstitute(institutes, customer);
+    instituteValidator.validateCustomerBelongsToInstitute(institute, customer);
 
     return reservationsUpdater.updateSeatNumber(reservations, req.getSeatNumber());
   }
 
 
   public void deleteReservations(DeleteReservationsDto.Request req) {
-    Institutes institutes = authProvider.getCurrentInstitute();
+    Institute institute = authProvider.getCurrentInstitute();
     long reservationsId = req.getReservationsId();
     Reservations reservations = reservationsReader.findById(reservationsId);
     Customer customer = reservations.getCustomer();
-    institutesValidator.validateCustomerBelongsToInstitute(institutes, customer);
+    instituteValidator.validateCustomerBelongsToInstitute(institute, customer);
     reservationsDelete.delete(reservations);
   }
 
   public GetReservationCustomerDetailsDto.Response getReservationsForCurrentInstitute(Long reservationsId) {
-    Institutes institutes = authProvider.getCurrentInstitute();
+    Institute institute = authProvider.getCurrentInstitute();
     Reservations reservations = reservationsReader.findById(reservationsId);
-    institutesValidator.validateReservationBelongsToInstitute(institutes, reservations);
+    instituteValidator.validateReservationBelongsToInstitute(institute, reservations);
     return GetReservationCustomerDetailsDto.Response.fromEntity(reservations);
   }
 

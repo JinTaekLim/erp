@@ -1,6 +1,6 @@
 package com.erp.erp.domain.reservations.business;
 
-import com.erp.erp.domain.institutes.common.entity.Institutes;
+import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.reservations.common.entity.Reservations;
 import com.erp.erp.domain.reservations.common.exception.NotFoundReservationException;
 import com.erp.erp.domain.reservations.repository.ReservationsRepository;
@@ -17,9 +17,9 @@ import org.springframework.stereotype.Component;
 public class ReservationsReader {
   private final ReservationsRepository reservationsRepository;
 
-  public List<Reservations> findByInstitutesAndStartTimeOn(Institutes institutes, LocalDate date) {
+  public List<Reservations> findByInstitutesAndStartTimeOn(Institute institute, LocalDate date) {
     List<Reservations> reservationsList = reservationsRepository.findByInstitutesAndStartTimeOn(
-        institutes,
+        institute,
         date
     );
     if (reservationsList.isEmpty()) throw new NotFoundReservationException();
@@ -27,12 +27,12 @@ public class ReservationsReader {
   }
 
   public List<Reservations> findByInstitutesAndReservationTimeBetween(
-      Institutes institutes,
+      Institute institute,
       LocalDateTime startTime,
       LocalDateTime endTime
   ){
     return reservationsRepository.findByInstitutesWithOverlappingTimeRange(
-        institutes,
+        institute,
         startTime,
         endTime
     );

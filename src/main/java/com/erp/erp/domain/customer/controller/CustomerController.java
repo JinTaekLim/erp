@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/customer")
-@Tag(name = "customers" ,description = "고객 관리")
+@Tag(name = "customer" ,description = "고객 관리")
 @RequiredArgsConstructor
 @Slf4j
 public class CustomerController {

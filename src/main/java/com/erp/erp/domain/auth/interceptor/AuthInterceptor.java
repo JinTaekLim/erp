@@ -6,8 +6,8 @@ import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.auth.business.TokenExtractor;
 import com.erp.erp.domain.auth.business.TokenManager;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
-import com.erp.erp.domain.institutes.common.entity.Institutes;
-import com.erp.erp.domain.institutes.repository.InstitutesRepository;
+import com.erp.erp.domain.institute.common.entity.Institute;
+import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.global.annotation.authentication.PermitAll;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -74,19 +74,20 @@ public class AuthInterceptor implements HandlerInterceptor {
 
   private final AccountCreator accountCreator;
   private final AccountReader accountReader;
-  private final InstitutesRepository institutesRepository;
+  private final InstituteRepository instituteRepository;
   private final TokenManager tokenManager;
 
   public String getTemporaryAccountInfo() {
-    Institutes institutes = institutesRepository.findById(1L)
-        .orElseGet(()-> {Institutes newInstitutes = Institutes.builder()
-              .name("test").totalSpots(4).build();
-          return institutesRepository.save(newInstitutes);
+    Institute institute = instituteRepository.findById(1L)
+        .orElseGet(()-> {
+          Institute newInstitute = Institute.builder()
+              .name("test").totalSeat(4).build();
+          return instituteRepository.save(newInstitute);
         });
     Account account = accountReader.findOptionalById(1L)
         .orElseGet(() -> {
           Account newAccount = Account.builder()
-              .account("test").password("test").institutes(institutes).build();
+              .account("test").password("test").institute(institute).build();
           return accountCreator.save(newAccount);
         });
     TokenDto tokenDto = tokenManager.createToken(account);

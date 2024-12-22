@@ -6,7 +6,7 @@ import com.erp.erp.domain.auth.common.exception.AuthenticationNullException;
 import com.erp.erp.domain.auth.common.exception.NotParsedValueException;
 import com.erp.erp.domain.auth.common.exception.UnAuthenticationAccountException;
 import com.erp.erp.domain.auth.common.exception.type.TokenErrorType;
-import com.erp.erp.domain.institutes.common.entity.Institutes;
+import com.erp.erp.domain.institute.common.entity.Institute;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -42,7 +42,7 @@ public class AuthProvider {
     }
   }
 
-  public Institutes getCurrentInstitute() {
+  public Institute getCurrentInstitute() {
     Long accountId = getCurrentAccountId();
     return accountReader.findInstitutesByAccountId(accountId);
   }

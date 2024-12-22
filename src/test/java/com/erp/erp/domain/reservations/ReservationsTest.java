@@ -7,8 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import com.erp.erp.domain.customer.common.dto.AddCustomerDto.Response;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.repository.CustomerRepository;
-import com.erp.erp.domain.institutes.common.entity.Institutes;
-import com.erp.erp.domain.institutes.repository.InstitutesRepository;
+import com.erp.erp.domain.institute.common.entity.Institute;
+import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.domain.payments.common.entity.OtherPayments;
 import com.erp.erp.domain.payments.common.entity.PlanPayment;
 import com.erp.erp.domain.plan.common.entity.Plan;
@@ -45,7 +45,7 @@ class ReservationsTest extends IntegrationTest {
   private TestRestTemplate restTemplate;
 
   @Autowired
-  private InstitutesRepository institutesRepository;
+  private InstituteRepository instituteRepository;
   @Autowired
   private CustomerRepository customerRepository;
   @Autowired
@@ -54,31 +54,31 @@ class ReservationsTest extends IntegrationTest {
   private PlanRepository planRepository;
 
 
-  private Institutes getInstitutes() {
-    return fixtureMonkey.giveMeBuilder(Institutes.class)
+  private Institute getInstitutes() {
+    return fixtureMonkey.giveMeBuilder(Institute.class)
         .setNull("id")
         .sample();
   }
 
-  private Customer getCustomers(Institutes institutes) {
+  private Customer getCustomers(Institute institute) {
     Plan plan = createPlans();
     PlanPayment planPayment = getPlanPayment(plan);
     List<OtherPayments> otherPaymentList = getRandomOtherPaymentList(plan);
 
     return fixtureMonkey.giveMeBuilder(Customer.class)
             .setNull("id")
-            .set("institutes", institutes)
+            .set("institute", institute)
             .set("planPayment", planPayment)
             .set("otherPayments", otherPaymentList)
             .set("progress", null)
             .sample();
   }
 
-  private Institutes createInstitutes() {
-    return institutesRepository.save(getInstitutes());
+  private Institute createInstitutes() {
+    return instituteRepository.save(getInstitutes());
   }
-  private Customer createCustomers(Institutes institutes){
-    Customer customer = getCustomers(institutes);
+  private Customer createCustomers(Institute institute){
+    Customer customer = getCustomers(institute);
     return customerRepository.save(customer);
   }
 
@@ -111,8 +111,8 @@ class ReservationsTest extends IntegrationTest {
   @Disabled
   void addReservations() {
     // given
-    Institutes institutes = createInstitutes();
-    Customer customer = createCustomers(institutes);
+    Institute institute = createInstitutes();
+    Customer customer = createCustomers(institute);
     LocalDateTime startTime = LocalDateTime.now();
 
     int randomInt = RandomValue.getInt(0,600);
@@ -156,8 +156,8 @@ class ReservationsTest extends IntegrationTest {
   @Disabled
   void addReservations_fail() {
     // given
-    Institutes institutes = createInstitutes();
-    Customer customer = createCustomers(institutes);
+    Institute institute = createInstitutes();
+    Customer customer = createCustomers(institute);
     LocalDateTime startTime = LocalDateTime.now();
     int randomInt = RandomValue.getInt(0,600);
     LocalDateTime endTime = startTime.minusMinutes(randomInt);
@@ -200,8 +200,8 @@ class ReservationsTest extends IntegrationTest {
   @Test
   void getDailyReservations_성공() {
     //given
-    Institutes institutes = createInstitutes();
-    Customer customer = createCustomers(institutes);
+    Institute institute = createInstitutes();
+    Customer customer = createCustomers(institute);
     LocalDate day = RandomValue.getRandomLocalDate();
 
     int reservationsCount = RandomValue.getInt(1,20);
@@ -219,7 +219,7 @@ class ReservationsTest extends IntegrationTest {
 
 
       Reservations reservations = Reservations.builder()
-          .institutes(institutes)
+          .institute(institute)
           .customer(customer)
           .startTime(startTime)
           .endTime(endTime)

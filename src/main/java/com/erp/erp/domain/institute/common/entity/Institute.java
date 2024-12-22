@@ -1,9 +1,10 @@
-package com.erp.erp.domain.institutes.common.entity;
+package com.erp.erp.domain.institute.common.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +13,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Institutes {
+@Table(name = "Institutes")
+public class Institute {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,16 +23,16 @@ public class Institutes {
   @NotNull
   private String name;
 
-  private int totalSpots;
+  private int totalSeat;
 
 
-  public void changeTotalSpots(int totalSpots) {
-    this.totalSpots = totalSpots;
+  public void changeTotalSpots(int totalSeat) {
+    this.totalSeat = totalSeat;
   }
 
   @Builder
-  public Institutes(String name, int totalSpots) {
+  public Institute(String name, int totalSeat) {
     this.name = name;
-    this.totalSpots = totalSpots;
+    this.totalSeat = totalSeat;
   }
 }

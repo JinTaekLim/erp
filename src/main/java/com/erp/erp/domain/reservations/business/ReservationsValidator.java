@@ -1,6 +1,6 @@
 package com.erp.erp.domain.reservations.business;
 
-import com.erp.erp.domain.institutes.common.entity.Institutes;
+import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.reservations.common.entity.Reservations;
 import com.erp.erp.domain.reservations.common.exception.InvalidReservationTimeException;
 import com.erp.erp.domain.reservations.common.exception.NoAvailableSpotsException;
@@ -20,17 +20,17 @@ public class ReservationsValidator {
   private final ReservationsRepository reservationsRepository;
 
   public void isTimeSlotAvailable(
-      Institutes institutes,
+      Institute institute,
       LocalDateTime startTime,
       LocalDateTime endTime
   ) {
     List<Reservations> reservationsList = reservationsRepository.findByInstitutesAndTimeRange(
-        institutes,
+        institute,
         startTime,
         endTime
     );
 
-    int totalSpots = institutes.getTotalSpots();
+    int totalSpots = institute.getTotalSeat();
     int slot = calculate30MinSlots(startTime, endTime);
     long[] slotOccupancy = new long[slot];
 

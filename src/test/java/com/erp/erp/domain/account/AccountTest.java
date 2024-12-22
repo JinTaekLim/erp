@@ -9,8 +9,8 @@ import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.account.repository.AccountRepository;
 import com.erp.erp.domain.auth.business.TokenManager;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
-import com.erp.erp.domain.institutes.common.entity.Institutes;
-import com.erp.erp.domain.institutes.repository.InstitutesRepository;
+import com.erp.erp.domain.institute.common.entity.Institute;
+import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.global.response.ApiResult;
 import com.erp.erp.global.util.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
@@ -18,8 +18,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -34,35 +32,35 @@ public class AccountTest extends IntegrationTest {
   }
 
   @Autowired
-  private InstitutesRepository institutesRepository;
+  private InstituteRepository instituteRepository;
   @Autowired
   private AccountRepository accountRepository;
   @Autowired
   private TokenManager tokenManager;
 
-  private Institutes getInstitutes() {
-    return fixtureMonkey.giveMeOne(Institutes.class);
+  private Institute getInstitutes() {
+    return fixtureMonkey.giveMeOne(Institute.class);
   }
 
-  private Institutes createInstitutes() {
-    return institutesRepository.save(getInstitutes());
+  private Institute createInstitutes() {
+    return instituteRepository.save(getInstitutes());
   }
 
-  private Account getAccount(Institutes institutes) {
+  private Account getAccount(Institute institute) {
     return fixtureMonkey.giveMeBuilder(Account.class)
-        .set("institutes", institutes)
+        .set("institute", institute)
         .sample();
   }
 
-  private Account createAccount(Institutes institutes) {
-    return accountRepository.save(getAccount(institutes));
+  private Account createAccount(Institute institute) {
+    return accountRepository.save(getAccount(institute));
   }
 
   @Test
   void login_성공() {
     //given
-    Institutes institutes = createInstitutes();
-    Account account = createAccount(institutes);
+    Institute institute = createInstitutes();
+    Account account = createAccount(institute);
     AccountLoginDto.Request request = AccountLoginDto.Request.builder()
         .account(account.getAccount())
         .password(account.getPassword())
@@ -143,8 +141,8 @@ public class AccountTest extends IntegrationTest {
   @Test
   void reissueToken() {
     //given
-    Institutes institutes = createInstitutes();
-    Account account = createAccount(institutes);
+    Institute institute = createInstitutes();
+    Account account = createAccount(institute);
     TokenDto tokenDto = tokenManager.createToken(account);
 
     String url = BASE_URL + "/reissueToken?refreshToken=" + tokenDto.getRefreshToken();
