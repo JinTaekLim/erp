@@ -1,6 +1,8 @@
 package com.erp.erp.domain.customers.common.dto;
 
 import com.erp.erp.domain.customers.common.entity.Customers;
+import com.erp.erp.domain.plan.common.entity.LicenseType;
+import com.erp.erp.domain.plan.common.entity.PlanType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -25,10 +27,16 @@ public class GetCustomerDto {
     private String gender;
     @Schema(description = "전화번호")
     private String phone;
-    @Schema(description = "이용권")
-    private String plans;
+    @Schema(description = "1/2종 구분")
+    private LicenseType licenseType;
+    @Schema(description = "이용권 이름")
+    private String planName;
+    @Schema(description = "이용권 구분 (시간/기간제)")
+    private PlanType planType;
     @Schema(description = "남은 시간")
     private double remainingTime;
+    @Schema(description = "남은 기간")
+    private int remainingPeriod;
     @Schema(description = "사용 시간")
     private double usedTime;
     @Schema(description = "등록 날짜")
@@ -44,6 +52,7 @@ public class GetCustomerDto {
 
       double usedTime = 0;
       double remainingTime = 0;
+      int remainingPeriod = 0;
 
 
       return Response.builder()
@@ -51,8 +60,11 @@ public class GetCustomerDto {
           .name(customers.getName())
           .gender(String.valueOf(customers.getGender()))
           .phone(customers.getPhone())
-          .plans(customers.getInstitutes().getName())
+          .licenseType(customers.getPlanPayment().getPlan().getLicenseType())
+          .planName(customers.getPlanPayment().getPlan().getName())
+          .planType(customers.getPlanPayment().getPlan().getPlanType())
           .remainingTime(remainingTime)
+          .remainingPeriod(remainingPeriod)
           .usedTime(usedTime)
           .registrationDate(registrationDate)
           .tardinessCount(0)
