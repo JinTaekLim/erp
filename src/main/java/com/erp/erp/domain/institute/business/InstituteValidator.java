@@ -3,7 +3,7 @@ package com.erp.erp.domain.institute.business;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.common.exception.InstituteNotFoundInCustomerException;
-import com.erp.erp.domain.reservations.common.entity.Reservations;
+import com.erp.erp.domain.reservation.common.entity.Reservation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -20,12 +20,12 @@ public class InstituteValidator {
     return customer;
   }
 
-  public Reservations validateReservationBelongsToInstitute(
+  public Reservation validateReservationBelongsToInstitute(
       Institute institute,
-      Reservations reservations
+      Reservation reservation
   ) {
-    Institute comparativeInstitute = reservations.getInstitute();
+    Institute comparativeInstitute = reservation.getInstitute();
     if (institute != comparativeInstitute) throw new InstituteNotFoundInCustomerException();
-    return reservations;
+    return reservation;
   }
 }
