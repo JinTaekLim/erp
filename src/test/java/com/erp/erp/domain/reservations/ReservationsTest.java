@@ -4,9 +4,9 @@ package com.erp.erp.domain.reservations;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.erp.erp.domain.customers.common.dto.AddCustomerDto.Response;
-import com.erp.erp.domain.customers.common.entity.Customers;
-import com.erp.erp.domain.customers.repository.CustomersRepository;
+import com.erp.erp.domain.customer.common.dto.AddCustomerDto.Response;
+import com.erp.erp.domain.customer.common.entity.Customer;
+import com.erp.erp.domain.customer.repository.CustomerRepository;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.institutes.repository.InstitutesRepository;
 import com.erp.erp.domain.payments.common.entity.OtherPayments;
@@ -47,7 +47,7 @@ class ReservationsTest extends IntegrationTest {
   @Autowired
   private InstitutesRepository institutesRepository;
   @Autowired
-  private CustomersRepository customersRepository;
+  private CustomerRepository customerRepository;
   @Autowired
   private ReservationsRepository reservationsRepository;
   @Autowired
@@ -60,12 +60,12 @@ class ReservationsTest extends IntegrationTest {
         .sample();
   }
 
-  private Customers getCustomers(Institutes institutes) {
+  private Customer getCustomers(Institutes institutes) {
     Plan plan = createPlans();
     PlanPayment planPayment = getPlanPayment(plan);
     List<OtherPayments> otherPaymentList = getRandomOtherPaymentList(plan);
 
-    return fixtureMonkey.giveMeBuilder(Customers.class)
+    return fixtureMonkey.giveMeBuilder(Customer.class)
             .setNull("id")
             .set("institutes", institutes)
             .set("planPayment", planPayment)
@@ -77,9 +77,9 @@ class ReservationsTest extends IntegrationTest {
   private Institutes createInstitutes() {
     return institutesRepository.save(getInstitutes());
   }
-  private Customers createCustomers(Institutes institutes){
-    Customers customers = getCustomers(institutes);
-    return customersRepository.save(customers);
+  private Customer createCustomers(Institutes institutes){
+    Customer customer = getCustomers(institutes);
+    return customerRepository.save(customer);
   }
 
   private PlanPayment getPlanPayment(Plan plan) {
@@ -112,14 +112,14 @@ class ReservationsTest extends IntegrationTest {
   void addReservations() {
     // given
     Institutes institutes = createInstitutes();
-    Customers customers = createCustomers(institutes);
+    Customer customer = createCustomers(institutes);
     LocalDateTime startTime = LocalDateTime.now();
 
     int randomInt = RandomValue.getInt(0,600);
     LocalDateTime endTime = LocalDateTime.now().plusMinutes(30+randomInt);
 
     AddReservationsDto.Request request = AddReservationsDto.Request.builder()
-            .customersId(customers.getId())
+            .customersId(customer.getId())
             .startTime(startTime)
             .endTime(endTime)
             .memo(RandomValue.string(255).get())
@@ -157,13 +157,13 @@ class ReservationsTest extends IntegrationTest {
   void addReservations_fail() {
     // given
     Institutes institutes = createInstitutes();
-    Customers customers = createCustomers(institutes);
+    Customer customer = createCustomers(institutes);
     LocalDateTime startTime = LocalDateTime.now();
     int randomInt = RandomValue.getInt(0,600);
     LocalDateTime endTime = startTime.minusMinutes(randomInt);
 
     AddReservationsDto.Request request = AddReservationsDto.Request.builder()
-            .customersId(customers.getId())
+            .customersId(customer.getId())
             .startTime(startTime)
             .endTime(endTime)
             .memo(RandomValue.string(255).get())
@@ -201,7 +201,7 @@ class ReservationsTest extends IntegrationTest {
   void getDailyReservations_성공() {
     //given
     Institutes institutes = createInstitutes();
-    Customers customers = createCustomers(institutes);
+    Customer customer = createCustomers(institutes);
     LocalDate day = RandomValue.getRandomLocalDate();
 
     int reservationsCount = RandomValue.getInt(1,20);
@@ -220,7 +220,7 @@ class ReservationsTest extends IntegrationTest {
 
       Reservations reservations = Reservations.builder()
           .institutes(institutes)
-          .customers(customers)
+          .customer(customer)
           .startTime(startTime)
           .endTime(endTime)
           .build();

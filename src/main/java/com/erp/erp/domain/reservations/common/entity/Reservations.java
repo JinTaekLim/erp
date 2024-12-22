@@ -1,6 +1,6 @@
 package com.erp.erp.domain.reservations.common.entity;
 
-import com.erp.erp.domain.customers.common.entity.Customers;
+import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import jakarta.persistence.*;
 
@@ -22,7 +22,7 @@ public class Reservations {
   private Institutes institutes;
 
   @ManyToOne
-  private Customers customers;
+  private Customer customer;
 
   private LocalDateTime startTime;
 
@@ -33,10 +33,10 @@ public class Reservations {
   private int seatNumber;
 
   @Builder
-  public Reservations(Institutes institutes, Customers customers, LocalDateTime startTime,
+  public Reservations(Institutes institutes, Customer customer, LocalDateTime startTime,
       LocalDateTime endTime, String memo) {
     this.institutes = institutes;
-    this.customers = customers;
+    this.customer = customer;
     this.startTime = startTime;
     this.endTime = endTime;
     this.memo = memo;

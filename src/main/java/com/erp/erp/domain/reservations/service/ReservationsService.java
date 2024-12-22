@@ -1,8 +1,8 @@
 package com.erp.erp.domain.reservations.service;
 
 import com.erp.erp.domain.auth.business.AuthProvider;
-import com.erp.erp.domain.customers.business.CustomersReader;
-import com.erp.erp.domain.customers.common.entity.Customers;
+import com.erp.erp.domain.customer.business.CustomerReader;
+import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.institutes.business.InstitutesValidator;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.reservations.business.ReservationsDelete;
@@ -32,13 +32,13 @@ public class ReservationsService {
   private final ReservationsUpdater reservationsUpdater;
   private final ReservationsDelete reservationsDelete;
   private final ReservationsValidator reservationsValidator;
-  private final CustomersReader customersReader;
+  private final CustomerReader customerReader;
 
 
   public Reservations addReservations(AddReservationsDto.Request req) {
     Institutes institutes = authProvider.getCurrentInstitute();
-    Customers customers = customersReader.findById(req.getCustomersId());
-    institutesValidator.validateCustomerBelongsToInstitute(institutes,customers);
+    Customer customer = customerReader.findById(req.getCustomersId());
+    institutesValidator.validateCustomerBelongsToInstitute(institutes, customer);
 
     LocalDateTime startTime = req.getStartTime();
     LocalDateTime endTime = req.getEndTime();
@@ -47,7 +47,7 @@ public class ReservationsService {
 
     Reservations reservations = Reservations.builder()
         .institutes(institutes)
-        .customers(customers)
+        .customer(customer)
         .startTime(startTime)
         .endTime(endTime)
         .memo(req.getMemo())
@@ -79,8 +79,8 @@ public class ReservationsService {
     Institutes institutes = authProvider.getCurrentInstitute();
     long reservationsId = req.getReservationsId();
     Reservations reservations = reservationsReader.findById(reservationsId);
-    Customers customers = reservations.getCustomers();
-    institutesValidator.validateCustomerBelongsToInstitute(institutes, customers);
+    Customer customer = reservations.getCustomer();
+    institutesValidator.validateCustomerBelongsToInstitute(institutes, customer);
 
     LocalDateTime startTime = req.getStartTime();
     LocalDateTime endTime = req.getEndTime();
@@ -93,8 +93,8 @@ public class ReservationsService {
     Institutes institutes = authProvider.getCurrentInstitute();
     long reservationsId = req.getReservationsId();
     Reservations reservations = reservationsReader.findById(reservationsId);
-    Customers customers = reservations.getCustomers();
-    institutesValidator.validateCustomerBelongsToInstitute(institutes, customers);
+    Customer customer = reservations.getCustomer();
+    institutesValidator.validateCustomerBelongsToInstitute(institutes, customer);
 
     return reservationsUpdater.updateSeatNumber(reservations, req.getSeatNumber());
   }
@@ -104,8 +104,8 @@ public class ReservationsService {
     Institutes institutes = authProvider.getCurrentInstitute();
     long reservationsId = req.getReservationsId();
     Reservations reservations = reservationsReader.findById(reservationsId);
-    Customers customers = reservations.getCustomers();
-    institutesValidator.validateCustomerBelongsToInstitute(institutes, customers);
+    Customer customer = reservations.getCustomer();
+    institutesValidator.validateCustomerBelongsToInstitute(institutes, customer);
     reservationsDelete.delete(reservations);
   }
 

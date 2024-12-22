@@ -31,7 +31,7 @@ public class ReservationsController {
 
     AddReservationsDto.Response response = AddReservationsDto.Response.builder()
         .reservationsId(reservations.getId())
-        .customersId(reservations.getCustomers().getId())
+        .customersId(reservations.getCustomer().getId())
         .startTime(reservations.getStartTime())
         .endTime(reservations.getEndTime())
         .memo(reservations.getMemo())
@@ -54,7 +54,7 @@ public class ReservationsController {
             .startTime(reservations.getStartTime())
             .endTime(reservations.getEndTime())
             .seatNumber(reservations.getSeatNumber())
-            .name(reservations.getCustomers().getName())
+            .name(reservations.getCustomer().getName())
             .build()
         )
         .toList();
@@ -72,7 +72,7 @@ public class ReservationsController {
             .reservationsId(reservations.getId())
             .startTime(reservations.getStartTime())
             .endTime(reservations.getEndTime())
-            .name(reservations.getCustomers().getName())
+            .name(reservations.getCustomer().getName())
             .seatNumber(reservations.getSeatNumber())
             .build()
         )

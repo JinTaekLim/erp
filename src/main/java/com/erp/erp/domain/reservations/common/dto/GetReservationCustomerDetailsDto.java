@@ -1,7 +1,7 @@
 package com.erp.erp.domain.reservations.common.dto;
 
-import com.erp.erp.domain.customers.common.entity.Customers;
-import com.erp.erp.domain.customers.common.entity.Gender;
+import com.erp.erp.domain.customer.common.entity.Customer;
+import com.erp.erp.domain.customer.common.entity.Gender;
 import com.erp.erp.domain.payments.common.entity.PlanPayment;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.reservations.common.entity.Reservations;
@@ -51,8 +51,8 @@ public class GetReservationCustomerDetailsDto {
     public static Response fromEntity(
         Reservations reservations
     ) {
-      Customers customers = reservations.getCustomers();
-      PlanPayment planPayment = customers.getPlanPayment();
+      Customer customer = reservations.getCustomer();
+      PlanPayment planPayment = customer.getPlanPayment();
       Plan plan = planPayment.getPlan();
 
       LocalDateTime registrationAt = planPayment.getRegistrationAt();
@@ -64,10 +64,10 @@ public class GetReservationCustomerDetailsDto {
       return Response.builder()
           .startTime(reservations.getStartTime())
           .endTime(reservations.getEndTime())
-          .photoUrl(customers.getPhotoUrl())
-          .name(customers.getName())
-          .gender(customers.getGender())
-          .phone(customers.getPhone())
+          .photoUrl(customer.getPhotoUrl())
+          .name(customer.getName())
+          .gender(customer.getGender())
+          .phone(customer.getPhone())
           .plans(plan.getName())
           .endDate(endDate)
           .remainingTime(0)
