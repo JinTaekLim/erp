@@ -4,7 +4,6 @@ import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.Gender;
 import com.erp.erp.domain.customer.common.entity.Progress;
 import com.erp.erp.domain.customer.common.entity.Progress.ProgressItem;
-import com.erp.erp.domain.payments.common.entity.OtherPayments;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -53,13 +52,14 @@ public class UpdateCustomerDto {
     private List<OtherPayment> otherPayment;
 
     public Customer updatedCustomers(Customer customer) {
-      List<OtherPayments> otherPaymentsList = toOtherPaymentsList();
-      return customer.update(name, gender, phone, address, photoUrl, memo, birthDate, otherPaymentsList);
+      List<com.erp.erp.domain.payment.common.entity.OtherPayment> otherPaymentList = toOtherPaymentsList();
+      return customer.update(name, gender, phone, address, photoUrl, memo, birthDate,
+          otherPaymentList);
     }
 
-    private List<OtherPayments> toOtherPaymentsList() {
+    private List<com.erp.erp.domain.payment.common.entity.OtherPayment> toOtherPaymentsList() {
       return this.otherPayment.stream()
-              .map(otherPayment -> OtherPayments.builder()
+              .map(otherPayment -> com.erp.erp.domain.payment.common.entity.OtherPayment.builder()
                       .content(otherPayment.getContent())
                       .status(otherPayment.isStatus())
                       .registrationAt(otherPayment.getRegistrationAt())
@@ -123,9 +123,9 @@ public class UpdateCustomerDto {
                 .build();
       }
 
-      private static List<OtherPayment> getOtherPaymentResponse(List<OtherPayments> otherPayments) {
+      private static List<OtherPayment> getOtherPaymentResponse(List<com.erp.erp.domain.payment.common.entity.OtherPayment> otherPayments) {
         return otherPayments.stream()
-                .map(o -> OtherPayment.builder()
+                .map(o -> UpdateCustomerDto.OtherPayment.builder()
                         .status(o.isStatus())
                         .content(o.getContent())
                         .price(o.getPrice())
@@ -135,9 +135,9 @@ public class UpdateCustomerDto {
       }
 
 
-      private List<OtherPayments> getOtherPayments() {
+      private List<com.erp.erp.domain.payment.common.entity.OtherPayment> getOtherPayments() {
         return this.otherPayment.stream()
-                .map(o -> OtherPayments.builder()
+                .map(o -> com.erp.erp.domain.payment.common.entity.OtherPayment.builder()
                         .status(o.status)
                         .registrationAt(o.registrationAt)
                         .content(o.content)

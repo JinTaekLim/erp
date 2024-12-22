@@ -20,8 +20,8 @@ import com.erp.erp.domain.customer.common.entity.Progress;
 import com.erp.erp.domain.customer.repository.CustomerRepository;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
-import com.erp.erp.domain.payments.common.entity.OtherPayments;
-import com.erp.erp.domain.payments.common.entity.PlanPayment;
+import com.erp.erp.domain.payment.common.entity.OtherPayment;
+import com.erp.erp.domain.payment.common.entity.PlanPayment;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.repository.PlanRepository;
 import com.erp.erp.global.response.ApiResult;
@@ -91,7 +91,7 @@ class CustomerTest extends IntegrationTest {
     return planRepository.save(getPlans());
   }
 
-  private Customer getCustomers(Institute institute, PlanPayment planPayment, List<OtherPayments> otherPaymentList) {
+  private Customer getCustomers(Institute institute, PlanPayment planPayment, List<OtherPayment> otherPaymentList) {
     return fixtureMonkey.giveMeBuilder(Customer.class)
             .setNull("id")
             .set("institute", institute)
@@ -103,14 +103,14 @@ class CustomerTest extends IntegrationTest {
 
   private Customer createCustomers(Plan plan, Institute institute) {
     PlanPayment planPayment = getPlanPayment(plan);
-    List<OtherPayments> otherPaymentList = getRandomOtherPaymentList(plan);
+    List<OtherPayment> otherPaymentList = getRandomOtherPaymentList(plan);
     Customer customer = getCustomers(institute, planPayment, otherPaymentList);
     return customerRepository.save(customer);
   }
 
   private Customer createCustomers(Institute institute, Plan plan, CustomerStatus status, String name) {
     PlanPayment planPayment = getPlanPayment(plan);
-    List<OtherPayments> otherPaymentList = getRandomOtherPaymentList(plan);
+    List<OtherPayment> otherPaymentList = getRandomOtherPaymentList(plan);
     Customer customer = fixtureMonkey.giveMeBuilder(Customer.class)
         .setNull("id")
         .set("institute", institute)
@@ -138,9 +138,9 @@ class CustomerTest extends IntegrationTest {
             .set("plan", plan)
             .sample();
   }
-  private List<OtherPayments> getRandomOtherPaymentList(Plan plan) {
+  private List<OtherPayment> getRandomOtherPaymentList(Plan plan) {
     int randomInt = RandomValue.getInt(0, 5);
-    return fixtureMonkey.giveMeBuilder(OtherPayments.class)
+    return fixtureMonkey.giveMeBuilder(OtherPayment.class)
             .setNull("id")
             .set("plan", plan)
             .sampleList(randomInt);

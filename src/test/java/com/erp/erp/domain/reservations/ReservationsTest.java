@@ -9,8 +9,8 @@ import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.repository.CustomerRepository;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
-import com.erp.erp.domain.payments.common.entity.OtherPayments;
-import com.erp.erp.domain.payments.common.entity.PlanPayment;
+import com.erp.erp.domain.payment.common.entity.OtherPayment;
+import com.erp.erp.domain.payment.common.entity.PlanPayment;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.repository.PlanRepository;
 import com.erp.erp.domain.reservations.common.dto.AddReservationsDto;
@@ -63,7 +63,7 @@ class ReservationsTest extends IntegrationTest {
   private Customer getCustomers(Institute institute) {
     Plan plan = createPlans();
     PlanPayment planPayment = getPlanPayment(plan);
-    List<OtherPayments> otherPaymentList = getRandomOtherPaymentList(plan);
+    List<OtherPayment> otherPaymentList = getRandomOtherPaymentList(plan);
 
     return fixtureMonkey.giveMeBuilder(Customer.class)
             .setNull("id")
@@ -89,9 +89,9 @@ class ReservationsTest extends IntegrationTest {
             .sample();
   }
 
-  private List<OtherPayments> getRandomOtherPaymentList(Plan plan) {
+  private List<OtherPayment> getRandomOtherPaymentList(Plan plan) {
     int randomInt = RandomValue.getInt(0, 5);
-    return fixtureMonkey.giveMeBuilder(OtherPayments.class)
+    return fixtureMonkey.giveMeBuilder(OtherPayment.class)
             .setNull("id")
             .set("plan", plan)
             .sampleList(randomInt);

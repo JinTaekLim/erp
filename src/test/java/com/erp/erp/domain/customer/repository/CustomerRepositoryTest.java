@@ -6,8 +6,8 @@ import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
-import com.erp.erp.domain.payments.common.entity.OtherPayments;
-import com.erp.erp.domain.payments.common.entity.PlanPayment;
+import com.erp.erp.domain.payment.common.entity.OtherPayment;
+import com.erp.erp.domain.payment.common.entity.PlanPayment;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.repository.PlanRepository;
 import com.erp.erp.global.util.randomValue.RandomValue;
@@ -38,7 +38,7 @@ class CustomerRepositoryTest extends JpaTest {
     return instituteRepository.save(getInstitutes());
   }
 
-  private Customer getCustomers(Institute institute, PlanPayment planPayment, List<OtherPayments> otherPaymentList) {
+  private Customer getCustomers(Institute institute, PlanPayment planPayment, List<OtherPayment> otherPaymentList) {
     return fixtureMonkey.giveMeBuilder(Customer.class)
             .setNull("id")
             .set("institute", institute)
@@ -65,9 +65,9 @@ class CustomerRepositoryTest extends JpaTest {
             .sample();
   }
 
-  private List<OtherPayments> getRandomOtherPaymentList(Plan plan) {
+  private List<OtherPayment> getRandomOtherPaymentList(Plan plan) {
     int randomInt = RandomValue.getInt(0, 5);
-    return fixtureMonkey.giveMeBuilder(OtherPayments.class)
+    return fixtureMonkey.giveMeBuilder(OtherPayment.class)
             .setNull("id")
             .set("plans", plan)
             .sampleList(randomInt);
@@ -84,7 +84,7 @@ class CustomerRepositoryTest extends JpaTest {
               Institute institute = createInstitutes();
               Plan plan = createPlans();
               PlanPayment planPayment = getPlanPayment(plan);
-              List<OtherPayments> otherPaymentList = getRandomOtherPaymentList(plan);
+              List<OtherPayment> otherPaymentList = getRandomOtherPaymentList(plan);
 
               return getCustomers(institute, planPayment, otherPaymentList);
             })
@@ -106,7 +106,7 @@ class CustomerRepositoryTest extends JpaTest {
     Institute institute = createInstitutes();
     Plan plan = createPlans();
     PlanPayment planPayment = getPlanPayment(plan);
-    List<OtherPayments> otherPaymentList = getRandomOtherPaymentList(plan);
+    List<OtherPayment> otherPaymentList = getRandomOtherPaymentList(plan);
     Customer customer = getCustomers(institute, planPayment, otherPaymentList);
     customerRepository.save(customer);
 
@@ -126,7 +126,7 @@ class CustomerRepositoryTest extends JpaTest {
     Institute institute = createInstitutes();
     Plan plan = createPlans();
     PlanPayment planPayment = getPlanPayment(plan);
-    List<OtherPayments> otherPaymentList = getRandomOtherPaymentList(plan);
+    List<OtherPayment> otherPaymentList = getRandomOtherPaymentList(plan);
     Customer customer = getCustomers(institute, planPayment, otherPaymentList);
     customerRepository.save(customer);
     long customersId = customer.getId();

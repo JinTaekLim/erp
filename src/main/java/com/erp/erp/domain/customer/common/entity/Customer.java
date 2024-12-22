@@ -1,8 +1,8 @@
 package com.erp.erp.domain.customer.common.entity;
 
 import com.erp.erp.domain.institute.common.entity.Institute;
-import com.erp.erp.domain.payments.common.entity.OtherPayments;
-import com.erp.erp.domain.payments.common.entity.PlanPayment;
+import com.erp.erp.domain.payment.common.entity.OtherPayment;
+import com.erp.erp.domain.payment.common.entity.PlanPayment;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -55,12 +55,12 @@ public class Customer {
 
   @OneToMany(cascade = CascadeType.ALL)
   @Valid
-  private List<OtherPayments> otherPayments;
+  private List<OtherPayment> otherPayments;
 
 
   @Builder
   public Customer(Institute institute, String name, Gender gender, String phone, String address, String photoUrl,
-                   String memo, LocalDate birthDate, PlanPayment planPayment, List<OtherPayments> otherPayments) {
+                   String memo, LocalDate birthDate, PlanPayment planPayment, List<OtherPayment> otherPayments) {
     this.institute = institute;
     this.name = name;
     this.gender = gender;
@@ -76,7 +76,7 @@ public class Customer {
 
 
   public Customer update(String name, Gender gender, String phone, String address, String photoUrl, String memo,
-                          LocalDate birthDate, List<OtherPayments> otherPayments) {
+                          LocalDate birthDate, List<OtherPayment> otherPayments) {
     this.name = name;
     this.gender = gender;
     this.phone = phone;

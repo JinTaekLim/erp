@@ -1,4 +1,4 @@
-package com.erp.erp.domain.payments.common.entity;
+package com.erp.erp.domain.payment.common.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor
-public class OtherPayments {
+@Table(name = "otherPayment")
+public class OtherPayment {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +31,7 @@ public class OtherPayments {
   private int price;
 
   @Builder
-  public OtherPayments(boolean status, LocalDateTime registrationAt, String content, int price) {
+  public OtherPayment(boolean status, LocalDateTime registrationAt, String content, int price) {
     this.status = status;
     this.registrationAt = registrationAt;
     this.content = content;

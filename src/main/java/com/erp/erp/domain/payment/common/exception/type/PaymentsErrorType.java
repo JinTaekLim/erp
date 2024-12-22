@@ -1,4 +1,4 @@
-package com.erp.erp.domain.payments.common.exception;
+package com.erp.erp.domain.payment.common.exception.type;
 
 import lombok.Getter;
 

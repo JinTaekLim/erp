@@ -2,7 +2,7 @@ package com.erp.erp.domain.reservations.common.dto;
 
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.Gender;
-import com.erp.erp.domain.payments.common.entity.PlanPayment;
+import com.erp.erp.domain.payment.common.entity.PlanPayment;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.reservations.common.entity.Reservations;
 import io.swagger.v3.oas.annotations.media.Schema;

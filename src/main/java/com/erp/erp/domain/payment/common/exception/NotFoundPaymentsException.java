@@ -1,5 +1,6 @@
-package com.erp.erp.domain.payments.common.exception;
+package com.erp.erp.domain.payment.common.exception;
 
+import com.erp.erp.domain.payment.common.exception.type.PaymentsErrorType;
 import com.erp.erp.global.error.exception.BusinessException;
 import lombok.Getter;
 

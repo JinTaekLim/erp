@@ -3,8 +3,7 @@ package com.erp.erp.domain.customer.common.dto;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.Gender;
 import com.erp.erp.domain.institute.common.entity.Institute;
-import com.erp.erp.domain.payments.common.entity.OtherPayments;
-import com.erp.erp.domain.payments.common.entity.PaymentsMethod;
+import com.erp.erp.domain.payment.common.entity.PaymentsMethod;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -109,8 +108,8 @@ public class AddCustomerDto {
     }
 
     public Customer toCustomers(Institute institute, Plan plan, String photoUrl) {
-      com.erp.erp.domain.payments.common.entity.PlanPayment planPayment = getPayments(plan);
-      List<OtherPayments> otherPayments = getOtherPayments();
+      com.erp.erp.domain.payment.common.entity.PlanPayment planPayment = getPayments(plan);
+      List<com.erp.erp.domain.payment.common.entity.OtherPayment> otherPayments = getOtherPayments();
 
       return Customer.builder()
           .institute(institute)
@@ -126,9 +125,9 @@ public class AddCustomerDto {
           .build();
     }
 
-    private List<OtherPayments> getOtherPayments() {
+    private List<com.erp.erp.domain.payment.common.entity.OtherPayment> getOtherPayments() {
       return this.otherPayment.stream()
-              .map(o -> OtherPayments.builder()
+              .map(o -> com.erp.erp.domain.payment.common.entity.OtherPayment.builder()
                       .status(o.status)
                       .registrationAt(o.registrationAt)
                       .content(o.content)
@@ -138,8 +137,8 @@ public class AddCustomerDto {
     }
 
 
-    private com.erp.erp.domain.payments.common.entity.PlanPayment getPayments(Plan plan) {
-      return com.erp.erp.domain.payments.common.entity.PlanPayment.builder()
+    private com.erp.erp.domain.payment.common.entity.PlanPayment getPayments(Plan plan) {
+      return com.erp.erp.domain.payment.common.entity.PlanPayment.builder()
           .plan(plan)
           .status(this.planPayment.status)
           .paymentsMethod(this.paymentsMethod)

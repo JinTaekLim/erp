@@ -1,4 +1,4 @@
-package com.erp.erp.domain.payments.common.entity;
+package com.erp.erp.domain.payment.common.entity;
 
 import com.erp.erp.domain.plan.common.entity.Plan;
 import jakarta.persistence.Entity;
@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
+@Table(name = "planPayments")
 public class PlanPayment {
 
   @Id
