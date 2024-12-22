@@ -1,9 +1,9 @@
-package com.erp.erp.domain.accounts.service;
+package com.erp.erp.domain.account.service;
 
-import com.erp.erp.domain.accounts.business.AccountsCreator;
-import com.erp.erp.domain.accounts.business.AccountsReader;
-import com.erp.erp.domain.accounts.common.dto.AccountsLoginDto;
-import com.erp.erp.domain.accounts.common.entity.Accounts;
+import com.erp.erp.domain.account.business.AccountCreator;
+import com.erp.erp.domain.account.business.AccountReader;
+import com.erp.erp.domain.account.common.dto.AccountLoginDto;
+import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.admins.common.dto.AddAccountDto;
 import com.erp.erp.domain.auth.business.TokenExtractor;
 import com.erp.erp.domain.auth.business.TokenManager;
@@ -17,32 +17,32 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class AccountsService {
+public class AccountService {
 
-  private final AccountsCreator accountsCreator;
-  private final AccountsReader accountsReader;
+  private final AccountCreator accountCreator;
+  private final AccountReader accountReader;
   private final InstitutesReader institutesReader;
   private final TokenManager tokenManager;
   private final TokenExtractor tokenExtractor;
 
   public AddAccountDto.Response addAccount(AddAccountDto.Request req) {
     Institutes institutes = institutesReader.findById(req.getInstituteId());
-    Accounts accounts = req.toEntityWithInstitute(institutes);
-    accountsCreator.save(accounts);
-    return AddAccountDto.Response.fromEntity(accounts);
+    Account account = req.toEntityWithInstitute(institutes);
+    accountCreator.save(account);
+    return AddAccountDto.Response.fromEntity(account);
   }
 
-  public TokenDto login(AccountsLoginDto.Request req) {
-    Accounts accounts = accountsReader.findByAccountAndPassword(
+  public TokenDto login(AccountLoginDto.Request req) {
+    Account account = accountReader.findByAccountAndPassword(
         req.getAccount(),
         req.getPassword()
     );
-    return tokenManager.createToken(accounts);
+    return tokenManager.createToken(account);
   }
 
   public TokenDto reissueToken(String refreshToken) {
     Long memberId = tokenExtractor.extractMemberIdFromRefreshToken(refreshToken);
-    Accounts accounts = accountsReader.findById(memberId);
-    return tokenManager.reissueToken(accounts, refreshToken);
+    Account account = accountReader.findById(memberId);
+    return tokenManager.reissueToken(account, refreshToken);
   }
 }

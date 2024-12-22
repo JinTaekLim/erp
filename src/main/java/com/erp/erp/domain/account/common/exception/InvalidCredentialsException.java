@@ -1,6 +1,6 @@
-package com.erp.erp.domain.accounts.common.exception;
+package com.erp.erp.domain.account.common.exception;
 
-import com.erp.erp.domain.accounts.common.exception.type.AccountErrorType;
+import com.erp.erp.domain.account.common.exception.type.AccountErrorType;
 import com.erp.erp.global.error.exception.UnAuthenticatedException;
 import java.io.Serial;
 import lombok.Getter;

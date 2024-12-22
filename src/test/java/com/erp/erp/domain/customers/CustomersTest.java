@@ -6,9 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import com.erp.erp.domain.accounts.business.PhotoUtil;
-import com.erp.erp.domain.accounts.common.entity.Accounts;
-import com.erp.erp.domain.accounts.repository.AccountsRepository;
+import com.erp.erp.domain.account.business.PhotoUtil;
+import com.erp.erp.domain.account.common.entity.Account;
+import com.erp.erp.domain.account.repository.AccountRepository;
 import com.erp.erp.domain.customers.common.dto.AddCustomerDto;
 
 import com.erp.erp.domain.customers.common.dto.SearchCustomerNameDto;
@@ -58,7 +58,7 @@ class CustomersTest extends IntegrationTest {
   private InstitutesRepository institutesRepository;
 
   @Autowired
-  private AccountsRepository accountsRepository;
+  private AccountRepository accountRepository;
 
   @Autowired
   private PlanRepository planRepository;
@@ -67,9 +67,9 @@ class CustomersTest extends IntegrationTest {
   private PhotoUtil photoUtil;
 
 
-  private Accounts getAccounts() {
+  private Account getAccounts() {
     Institutes institutes = createInstitutes();
-    return fixtureMonkey.giveMeBuilder(Accounts.class)
+    return fixtureMonkey.giveMeBuilder(Account.class)
         .setNull("id")
         .set("institutes", institutes)
         .sample();
@@ -80,7 +80,7 @@ class CustomersTest extends IntegrationTest {
         .sample();
   }
 
-  private Accounts createAccounts() { return accountsRepository.save(getAccounts()); }
+  private Account createAccounts() { return accountRepository.save(getAccounts()); }
   private Institutes createInstitutes() {
     return institutesRepository.save(getInstitutes());
   }

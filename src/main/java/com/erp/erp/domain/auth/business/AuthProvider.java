@@ -1,6 +1,6 @@
 package com.erp.erp.domain.auth.business;
 
-import com.erp.erp.domain.accounts.business.AccountsReader;
+import com.erp.erp.domain.account.business.AccountReader;
 import com.erp.erp.domain.auth.common.exception.AuthenticationNameNullException;
 import com.erp.erp.domain.auth.common.exception.AuthenticationNullException;
 import com.erp.erp.domain.auth.common.exception.NotParsedValueException;
@@ -18,7 +18,7 @@ import org.springframework.util.StringUtils;
 @RequiredArgsConstructor
 public class AuthProvider {
 
-  private final AccountsReader accountsReader;
+  private final AccountReader accountReader;
 
   private final String GUEST = "anonymousUser";
 
@@ -44,7 +44,7 @@ public class AuthProvider {
 
   public Institutes getCurrentInstitute() {
     Long accountId = getCurrentAccountId();
-    return accountsReader.findInstitutesByAccountId(accountId);
+    return accountReader.findInstitutesByAccountId(accountId);
   }
 
 }

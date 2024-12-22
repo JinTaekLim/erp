@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
-import com.erp.erp.domain.accounts.common.entity.Accounts;
+import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.auth.business.AuthProvider;
 import com.erp.erp.domain.institutes.common.dto.UpdateTotalSpotsDto;
 import com.erp.erp.domain.institutes.common.dto.UpdateTotalSpotsDto.Request;
@@ -42,9 +42,9 @@ public class InstitutesTest extends IntegrationTest {
   void updateTotalSpots_성공() {
     //given
     /* 인증 관련 코드 추가 작성 필요*/
-    Accounts accounts = fixtureMonkey.giveMeOne(Accounts.class);
+    Account account = fixtureMonkey.giveMeOne(Account.class);
     
-    Institutes institutes = accounts.getInstitutes();
+    Institutes institutes = account.getInstitutes();
 
     UpdateTotalSpotsDto.Request request = fixtureMonkey.giveMeOne(
         UpdateTotalSpotsDto.Request.class
@@ -82,9 +82,9 @@ public class InstitutesTest extends IntegrationTest {
   void updateTotalSpots_잘못된_Num값() {
     //given
     /* 인증 관련 코드 추가 작성 필요*/
-    Accounts accounts = fixtureMonkey.giveMeOne(Accounts.class);
+    Account account = fixtureMonkey.giveMeOne(Account.class);
 
-    Institutes institutes = accounts.getInstitutes();
+    Institutes institutes = account.getInstitutes();
 
     UpdateTotalSpotsDto.Request request = UpdateTotalSpotsDto.Request.builder()
         .num(RandomValue.getInt(-999,-1))
@@ -120,9 +120,9 @@ public class InstitutesTest extends IntegrationTest {
   void updateTotalSpots_잘못된_값() {
     //given
     /* 인증 관련 코드 추가 작성 필요*/
-    Accounts accounts = fixtureMonkey.giveMeOne(Accounts.class);
+    Account account = fixtureMonkey.giveMeOne(Account.class);
 
-    Institutes institutes = accounts.getInstitutes();
+    Institutes institutes = account.getInstitutes();
 
 
     String url = "http://localhost:" + port + "/api/institutes/updateTotalSpots";

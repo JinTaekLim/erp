@@ -1,12 +1,12 @@
-package com.erp.erp.domain.accounts;
+package com.erp.erp.domain.account;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.erp.erp.domain.accounts.common.dto.AccountsLoginDto;
-import com.erp.erp.domain.accounts.common.entity.Accounts;
-import com.erp.erp.domain.accounts.repository.AccountsRepository;
+import com.erp.erp.domain.account.common.dto.AccountLoginDto;
+import com.erp.erp.domain.account.common.entity.Account;
+import com.erp.erp.domain.account.repository.AccountRepository;
 import com.erp.erp.domain.auth.business.TokenManager;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
@@ -14,6 +14,7 @@ import com.erp.erp.domain.institutes.repository.InstitutesRepository;
 import com.erp.erp.global.response.ApiResult;
 import com.erp.erp.global.util.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,19 +24,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 
-public class AccountsTest extends IntegrationTest {
+public class AccountTest extends IntegrationTest {
 
+  private String BASE_URL;
 
-  @LocalServerPort
-  private int port;
-
-  @Autowired
-  private TestRestTemplate restTemplate;
+  @BeforeEach
+  void setUp() {
+    BASE_URL = "http://localhost:" + port + "/api/account";
+  }
 
   @Autowired
   private InstitutesRepository institutesRepository;
   @Autowired
-  private AccountsRepository accountsRepository;
+  private AccountRepository accountRepository;
   @Autowired
   private TokenManager tokenManager;
 
@@ -47,27 +48,27 @@ public class AccountsTest extends IntegrationTest {
     return institutesRepository.save(getInstitutes());
   }
 
-  private Accounts getAccount(Institutes institutes) {
-    return fixtureMonkey.giveMeBuilder(Accounts.class)
+  private Account getAccount(Institutes institutes) {
+    return fixtureMonkey.giveMeBuilder(Account.class)
         .set("institutes", institutes)
         .sample();
   }
 
-  private Accounts createAccount(Institutes institutes) {
-    return accountsRepository.save(getAccount(institutes));
+  private Account createAccount(Institutes institutes) {
+    return accountRepository.save(getAccount(institutes));
   }
 
   @Test
   void login_성공() {
     //given
     Institutes institutes = createInstitutes();
-    Accounts accounts = createAccount(institutes);
-    AccountsLoginDto.Request request = AccountsLoginDto.Request.builder()
-        .account(accounts.getAccount())
-        .password(accounts.getPassword())
+    Account account = createAccount(institutes);
+    AccountLoginDto.Request request = AccountLoginDto.Request.builder()
+        .account(account.getAccount())
+        .password(account.getPassword())
         .build();
 
-    String url = "http://localhost:" + port + "/api/accounts/login";
+    String url = BASE_URL + "/login";
 
     //when
     ResponseEntity<String> responseEntity = restTemplate.postForEntity(
@@ -96,9 +97,9 @@ public class AccountsTest extends IntegrationTest {
   @DisplayName("필수값 미전달")
   void login_fail_1() {
     //given
-    AccountsLoginDto.Request request = AccountsLoginDto.Request.builder().build();
+    AccountLoginDto.Request request = AccountLoginDto.Request.builder().build();
 
-    String url = "http://localhost:" + port + "/api/accounts/login";
+    String url = BASE_URL + "/login";
 
     //when
     ResponseEntity<String> responseEntity = restTemplate.postForEntity(
@@ -123,9 +124,9 @@ public class AccountsTest extends IntegrationTest {
   @DisplayName("존재하지 않거나 잘못된 아이디 혹은 비밀번호")
   void login_fail_2() {
     //given
-    AccountsLoginDto.Request request = fixtureMonkey.giveMeOne(AccountsLoginDto.Request.class);
+    AccountLoginDto.Request request = fixtureMonkey.giveMeOne(AccountLoginDto.Request.class);
 
-    String url = "http://localhost:" + port + "/api/accounts/login";
+    String url = BASE_URL + "/login";
 
     //when
     ResponseEntity<String> responseEntity;
@@ -143,10 +144,10 @@ public class AccountsTest extends IntegrationTest {
   void reissueToken() {
     //given
     Institutes institutes = createInstitutes();
-    Accounts accounts = createAccount(institutes);
-    TokenDto tokenDto = tokenManager.createToken(accounts);
+    Account account = createAccount(institutes);
+    TokenDto tokenDto = tokenManager.createToken(account);
 
-    String url = "http://localhost:" + port + "/api/accounts/reissueToken?refreshToken=" + tokenDto.getRefreshToken();
+    String url = BASE_URL + "/reissueToken?refreshToken=" + tokenDto.getRefreshToken();
 
 
     //when

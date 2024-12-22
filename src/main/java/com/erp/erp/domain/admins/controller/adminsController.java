@@ -1,7 +1,7 @@
 package com.erp.erp.domain.admins.controller;
 
 
-import com.erp.erp.domain.accounts.service.AccountsService;
+import com.erp.erp.domain.account.service.AccountService;
 import com.erp.erp.domain.admins.common.dto.AddAccountDto;
 import com.erp.erp.domain.admins.common.dto.AddInstituteDto;
 import com.erp.erp.domain.admins.common.dto.AddPlanDto;
@@ -28,7 +28,7 @@ public class adminsController {
 
   private final PlanService planService;
   private final InstitutesService instituteService;
-  private final AccountsService accountsService;
+  private final AccountService accountService;
 
 
   @Operation(summary = "이용권 등록")
@@ -62,7 +62,7 @@ public class adminsController {
   public ApiResult<AddAccountDto.Response> addAccount(
       @RequestBody @Valid AddAccountDto.Request req
   ) {
-    AddAccountDto.Response response = accountsService.addAccount(req);
+    AddAccountDto.Response response = accountService.addAccount(req);
     return ApiResult.success(response);
   }
 

@@ -1,6 +1,6 @@
 package com.erp.erp.domain.customers.service;
 
-import com.erp.erp.domain.accounts.business.PhotoUtil;
+import com.erp.erp.domain.account.business.PhotoUtil;
 import com.erp.erp.domain.auth.business.AuthProvider;
 import com.erp.erp.domain.customers.business.CustomersCreator;
 import com.erp.erp.domain.customers.business.CustomersReader;

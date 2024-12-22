@@ -1,6 +1,6 @@
 package com.erp.erp.domain.admins.common.dto;
 
-import com.erp.erp.domain.accounts.common.entity.Accounts;
+import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -31,8 +31,8 @@ public class AddAccountDto {
     @NotNull
     private String password;
 
-    public Accounts toEntityWithInstitute(Institutes institutes) {
-      return Accounts.builder().institutes(institutes).account(account).password(password).build();
+    public Account toEntityWithInstitute(Institutes institutes) {
+      return Account.builder().institutes(institutes).account(account).password(password).build();
     }
 
   }
@@ -52,10 +52,10 @@ public class AddAccountDto {
     @NotNull
     private String account;
 
-    public static AddAccountDto.Response fromEntity(Accounts accounts) {
+    public static AddAccountDto.Response fromEntity(Account account) {
       return Response.builder()
-          .instituteId(accounts.getInstitutes().getId())
-          .account(accounts.getAccount())
+          .instituteId(account.getInstitutes().getId())
+          .account(account.getAccount())
           .build();
     }
   }

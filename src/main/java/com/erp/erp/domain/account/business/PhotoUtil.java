@@ -1,4 +1,4 @@
-package com.erp.erp.domain.accounts.business;
+package com.erp.erp.domain.account.business;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;

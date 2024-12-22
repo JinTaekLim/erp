@@ -1,7 +1,7 @@
-package com.erp.erp.domain.accounts.controller;
+package com.erp.erp.domain.account.controller;
 
-import com.erp.erp.domain.accounts.common.dto.AccountsLoginDto;
-import com.erp.erp.domain.accounts.service.AccountsService;
+import com.erp.erp.domain.account.common.dto.AccountLoginDto;
+import com.erp.erp.domain.account.service.AccountService;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
 import com.erp.erp.global.annotation.authentication.PermitAll;
 import com.erp.erp.global.response.ApiResult;
@@ -17,20 +17,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/accounts")
+@RequestMapping("/api/account")
 @Tag(name = "account", description = "계정 관리")
 @RequiredArgsConstructor
 @Slf4j
-public class AccountsController {
+public class AccountController {
 
-  private final AccountsService accountsService;
+  private final AccountService accountService;
 
 
   @Operation(summary = "로그인")
   @PostMapping("/login")
   @PermitAll
-  public ApiResult<TokenDto> login(@Valid @RequestBody AccountsLoginDto.Request request) {
-    TokenDto response = accountsService.login(request);
+  public ApiResult<TokenDto> login(@Valid @RequestBody AccountLoginDto.Request request) {
+    TokenDto response = accountService.login(request);
     return ApiResult.success(response);
   }
 
@@ -38,7 +38,7 @@ public class AccountsController {
   @PostMapping("/reissueToken")
   @PermitAll
   public ApiResult<TokenDto> reissueToken(@RequestParam String refreshToken) {
-    TokenDto response = accountsService.reissueToken(refreshToken);
+    TokenDto response = accountService.reissueToken(refreshToken);
     return ApiResult.success(response);
   }
 }

@@ -1,8 +1,8 @@
 package com.erp.erp.domain.auth.interceptor;
 
-import com.erp.erp.domain.accounts.business.AccountsCreator;
-import com.erp.erp.domain.accounts.business.AccountsReader;
-import com.erp.erp.domain.accounts.common.entity.Accounts;
+import com.erp.erp.domain.account.business.AccountCreator;
+import com.erp.erp.domain.account.business.AccountReader;
+import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.auth.business.TokenExtractor;
 import com.erp.erp.domain.auth.business.TokenManager;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
@@ -72,8 +72,8 @@ public class AuthInterceptor implements HandlerInterceptor {
   이후 삭제 예정
   */
 
-  private final AccountsCreator accountsCreator;
-  private final AccountsReader accountsReader;
+  private final AccountCreator accountCreator;
+  private final AccountReader accountReader;
   private final InstitutesRepository institutesRepository;
   private final TokenManager tokenManager;
 
@@ -83,13 +83,13 @@ public class AuthInterceptor implements HandlerInterceptor {
               .name("test").totalSpots(4).build();
           return institutesRepository.save(newInstitutes);
         });
-    Accounts accounts = accountsReader.findOptionalById(1L)
+    Account account = accountReader.findOptionalById(1L)
         .orElseGet(() -> {
-          Accounts newAccount = Accounts.builder()
+          Account newAccount = Account.builder()
               .account("test").password("test").institutes(institutes).build();
-          return accountsCreator.save(newAccount);
+          return accountCreator.save(newAccount);
         });
-    TokenDto tokenDto = tokenManager.createToken(accounts);
+    TokenDto tokenDto = tokenManager.createToken(account);
     return tokenDto.getAccessToken();
   }
 

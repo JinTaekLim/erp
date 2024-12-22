@@ -1,6 +1,6 @@
 package com.erp.erp.domain.auth.business;
 
-import com.erp.erp.domain.accounts.common.entity.Accounts;
+import com.erp.erp.domain.account.common.entity.Account;
 import io.jsonwebtoken.Claims;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,9 +17,9 @@ public class AuthenticationProvider {
 
   private final String ROLE = "ACCOUNT";
 
-  public Authentication getAuthentication(Accounts accounts) {
+  public Authentication getAuthentication(Account account) {
     List<SimpleGrantedAuthority> authorities = getAuthorities();
-    User principal = new User(String.valueOf(accounts.getId()), "", authorities);
+    User principal = new User(String.valueOf(account.getId()), "", authorities);
     return new UsernamePasswordAuthenticationToken(principal, null, authorities);
   }
 

@@ -1,4 +1,4 @@
-package com.erp.erp.domain.accounts.common.dto;
+package com.erp.erp.domain.account.common.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class AccountsLoginDto {
+public class AccountLoginDto {
 
   @Schema(name = "AccountsLoginDto_Request" , description = "로그인 요청")
   @Getter
