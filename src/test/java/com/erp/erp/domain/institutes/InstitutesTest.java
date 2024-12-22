@@ -53,7 +53,7 @@ public class InstitutesTest extends IntegrationTest {
     String url = "http://localhost:" + port + "/api/institutes/updateTotalSpots";
 
     //when
-    when(authProvider.getCurrentInstitutes()).thenReturn(institutes);
+    when(authProvider.getCurrentInstitute()).thenReturn(institutes);
 
 
     ResponseEntity<String> responseEntity = restTemplate.postForEntity(
@@ -94,7 +94,7 @@ public class InstitutesTest extends IntegrationTest {
     String url = "http://localhost:" + port + "/api/institutes/updateTotalSpots";
 
     //when
-    when(authProvider.getCurrentInstitutes()).thenReturn(institutes);
+    when(authProvider.getCurrentInstitute()).thenReturn(institutes);
 
     ResponseEntity<String> responseEntity = restTemplate.postForEntity(
         url,
@@ -129,7 +129,7 @@ public class InstitutesTest extends IntegrationTest {
     String url = "http://localhost:" + port + "/api/institutes/updateTotalSpots";
 
     //when
-    when(authProvider.getCurrentInstitutes()).thenReturn(institutes);
+    when(authProvider.getCurrentInstitute()).thenReturn(institutes);
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);

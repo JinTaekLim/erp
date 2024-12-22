@@ -42,7 +42,7 @@ public class CustomersService {
 
   @Transactional
   public AddCustomerDto.Response addCustomer(AddCustomerDto.Request req) {
-    Institutes institutes = authProvider.getCurrentInstitutes();
+    Institutes institutes = authProvider.getCurrentInstitute();
     Plan plan = planReader.findById(req.getPlansId());
     MultipartFile photo = null;
     String photoUrl = (photo == null) ? null : photoUtil.upload(photo);
@@ -74,7 +74,7 @@ public class CustomersService {
   }
 
   public List<Customers> getCurrentCustomers(int page) {
-    Institutes institutes = authProvider.getCurrentInstitutes();
+    Institutes institutes = authProvider.getCurrentInstitute();
     Pageable pageable = PageRequest.of(page, 4);
     Page<Customers> customersPage = customersReader.findByInstitutesIdAndStatusActive(
         institutes,
@@ -84,7 +84,7 @@ public class CustomersService {
   }
 
   public List<Customers> getExpiredCustomers(int page) {
-    Institutes institutes = authProvider.getCurrentInstitutes();
+    Institutes institutes = authProvider.getCurrentInstitute();
     Pageable pageable = PageRequest.of(page, 4);
     Page<Customers> customersPage = customersReader.findByInstitutesIdAndStatusInactive(
         institutes,
@@ -94,12 +94,12 @@ public class CustomersService {
   }
 
   public List<Customers> getCurrentCustomers(){
-    Institutes institutes = authProvider.getCurrentInstitutes();
+    Institutes institutes = authProvider.getCurrentInstitute();
     return customersReader.findByInstitutesIdAndStatusActive(institutes);
   }
 
   public List<SearchCustomerNameDto.Response> searchCustomerName(String keyword) {
-    Institutes institutesId = authProvider.getCurrentInstitutes();
+    Institutes institutesId = authProvider.getCurrentInstitute();
     List<Customers> customers = customersReader.findByInstitutesIdAndNameStartingWithAndStatusIn(
         institutesId,
         keyword
