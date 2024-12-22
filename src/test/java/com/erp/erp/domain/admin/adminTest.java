@@ -1,8 +1,8 @@
-package com.erp.erp.domain.admins;
+package com.erp.erp.domain.admin;
 
-import com.erp.erp.domain.admins.common.dto.AddAccountDto;
-import com.erp.erp.domain.admins.common.dto.AddInstituteDto;
-import com.erp.erp.domain.admins.common.dto.AddPlanDto;
+import com.erp.erp.domain.admin.common.dto.AddAccountDto;
+import com.erp.erp.domain.admin.common.dto.AddInstituteDto;
+import com.erp.erp.domain.admin.common.dto.AddPlanDto;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.institutes.common.exception.NotFoundInstituteException;
 import com.erp.erp.domain.institutes.repository.InstitutesRepository;
@@ -11,6 +11,7 @@ import com.erp.erp.global.response.ApiResult;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.util.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -23,13 +24,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-class adminsTest extends IntegrationTest {
+class adminTest extends IntegrationTest {
 
-  @LocalServerPort
-  private int port;
+  private String BASE_URL;
 
-  @Autowired
-  private TestRestTemplate restTemplate;
+  @BeforeEach
+  void setUp() {
+    BASE_URL = "http://localhost:" + port + "/api/admin";
+  }
 
   @Autowired
   private InstitutesRepository institutesRepository;
@@ -52,7 +54,7 @@ class adminsTest extends IntegrationTest {
         .set("licenseType", RandomValue.getRandomEnum(LicenseType.class))
         .sample();
 
-    String url = "http://localhost:" + port + "/api/admin/addPlans";
+    String url = BASE_URL + "/addPlan";
 
     //when
     ResponseEntity<String> responseEntity = restTemplate.postForEntity(
@@ -80,7 +82,7 @@ class adminsTest extends IntegrationTest {
     // given
     AddInstituteDto.Request req = fixtureMonkey.giveMeOne(AddInstituteDto.Request.class);
 
-    String url = "http://localhost:" + port + "/api/admin/addInstitute";
+    String url = BASE_URL + "/addInstitute";
 
     // when
     ResponseEntity<String> responseEntity = restTemplate.postForEntity(
@@ -111,7 +113,7 @@ class adminsTest extends IntegrationTest {
         .set("instituteId", institutes.getId())
         .sample();
 
-    String url = "http://localhost:" + port + "/api/admin/addAccount";
+    String url = BASE_URL + "/addAccount";
 
     // when
     ResponseEntity<String> responseEntity = restTemplate.postForEntity(
@@ -143,7 +145,7 @@ class adminsTest extends IntegrationTest {
         .sample();
 
     NotFoundInstituteException exception = new NotFoundInstituteException();
-    String url = "http://localhost:" + port + "/api/admin/addAccount";
+    String url = BASE_URL + "/addAccount";
 
     // when
     ResponseEntity<String> responseEntity = restTemplate.postForEntity(

@@ -1,4 +1,4 @@
-package com.erp.erp.domain.admins.common.dto;
+package com.erp.erp.domain.admin.common.dto;
 
 import com.erp.erp.domain.plan.common.entity.LicenseType;
 import com.erp.erp.domain.plan.common.entity.PlanType;

@@ -1,10 +1,10 @@
-package com.erp.erp.domain.admins.controller;
+package com.erp.erp.domain.admin.controller;
 
 
 import com.erp.erp.domain.account.service.AccountService;
-import com.erp.erp.domain.admins.common.dto.AddAccountDto;
-import com.erp.erp.domain.admins.common.dto.AddInstituteDto;
-import com.erp.erp.domain.admins.common.dto.AddPlanDto;
+import com.erp.erp.domain.admin.common.dto.AddAccountDto;
+import com.erp.erp.domain.admin.common.dto.AddInstituteDto;
+import com.erp.erp.domain.admin.common.dto.AddPlanDto;
 import com.erp.erp.domain.institutes.service.InstitutesService;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.service.PlanService;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "admin", description = "관리자용")
 @RequiredArgsConstructor
 @Slf4j
-public class adminsController {
+public class adminController {
 
   private final PlanService planService;
   private final InstitutesService instituteService;
@@ -32,7 +32,7 @@ public class adminsController {
 
 
   @Operation(summary = "이용권 등록")
-  @PostMapping("/addPlans")
+  @PostMapping("/addPlan")
   public ApiResult<AddPlanDto.Response> addPlans(
       @RequestBody @Valid AddPlanDto.Request request
   ) {

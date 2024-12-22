@@ -1,4 +1,4 @@
-package com.erp.erp.domain.admins.common.dto;
+package com.erp.erp.domain.admin.common.dto;
 
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import io.swagger.v3.oas.annotations.media.Schema;

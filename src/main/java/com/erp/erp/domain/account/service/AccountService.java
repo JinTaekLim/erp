@@ -4,7 +4,7 @@ import com.erp.erp.domain.account.business.AccountCreator;
 import com.erp.erp.domain.account.business.AccountReader;
 import com.erp.erp.domain.account.common.dto.AccountLoginDto;
 import com.erp.erp.domain.account.common.entity.Account;
-import com.erp.erp.domain.admins.common.dto.AddAccountDto;
+import com.erp.erp.domain.admin.common.dto.AddAccountDto;
 import com.erp.erp.domain.auth.business.TokenExtractor;
 import com.erp.erp.domain.auth.business.TokenManager;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
