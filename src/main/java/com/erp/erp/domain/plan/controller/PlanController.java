@@ -33,6 +33,7 @@ public class PlanController {
     List<GetPlanDto.Response> responses = planList.stream()
         .map(plan -> GetPlanDto.Response.builder()
             .id(plan.getId())
+            .planType(plan.getPlanType())
             .licenseType(plan.getLicenseType())
             .name(plan.getName())
             .price(plan.getPrice())

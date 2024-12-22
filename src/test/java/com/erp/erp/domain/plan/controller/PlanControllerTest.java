@@ -119,6 +119,7 @@ class PlanControllerTest extends IntegrationTest {
     IntStream.range(0,size).forEach(i -> {
       GetPlanDto.Response actualList = apiResponse.getData().get(i);
       Plan expectedList = plans.get(i);
+      assertThat(actualList.getPlanType()).isEqualTo(expectedList.getPlanType());
       assertThat(actualList.getLicenseType()).isEqualTo(expectedList.getLicenseType());
       assertThat(actualList.getId()).isEqualTo(expectedList.getId());
       assertThat(actualList.getName()).isEqualTo(expectedList.getName());

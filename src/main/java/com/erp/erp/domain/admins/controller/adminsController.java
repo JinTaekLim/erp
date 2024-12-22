@@ -39,6 +39,7 @@ public class adminsController {
     Plan plan = planService.addPlans(request);
 
     AddPlanDto.Response response = AddPlanDto.Response.builder()
+        .planType(plan.getPlanType())
         .licenseType(plan.getLicenseType())
         .name(plan.getName())
         .price(plan.getPrice())

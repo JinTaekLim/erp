@@ -21,6 +21,7 @@ public class PlanService {
   public Plan addPlans(AddPlanDto.Request request) {
 
     Plan plan = Plan.builder()
+        .planType(request.getPlanType())
         .licenseType(request.getLicenseType())
         .name(request.getName())
         .price(request.getPrice())

@@ -17,6 +17,9 @@ public class Plan {
   private Long id;
 
   @NotNull
+  private PlanType planType;
+
+  @NotNull
   private LicenseType licenseType;
 
   @NotNull
@@ -31,7 +34,9 @@ public class Plan {
   private int availablePeriod;
 
   @Builder
-  public Plan(LicenseType licenseType, String name, int price, int availableTime, int availablePeriod) {
+  public Plan(PlanType planType, LicenseType licenseType, String name, int price, int availableTime,
+      int availablePeriod) {
+    this.planType = planType;
     this.licenseType = licenseType;
     this.name = name;
     this.price = price;
