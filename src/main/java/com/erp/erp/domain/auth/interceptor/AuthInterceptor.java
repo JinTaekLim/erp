@@ -8,13 +8,16 @@ import com.erp.erp.domain.auth.business.TokenManager;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
 import com.erp.erp.domain.institutes.common.entity.Institutes;
 import com.erp.erp.domain.institutes.repository.InstitutesRepository;
+import com.erp.erp.global.annotation.authentication.PermitAll;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.lang.annotation.Annotation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
@@ -29,6 +32,7 @@ public class AuthInterceptor implements HandlerInterceptor {
       Object handler) {
 
     if (isViewRequest(handler)) { return true; }
+    if (hasAnnotation(handler, PermitAll.class)) { return true; }
 
     String accessToken = tokenExtractor.getTokenFromAuthorizationHeader(request);
 
@@ -38,6 +42,11 @@ public class AuthInterceptor implements HandlerInterceptor {
     validateTokenPresence(accessToken);
     setAuthentication(accessToken);
     return true;
+  }
+
+  private boolean hasAnnotation(Object handler, Class<? extends Annotation> clazz) {
+    HandlerMethod handlerMethod = (HandlerMethod) handler;
+    return handlerMethod.getMethod().isAnnotationPresent(clazz);
   }
 
   private void validateTokenPresence(String token) {
