@@ -1,13 +1,13 @@
 package com.erp.erp.domain.auth.interceptor;
 
-import com.erp.erp.domain.accounts.business.AccountsCreator;
-import com.erp.erp.domain.accounts.business.AccountsReader;
-import com.erp.erp.domain.accounts.common.entity.Accounts;
+import com.erp.erp.domain.account.business.AccountCreator;
+import com.erp.erp.domain.account.business.AccountReader;
+import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.auth.business.TokenExtractor;
 import com.erp.erp.domain.auth.business.TokenManager;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
-import com.erp.erp.domain.institutes.common.entity.Institutes;
-import com.erp.erp.domain.institutes.repository.InstitutesRepository;
+import com.erp.erp.domain.institute.common.entity.Institute;
+import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.global.annotation.authentication.PermitAll;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -72,24 +72,25 @@ public class AuthInterceptor implements HandlerInterceptor {
   이후 삭제 예정
   */
 
-  private final AccountsCreator accountsCreator;
-  private final AccountsReader accountsReader;
-  private final InstitutesRepository institutesRepository;
+  private final AccountCreator accountCreator;
+  private final AccountReader accountReader;
+  private final InstituteRepository instituteRepository;
   private final TokenManager tokenManager;
 
   public String getTemporaryAccountInfo() {
-    Institutes institutes = institutesRepository.findById(1L)
-        .orElseGet(()-> {Institutes newInstitutes = Institutes.builder()
-              .name("test").totalSpots(4).build();
-          return institutesRepository.save(newInstitutes);
+    Institute institute = instituteRepository.findById(1L)
+        .orElseGet(()-> {
+          Institute newInstitute = Institute.builder()
+              .name("test").totalSeat(4).build();
+          return instituteRepository.save(newInstitute);
         });
-    Accounts accounts = accountsReader.findOptionalById(1L)
+    Account account = accountReader.findOptionalById(1L)
         .orElseGet(() -> {
-          Accounts newAccount = Accounts.builder()
-              .account("test").password("test").institutes(institutes).build();
-          return accountsCreator.save(newAccount);
+          Account newAccount = Account.builder()
+              .account("test").password("test").institute(institute).build();
+          return accountCreator.save(newAccount);
         });
-    TokenDto tokenDto = tokenManager.createToken(accounts);
+    TokenDto tokenDto = tokenManager.createToken(account);
     return tokenDto.getAccessToken();
   }
 

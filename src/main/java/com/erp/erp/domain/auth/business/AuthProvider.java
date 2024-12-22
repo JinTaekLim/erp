@@ -1,12 +1,12 @@
 package com.erp.erp.domain.auth.business;
 
-import com.erp.erp.domain.accounts.business.AccountsReader;
+import com.erp.erp.domain.account.business.AccountReader;
 import com.erp.erp.domain.auth.common.exception.AuthenticationNameNullException;
 import com.erp.erp.domain.auth.common.exception.AuthenticationNullException;
 import com.erp.erp.domain.auth.common.exception.NotParsedValueException;
 import com.erp.erp.domain.auth.common.exception.UnAuthenticationAccountException;
 import com.erp.erp.domain.auth.common.exception.type.TokenErrorType;
-import com.erp.erp.domain.institutes.common.entity.Institutes;
+import com.erp.erp.domain.institute.common.entity.Institute;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -18,7 +18,7 @@ import org.springframework.util.StringUtils;
 @RequiredArgsConstructor
 public class AuthProvider {
 
-  private final AccountsReader accountsReader;
+  private final AccountReader accountReader;
 
   private final String GUEST = "anonymousUser";
 
@@ -42,9 +42,9 @@ public class AuthProvider {
     }
   }
 
-  public Institutes getCurrentInstitute() {
+  public Institute getCurrentInstitute() {
     Long accountId = getCurrentAccountId();
-    return accountsReader.findInstitutesByAccountId(accountId);
+    return accountReader.findInstitutesByAccountId(accountId);
   }
 
 }

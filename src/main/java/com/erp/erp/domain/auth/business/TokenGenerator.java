@@ -1,6 +1,6 @@
 package com.erp.erp.domain.auth.business;
 
-import com.erp.erp.domain.accounts.common.entity.Accounts;
+import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +20,8 @@ public class TokenGenerator {
     private final AuthenticationProvider authenticationProvider;
 
 
-    public TokenDto getToken(Accounts accounts) {
-        Authentication authentication = authenticationProvider.getAuthentication(accounts);
+    public TokenDto getToken(Account account) {
+        Authentication authentication = authenticationProvider.getAuthentication(account);
         return generateToken(authentication);
     }
 
