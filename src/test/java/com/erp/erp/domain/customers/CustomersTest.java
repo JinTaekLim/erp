@@ -24,13 +24,12 @@ import com.erp.erp.domain.payments.common.entity.OtherPayments;
 import com.erp.erp.domain.payments.common.entity.PlanPayment;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.repository.PlanRepository;
-import com.erp.erp.global.error.ApiResult;
+import com.erp.erp.global.response.ApiResult;
 import com.erp.erp.global.util.randomValue.Language;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.util.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
 import java.util.Arrays;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -43,7 +42,6 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.IntStream;
-import org.springframework.transaction.annotation.Transactional;
 
 class CustomersTest extends IntegrationTest {
 

@@ -3,7 +3,7 @@ package com.erp.erp.domain.reservations.controller;
 import com.erp.erp.domain.reservations.common.dto.*;
 import com.erp.erp.domain.reservations.common.entity.Reservations;
 import com.erp.erp.domain.reservations.service.ReservationsService;
-import com.erp.erp.global.error.ApiResult;
+import com.erp.erp.global.response.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

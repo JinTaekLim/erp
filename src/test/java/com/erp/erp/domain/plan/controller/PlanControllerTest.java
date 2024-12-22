@@ -7,7 +7,7 @@ import com.erp.erp.domain.plan.common.dto.GetPlanDto;
 import com.erp.erp.domain.plan.common.entity.LicenseType;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.repository.PlanRepository;
-import com.erp.erp.global.error.ApiResult;
+import com.erp.erp.global.response.ApiResult;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.util.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;

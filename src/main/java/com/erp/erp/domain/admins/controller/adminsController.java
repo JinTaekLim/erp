@@ -8,7 +8,7 @@ import com.erp.erp.domain.admins.common.dto.AddPlanDto;
 import com.erp.erp.domain.institutes.service.InstitutesService;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.service.PlanService;
-import com.erp.erp.global.error.ApiResult;
+import com.erp.erp.global.response.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

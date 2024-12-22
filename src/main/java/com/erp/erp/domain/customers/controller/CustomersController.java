@@ -9,7 +9,7 @@ import com.erp.erp.domain.customers.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customers.common.entity.CustomerStatus;
 import com.erp.erp.domain.customers.common.entity.Customers;
 import com.erp.erp.domain.customers.service.CustomersService;
-import com.erp.erp.global.error.ApiResult;
+import com.erp.erp.global.response.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

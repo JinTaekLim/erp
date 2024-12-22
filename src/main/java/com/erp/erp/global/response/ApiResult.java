@@ -1,4 +1,4 @@
-package com.erp.erp.global.error;
+package com.erp.erp.global.response;
 
 import com.erp.erp.global.error.exception.type.ApiErrorType;
 import lombok.Getter;

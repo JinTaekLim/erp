@@ -5,7 +5,7 @@ import com.erp.erp.domain.plan.common.dto.GetPlanDto;
 import com.erp.erp.domain.plan.common.entity.LicenseType;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.service.PlanService;
-import com.erp.erp.global.error.ApiResult;
+import com.erp.erp.global.response.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
