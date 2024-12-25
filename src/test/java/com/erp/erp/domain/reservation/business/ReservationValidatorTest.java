@@ -47,7 +47,7 @@ class ReservationValidatorTest extends ServiceTest {
     }
 
     // when
-    when(reservationRepository.findByInstitutesAndTimeRange(institute, startTime, endTime))
+    when(reservationRepository.findByInstituteAndTimeRange(institute, startTime, endTime))
         .thenReturn(reservationList);
 
 
@@ -79,7 +79,7 @@ class ReservationValidatorTest extends ServiceTest {
 
 
     // when
-    when(reservationRepository.findByInstitutesAndTimeRange(institute, startTime, endTime))
+    when(reservationRepository.findByInstituteAndTimeRange(institute, startTime, endTime))
         .thenReturn(reservationList);
 
 

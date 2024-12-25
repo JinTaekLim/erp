@@ -18,7 +18,7 @@ public class ReservationReader {
   private final ReservationRepository reservationRepository;
 
   public List<Reservation> findByInstitutesAndStartTimeOn(Institute institute, LocalDate date) {
-    List<Reservation> reservationList = reservationRepository.findByInstitutesAndStartTimeOn(
+    List<Reservation> reservationList = reservationRepository.findByInstituteAndStartTimeOn(
         institute,
         date
     );
@@ -31,7 +31,7 @@ public class ReservationReader {
       LocalDateTime startTime,
       LocalDateTime endTime
   ){
-    return reservationRepository.findByInstitutesWithOverlappingTimeRange(
+    return reservationRepository.findByInstituteWithOverlappingTimeRange(
         institute,
         startTime,
         endTime

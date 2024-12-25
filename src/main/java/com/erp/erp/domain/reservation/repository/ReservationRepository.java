@@ -11,13 +11,13 @@ import org.springframework.data.jpa.repository.Query;
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
   @Query("SELECT r FROM Reservation r WHERE CAST(r.startTime AS DATE) = :date AND r.institute = :institute")
-  List<Reservation> findByInstitutesAndStartTimeOn(Institute institute, LocalDate date);
+  List<Reservation> findByInstituteAndStartTimeOn(Institute institute, LocalDate date);
 
-  @Query("SELECT r FROM Reservation r WHERE r.institute = :institutes AND r.startTime BETWEEN :startTime AND :endTime")
-  List<Reservation> findByInstitutesAndTimeRange(Institute institute, LocalDateTime startTime, LocalDateTime endTime);
+  @Query("SELECT r FROM Reservation r WHERE r.institute = :institute AND r.startTime >= :startTime AND r.startTime < :endTime")
+  List<Reservation> findByInstituteAndTimeRange(Institute institute, LocalDateTime startTime, LocalDateTime endTime);
 
-  @Query("SELECT r FROM Reservation r WHERE r.institute = :institutes AND r.startTime < :endTime AND r.endTime > :startTime")
-  List<Reservation> findByInstitutesWithOverlappingTimeRange(Institute institute, LocalDateTime startTime, LocalDateTime endTime);
+  @Query("SELECT r FROM Reservation r WHERE r.institute = :institute AND r.startTime < :endTime AND r.endTime > :startTime")
+  List<Reservation> findByInstituteWithOverlappingTimeRange(Institute institute, LocalDateTime startTime, LocalDateTime endTime);
 
 //  @Modifying
 //  @Transactional
