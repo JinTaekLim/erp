@@ -1,6 +1,7 @@
 package com.erp.erp.domain.account.business;
 
 import com.erp.erp.domain.account.common.entity.Account;
+import com.erp.erp.domain.account.common.exception.AccountInstituteNotFoundException;
 import com.erp.erp.domain.account.common.exception.InvalidCredentialsException;
 import com.erp.erp.domain.account.repository.AccountRepository;
 import com.erp.erp.domain.institute.common.entity.Institute;
@@ -30,6 +31,7 @@ public class AccountReader {
   };
 
   public Institute findInstitutesByAccountId(Long accountId) {
-    return accountRepository.findInstitutesByAccountId(accountId).orElseThrow();
+    return accountRepository.findInstitutesByAccountId(accountId)
+        .orElseThrow(AccountInstituteNotFoundException::new);
   }
 }
