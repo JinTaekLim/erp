@@ -24,7 +24,7 @@ public class ReservationValidator {
       LocalDateTime startTime,
       LocalDateTime endTime
   ) {
-    List<Reservation> reservationList = reservationRepository.findByInstitutesAndTimeRange(
+    List<Reservation> reservationList = reservationRepository.findByInstituteAndTimeRange(
         institute,
         startTime,
         endTime
@@ -35,15 +35,19 @@ public class ReservationValidator {
     long[] slotOccupancy = new long[slot];
 
     for (Reservation reservation : reservationList) {
-      int reservationStartIndex = getReservationStartIndex(startTime, reservation.getStartTime());
-      int reservationEndIndex = calculate30MinSlots(reservation.getStartTime(), reservation.getEndTime());
-
-      checkSlotOccupancy(slotOccupancy, reservationStartIndex, reservationEndIndex, totalSpots);
+      int startIndex = getReservationStartIndex(startTime, reservation.getStartTime());
+      int endIndex = getReservationEndIndex(slot, startIndex, reservation.getStartTime(), reservation.getEndTime());
+      checkSlotOccupancy(slotOccupancy, startIndex, endIndex, totalSpots);
     }
   }
 
   private int getReservationStartIndex(LocalDateTime startTime, LocalDateTime reservationStartTime){
     return startTime.equals(reservationStartTime) ? 0 : calculate30MinSlots(startTime, reservationStartTime);
+  }
+
+  private int getReservationEndIndex(int slotSize, int startIndex, LocalDateTime startTime, LocalDateTime endTime){
+    int endIndex = startIndex + calculate30MinSlots(startTime, endTime);
+    return Math.min(endIndex, slotSize);
   }
 
   private void checkSlotOccupancy(long[] slotOccupancy, int startIndex, int endIndex, int totalSpots) {

@@ -51,7 +51,7 @@ public class Reservation {
   }
 
   private LocalDateTime truncateToMinutes(LocalDateTime dateTime) {
-    return dateTime != null ? dateTime.withSecond(0) : null;
+    return dateTime != null ? dateTime.withSecond(0).withNano(0) : null;
   }
 
 
