@@ -4,6 +4,7 @@ import com.erp.erp.domain.admin.common.dto.AddInstituteDto;
 import com.erp.erp.domain.auth.business.AuthProvider;
 import com.erp.erp.domain.institute.business.InstituteCreator;
 import com.erp.erp.domain.institute.business.InstituteUpdater;
+import com.erp.erp.domain.institute.common.dto.GetInstituteInfoDto;
 import com.erp.erp.domain.institute.common.dto.UpdateTotalSeatDto;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import lombok.RequiredArgsConstructor;
@@ -35,5 +36,10 @@ public class InstituteService {
     Institute institute = req.toEntity();
     instituteCreator.save(institute);
     return AddInstituteDto.Response.fromEntity(institute);
+  }
+
+  public GetInstituteInfoDto.Response getInfo() {
+    Institute institute = authProvider.getCurrentInstitute();
+    return GetInstituteInfoDto.Response.fromEntity(institute);
   }
 }
