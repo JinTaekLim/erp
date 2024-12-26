@@ -112,15 +112,16 @@ class ReservationTest extends IntegrationTest {
   }
 
   @Test
-  @Disabled
   void addReservations() {
     // given
     Institute institute = createInstitutes();
     Customer customer = createCustomers(institute);
-    LocalDateTime startTime = LocalDateTime.now();
+    int randomInt1 = RandomValue.getInt(0, 2);
+    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime startTime = (randomInt1 == 0) ? now.withMinute(0) : now.withMinute(30);
 
-    int randomInt = RandomValue.getInt(0,600);
-    LocalDateTime endTime = LocalDateTime.now().plusMinutes(30+randomInt);
+    int randomInt2 = RandomValue.getInt(1,10);
+    LocalDateTime endTime = startTime.plusMinutes(30*randomInt2);
 
     AddReservationDto.Request request = AddReservationDto.Request.builder()
             .customerId(customer.getId())
@@ -150,8 +151,8 @@ class ReservationTest extends IntegrationTest {
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertNotNull(apiResponse.getData());
     assertThat(apiResponse.getData().getCustomerId()).isEqualTo(request.getCustomerId());
-    assertThat(apiResponse.getData().getStartTime()).isEqualTo(request.getStartTime().withNano(0));
-    assertThat(apiResponse.getData().getEndTime()).isEqualTo(request.getEndTime().withNano(0));
+    assertThat(apiResponse.getData().getStartTime()).isEqualTo(request.getStartTime().withSecond(0).withNano(0));
+    assertThat(apiResponse.getData().getEndTime()).isEqualTo(request.getEndTime().withSecond(0).withNano(0));
     assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
   }
 

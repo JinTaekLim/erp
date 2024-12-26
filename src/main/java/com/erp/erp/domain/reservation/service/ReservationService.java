@@ -40,8 +40,8 @@ public class ReservationService {
     Customer customer = customerReader.findById(req.getCustomerId());
     instituteValidator.validateCustomerBelongsToInstitute(institute, customer);
 
-    LocalDateTime startTime = req.getStartTime();
-    LocalDateTime endTime = req.getEndTime();
+    LocalDateTime startTime = reservationValidator.validateReservationTime(req.getStartTime());
+    LocalDateTime endTime = reservationValidator.validateReservationTime(req.getEndTime());
 
     reservationValidator.isTimeSlotAvailable(institute, startTime, endTime);
 

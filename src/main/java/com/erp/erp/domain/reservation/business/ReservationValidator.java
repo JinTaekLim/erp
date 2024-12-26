@@ -4,6 +4,7 @@ import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.reservation.common.entity.Reservation;
 import com.erp.erp.domain.reservation.common.exception.InvalidReservationTimeException;
 import com.erp.erp.domain.reservation.common.exception.NoAvailableSeatException;
+import com.erp.erp.domain.reservation.common.exception.TimeNotOnHalfHourException;
 import com.erp.erp.domain.reservation.repository.ReservationRepository;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -18,6 +19,14 @@ import org.springframework.stereotype.Component;
 public class ReservationValidator {
 
   private final ReservationRepository reservationRepository;
+
+  public LocalDateTime validateReservationTime(LocalDateTime time) {
+    if (time.getMinute() % 30 != 0) {
+      throw new TimeNotOnHalfHourException();
+    }
+    return time.withSecond(0).withNano(0);
+  }
+
 
   public void isTimeSlotAvailable(
       Institute institute,
@@ -36,23 +45,30 @@ public class ReservationValidator {
 
     for (Reservation reservation : reservationList) {
       int startIndex = getReservationStartIndex(startTime, reservation.getStartTime());
-      int endIndex = getReservationEndIndex(slot, startIndex, reservation.getStartTime(), reservation.getEndTime());
+      int endIndex = getReservationEndIndex(slot, startIndex, reservation.getStartTime(),
+          reservation.getEndTime());
       checkSlotOccupancy(slotOccupancy, startIndex, endIndex, totalSpots);
     }
   }
 
-  private int getReservationStartIndex(LocalDateTime startTime, LocalDateTime reservationStartTime){
-    return startTime.equals(reservationStartTime) ? 0 : calculate30MinSlots(startTime, reservationStartTime);
+  private int getReservationStartIndex(LocalDateTime startTime,
+      LocalDateTime reservationStartTime) {
+    return startTime.equals(reservationStartTime) ? 0
+        : calculate30MinSlots(startTime, reservationStartTime);
   }
 
-  private int getReservationEndIndex(int slotSize, int startIndex, LocalDateTime startTime, LocalDateTime endTime){
+  private int getReservationEndIndex(int slotSize, int startIndex, LocalDateTime startTime,
+      LocalDateTime endTime) {
     int endIndex = startIndex + calculate30MinSlots(startTime, endTime);
     return Math.min(endIndex, slotSize);
   }
 
-  private void checkSlotOccupancy(long[] slotOccupancy, int startIndex, int endIndex, int totalSpots) {
+  private void checkSlotOccupancy(long[] slotOccupancy, int startIndex, int endIndex,
+      int totalSpots) {
     for (int slotIndex = startIndex; slotIndex < endIndex; slotIndex++) {
-      if (slotOccupancy[slotIndex] >= totalSpots) {throw new NoAvailableSeatException();}
+      if (slotOccupancy[slotIndex] >= totalSpots) {
+        throw new NoAvailableSeatException();
+      }
       slotOccupancy[slotIndex]++;
     }
   }
