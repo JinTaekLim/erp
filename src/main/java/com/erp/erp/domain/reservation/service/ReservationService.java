@@ -40,18 +40,12 @@ public class ReservationService {
     Customer customer = customerReader.findById(req.getCustomerId());
     instituteValidator.validateCustomerBelongsToInstitute(institute, customer);
 
-    LocalDateTime startTime = req.getStartTime();
-    LocalDateTime endTime = req.getEndTime();
+    LocalDateTime startTime = reservationValidator.validateReservationTime(req.getStartTime());
+    LocalDateTime endTime = reservationValidator.validateReservationTime(req.getEndTime());
 
     reservationValidator.isTimeSlotAvailable(institute, startTime, endTime);
 
-    Reservation reservation = Reservation.builder()
-        .institute(institute)
-        .customer(customer)
-        .startTime(startTime)
-        .endTime(endTime)
-        .memo(req.getMemo())
-        .build();
+    Reservation reservation = req.toEntity(institute, customer);
 
     return reservationCreator.save(reservation);
   }

@@ -28,15 +28,7 @@ public class ReservationController {
   public ApiResult<AddReservationDto.Response> addReservation(
       @Valid @RequestBody AddReservationDto.Request req) {
     Reservation reservation = reservationService.addReservations(req);
-
-    AddReservationDto.Response response = AddReservationDto.Response.builder()
-        .reservationId(reservation.getId())
-        .customerId(reservation.getCustomer().getId())
-        .startTime(reservation.getStartTime())
-        .endTime(reservation.getEndTime())
-        .memo(reservation.getMemo())
-        .seatNumber(reservation.getSeatNumber())
-        .build();
+    AddReservationDto.Response response = AddReservationDto.Response.fromEntity(reservation);
 
     return ApiResult.success(response);
   }
