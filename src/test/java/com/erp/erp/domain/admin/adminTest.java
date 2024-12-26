@@ -99,7 +99,9 @@ class adminTest extends IntegrationTest {
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertNotNull(apiResponse.getData());
     assertThat(apiResponse.getData().getName()).isEqualTo(req.getName());
-    assertThat(apiResponse.getData().getTotalSpots()).isEqualTo(req.getTotalSpots());
+    assertThat(apiResponse.getData().getTotalSeat()).isEqualTo(req.getTotalSeat());
+    assertThat(apiResponse.getData().getOpenTime()).isEqualTo(req.getOpenTime());
+    assertThat(apiResponse.getData().getCloseTime()).isEqualTo(req.getCloseTime());
   }
 
 
