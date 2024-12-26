@@ -4,6 +4,7 @@ import com.erp.erp.domain.admin.common.dto.AddInstituteDto;
 import com.erp.erp.domain.auth.business.AuthProvider;
 import com.erp.erp.domain.institute.business.InstituteCreator;
 import com.erp.erp.domain.institute.business.InstituteUpdater;
+import com.erp.erp.domain.institute.common.dto.GetInstituteInfoDto;
 import com.erp.erp.domain.institute.common.dto.UpdateTotalSeatDto;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import lombok.RequiredArgsConstructor;
@@ -21,19 +22,18 @@ public class InstituteService {
 
   public UpdateTotalSeatDto.Response updateTotalSpots(UpdateTotalSeatDto.Request req) {
     Institute institute = authProvider.getCurrentInstitute();
-    int num = req.getNum();
-    instituteUpdater.updateSpotsNumber(institute, num);
-
-    return UpdateTotalSeatDto.Response.builder()
-        .id(institute.getId())
-        .name(institute.getName())
-        .num(institute.getTotalSeat())
-        .build();
+    instituteUpdater.updateSpotsNumber(institute, req.getTotalSeat());
+    return UpdateTotalSeatDto.Response.fromEntity(institute);
   }
 
   public AddInstituteDto.Response addInstitute(AddInstituteDto.Request req) {
     Institute institute = req.toEntity();
     instituteCreator.save(institute);
     return AddInstituteDto.Response.fromEntity(institute);
+  }
+
+  public GetInstituteInfoDto.Response getInfo() {
+    Institute institute = authProvider.getCurrentInstitute();
+    return GetInstituteInfoDto.Response.fromEntity(institute);
   }
 }
