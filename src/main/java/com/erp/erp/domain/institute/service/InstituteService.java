@@ -22,14 +22,8 @@ public class InstituteService {
 
   public UpdateTotalSeatDto.Response updateTotalSpots(UpdateTotalSeatDto.Request req) {
     Institute institute = authProvider.getCurrentInstitute();
-    int num = req.getNum();
-    instituteUpdater.updateSpotsNumber(institute, num);
-
-    return UpdateTotalSeatDto.Response.builder()
-        .id(institute.getId())
-        .name(institute.getName())
-        .num(institute.getTotalSeat())
-        .build();
+    instituteUpdater.updateSpotsNumber(institute, req.getTotalSeat());
+    return UpdateTotalSeatDto.Response.fromEntity(institute);
   }
 
   public AddInstituteDto.Response addInstitute(AddInstituteDto.Request req) {
