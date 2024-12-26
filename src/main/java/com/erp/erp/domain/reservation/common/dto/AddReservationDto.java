@@ -5,6 +5,7 @@ import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.reservation.common.entity.Reservation;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
@@ -34,6 +35,9 @@ public class AddReservationDto {
     private LocalDateTime endTime;
     @Schema(description = "메모")
     private String memo;
+    @Schema(description = "좌석 번호")
+    @Min(value = 1, message = "좌석 번호는 1 이상의 값이어야 합니다.")
+    private int seatNumber;
 
 
     public Reservation toEntity(Institute institute, Customer customer) {
@@ -43,6 +47,7 @@ public class AddReservationDto {
           .startTime(this.startTime)
           .endTime(this.endTime)
           .memo(this.memo)
+          .seatNumber(this.seatNumber)
           .build();
     }
   }

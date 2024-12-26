@@ -56,7 +56,8 @@ public class ReservationController {
 
   @Operation(summary = "특정 시간 예약 조회")
   @GetMapping("/getReservationByTime")
-  public ApiResult<List<GetDailyReservationDto.Response>> getReservationByTime(@RequestParam LocalDateTime time) {
+  public ApiResult<List<GetDailyReservationDto.Response>> getReservationByTime(
+      @RequestParam LocalDateTime time) {
     List<Reservation> reservationList = reservationService.getReservationByTime(time);
 
     List<GetDailyReservationDto.Response> response = reservationList.stream()
@@ -74,19 +75,14 @@ public class ReservationController {
   }
 
 
-
   @Operation(summary = "예약 수정")
   @PostMapping("/updatedReservation")
   public ApiResult<UpdatedReservationDto.Response> updatedReservation(
       @Valid @RequestBody UpdatedReservationDto.Request req) {
     Reservation reservation = reservationService.updateReservation(req);
 
-    UpdatedReservationDto.Response response = UpdatedReservationDto.Response.builder()
-        .reservationId(reservation.getId())
-        .startTime(reservation.getStartTime().toLocalTime())
-        .endTime(reservation.getEndTime().toLocalTime())
-        .memo(reservation.getMemo())
-        .build();
+    UpdatedReservationDto.Response response = UpdatedReservationDto.Response.fromEntity(
+        reservation);
 
     return ApiResult.success(response);
   }

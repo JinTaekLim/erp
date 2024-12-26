@@ -4,6 +4,7 @@ import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.common.exception.InstituteNotFoundInCustomerException;
 import com.erp.erp.domain.reservation.common.entity.Reservation;
+import com.erp.erp.domain.reservation.common.exception.InvalidSeatRangeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -27,5 +28,9 @@ public class InstituteValidator {
     Institute comparativeInstitute = reservation.getInstitute();
     if (institute != comparativeInstitute) throw new InstituteNotFoundInCustomerException();
     return reservation;
+  }
+
+  public void isValidSeatNumber(Institute institute, int seatNumber) {
+    if (institute.getTotalSeat() < seatNumber) throw new InvalidSeatRangeException();
   }
 }

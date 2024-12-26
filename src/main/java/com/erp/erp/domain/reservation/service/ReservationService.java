@@ -38,7 +38,9 @@ public class ReservationService {
   public Reservation addReservations(AddReservationDto.Request req) {
     Institute institute = authProvider.getCurrentInstitute();
     Customer customer = customerReader.findById(req.getCustomerId());
+
     instituteValidator.validateCustomerBelongsToInstitute(institute, customer);
+    instituteValidator.isValidSeatNumber(institute, req.getSeatNumber());
 
     LocalDateTime startTime = reservationValidator.validateReservationTime(req.getStartTime());
     LocalDateTime endTime = reservationValidator.validateReservationTime(req.getEndTime());
@@ -71,16 +73,14 @@ public class ReservationService {
   public Reservation updateReservation(UpdatedReservationDto.Request req) {
 
     Institute institute = authProvider.getCurrentInstitute();
-    long reservationsId = req.getReservationId();
-    Reservation reservation = reservationReader.findById(reservationsId);
-    Customer customer = reservation.getCustomer();
-    instituteValidator.validateCustomerBelongsToInstitute(institute, customer);
+    Reservation reservation = reservationReader.findById(req.getReservationId());
 
-    LocalDateTime startTime = req.getStartTime();
-    LocalDateTime endTime = req.getEndTime();
-    String memo = req.getMemo();
+    instituteValidator.isValidSeatNumber(institute, req.getSeatNumber());
 
-    return reservationUpdater.updatedReservations(reservation, startTime, endTime, memo);
+    instituteValidator.validateCustomerBelongsToInstitute(institute, reservation.getCustomer());
+
+    return reservationUpdater.updatedReservations(reservation, req.getStartTime(), req.getEndTime(),
+        req.getMemo(), req.getSeatNumber());
   }
 
   public Reservation updatedSeatNumber(UpdatedSeatNumberDto.Request req) {
@@ -103,7 +103,8 @@ public class ReservationService {
     reservationDelete.delete(reservation);
   }
 
-  public GetReservationCustomerDetailsDto.Response getReservationsForCurrentInstitute(Long reservationsId) {
+  public GetReservationCustomerDetailsDto.Response getReservationsForCurrentInstitute(
+      Long reservationsId) {
     Institute institute = authProvider.getCurrentInstitute();
     Reservation reservation = reservationReader.findById(reservationsId);
     instituteValidator.validateReservationBelongsToInstitute(institute, reservation);

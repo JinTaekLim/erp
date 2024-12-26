@@ -30,6 +30,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -128,6 +129,7 @@ class ReservationTest extends IntegrationTest {
             .startTime(startTime)
             .endTime(endTime)
             .memo(RandomValue.string(255).get())
+        .seatNumber(RandomValue.getInt(1, institute.getTotalSeat()))
             .build();
 
     // when
@@ -158,21 +160,25 @@ class ReservationTest extends IntegrationTest {
 
   @Test
   @DisplayName("시작 시간이 종료 시간과 동일하거나 작은 경우")
-  @Disabled
   void addReservations_fail() {
     // given
     Institute institute = createInstitutes();
     Customer customer = createCustomers(institute);
-    LocalDateTime startTime = LocalDateTime.now();
-    int randomInt = RandomValue.getInt(0,600);
-    LocalDateTime endTime = startTime.minusMinutes(randomInt);
+    int randomInt1 = RandomValue.getInt(0, 2);
+    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime startTime = (randomInt1 == 0) ? now.withMinute(0) : now.withMinute(30);
+
+    int randomInt2 = RandomValue.getInt(1,10);
+    LocalDateTime endTime = startTime.minusMinutes(30*randomInt2);
 
     AddReservationDto.Request request = AddReservationDto.Request.builder()
             .customerId(customer.getId())
             .startTime(startTime)
             .endTime(endTime)
             .memo(RandomValue.string(255).get())
-            .build();
+        .seatNumber(RandomValue.getInt(1, institute.getTotalSeat()))
+
+        .build();
 
     InvalidReservationTimeException exception = new InvalidReservationTimeException();
 
