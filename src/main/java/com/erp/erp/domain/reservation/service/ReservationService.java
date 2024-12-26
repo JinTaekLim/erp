@@ -38,7 +38,9 @@ public class ReservationService {
   public Reservation addReservations(AddReservationDto.Request req) {
     Institute institute = authProvider.getCurrentInstitute();
     Customer customer = customerReader.findById(req.getCustomerId());
+
     instituteValidator.validateCustomerBelongsToInstitute(institute, customer);
+    instituteValidator.isValidSeatNumber(institute, req.getSeatNumber());
 
     LocalDateTime startTime = reservationValidator.validateReservationTime(req.getStartTime());
     LocalDateTime endTime = reservationValidator.validateReservationTime(req.getEndTime());
@@ -103,7 +105,8 @@ public class ReservationService {
     reservationDelete.delete(reservation);
   }
 
-  public GetReservationCustomerDetailsDto.Response getReservationsForCurrentInstitute(Long reservationsId) {
+  public GetReservationCustomerDetailsDto.Response getReservationsForCurrentInstitute(
+      Long reservationsId) {
     Institute institute = authProvider.getCurrentInstitute();
     Reservation reservation = reservationReader.findById(reservationsId);
     instituteValidator.validateReservationBelongsToInstitute(institute, reservation);

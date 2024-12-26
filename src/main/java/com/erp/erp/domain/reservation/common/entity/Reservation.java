@@ -35,12 +35,13 @@ public class Reservation {
 
   @Builder
   public Reservation(Institute institute, Customer customer, LocalDateTime startTime,
-      LocalDateTime endTime, String memo) {
+      LocalDateTime endTime, String memo, int seatNumber) {
     this.institute = institute;
     this.customer = customer;
     this.startTime = startTime;
     this.endTime = endTime;
     this.memo = memo;
+    this.seatNumber = seatNumber;
   }
 
   @PrePersist

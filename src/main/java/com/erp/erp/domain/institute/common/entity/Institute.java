@@ -5,8 +5,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,7 +25,7 @@ public class Institute {
   @NotBlank
   private String name;
 
-  @NotNull
+  @Min(value = 1)
   private int totalSeat;
 
   private LocalTime openTime;
