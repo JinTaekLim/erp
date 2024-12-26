@@ -54,6 +54,7 @@ public class RandomValue {
   }
 
   public static int getInt(int min, int max) {
+    if (min == max) return max;
     return randomValueGenerator.getRandomInt(min, max);
   }
 

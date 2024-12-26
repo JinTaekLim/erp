@@ -73,16 +73,14 @@ public class ReservationService {
   public Reservation updateReservation(UpdatedReservationDto.Request req) {
 
     Institute institute = authProvider.getCurrentInstitute();
-    long reservationsId = req.getReservationId();
-    Reservation reservation = reservationReader.findById(reservationsId);
-    Customer customer = reservation.getCustomer();
-    instituteValidator.validateCustomerBelongsToInstitute(institute, customer);
+    Reservation reservation = reservationReader.findById(req.getReservationId());
 
-    LocalDateTime startTime = req.getStartTime();
-    LocalDateTime endTime = req.getEndTime();
-    String memo = req.getMemo();
+    instituteValidator.isValidSeatNumber(institute, req.getSeatNumber());
 
-    return reservationUpdater.updatedReservations(reservation, startTime, endTime, memo);
+    instituteValidator.validateCustomerBelongsToInstitute(institute, reservation.getCustomer());
+
+    return reservationUpdater.updatedReservations(reservation, req.getStartTime(), req.getEndTime(),
+        req.getMemo(), req.getSeatNumber());
   }
 
   public Reservation updatedSeatNumber(UpdatedSeatNumberDto.Request req) {

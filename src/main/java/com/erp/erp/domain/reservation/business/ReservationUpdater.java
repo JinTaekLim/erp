@@ -17,9 +17,10 @@ public class ReservationUpdater {
       Reservation reservation,
       LocalDateTime startTime,
       LocalDateTime endTime,
-      String memo
+      String memo,
+      int seatNumber
   ) {
-    reservation.updatedReservations(startTime,endTime,memo);
+    reservation.updatedReservations(startTime,endTime,memo, seatNumber);
     return reservationRepository.save(reservation);
   }
 
