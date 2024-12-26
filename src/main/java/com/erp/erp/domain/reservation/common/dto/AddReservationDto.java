@@ -1,6 +1,9 @@
 package com.erp.erp.domain.reservation.common.dto;
 
 
+import com.erp.erp.domain.customer.common.entity.Customer;
+import com.erp.erp.domain.institute.common.entity.Institute;
+import com.erp.erp.domain.reservation.common.entity.Reservation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -32,6 +35,16 @@ public class AddReservationDto {
     @Schema(description = "메모")
     private String memo;
 
+
+    public Reservation toEntity(Institute institute, Customer customer) {
+      return Reservation.builder()
+          .institute(institute)
+          .customer(customer)
+          .startTime(this.startTime)
+          .endTime(this.endTime)
+          .memo(this.memo)
+          .build();
+    }
   }
 
   @Schema(name = "AddReservationDto_Request" , description = "회원 예약 추가 반환")
@@ -54,5 +67,15 @@ public class AddReservationDto {
     @Schema(description = "메모")
     private String memo;
 
+    public static Response fromEntity(Reservation reservation){
+      return AddReservationDto.Response.builder()
+          .reservationId(reservation.getId())
+          .customerId(reservation.getCustomer().getId())
+          .startTime(reservation.getStartTime())
+          .endTime(reservation.getEndTime())
+          .memo(reservation.getMemo())
+          .seatNumber(reservation.getSeatNumber())
+          .build();
+    }
   }
 }

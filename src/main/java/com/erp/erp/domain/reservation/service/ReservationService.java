@@ -45,13 +45,7 @@ public class ReservationService {
 
     reservationValidator.isTimeSlotAvailable(institute, startTime, endTime);
 
-    Reservation reservation = Reservation.builder()
-        .institute(institute)
-        .customer(customer)
-        .startTime(startTime)
-        .endTime(endTime)
-        .memo(req.getMemo())
-        .build();
+    Reservation reservation = req.toEntity(institute, customer);
 
     return reservationCreator.save(reservation);
   }
