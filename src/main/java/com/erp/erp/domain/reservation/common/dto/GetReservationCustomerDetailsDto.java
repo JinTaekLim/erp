@@ -36,7 +36,7 @@ public class GetReservationCustomerDetailsDto {
     @Schema(description = "전화번호")
     private String phone;
     @Schema(description = "이용권")
-    private String plans;
+    private String planName;
     @Schema(description = "이용권 종료 날짜")
     private LocalDate endDate;
     @Schema(description = "남은 시간")
@@ -46,18 +46,17 @@ public class GetReservationCustomerDetailsDto {
     @Schema(description = "메모")
     private String memo;
     @Schema(description = "진도표")
-    private List<LessonProgress> lessonProgressList;
+    private List<ProgressResponse> progress;
 
     public static Response fromEntity(
         Reservation reservation
     ) {
       Customer customer = reservation.getCustomer();
-      PlanPayment planPayment = customer.getPlanPayment();
-      Plan plan = planPayment.getPlan();
+      Plan plan = customer.getPlanPayment().getPlan();
 
-      LocalDateTime registrationAt = planPayment.getRegistrationAt();
+
+      LocalDateTime registrationAt = customer.getPlanPayment().getRegistrationAt();
       int availablePeriod = plan.getAvailablePeriod();
-
       LocalDate endDate = registrationAt.plusDays(availablePeriod).toLocalDate();
 
 
@@ -68,17 +67,17 @@ public class GetReservationCustomerDetailsDto {
           .name(customer.getName())
           .gender(customer.getGender())
           .phone(customer.getPhone())
-          .plans(plan.getName())
+          .planName(plan.getName())
           .endDate(endDate)
           .remainingTime(0)
           .usedTime(0)
-          .memo("null")
-          .lessonProgressList(null)
+          .memo(customer.getMemo())
+          .progress(null)
           .build();
     }
   }
 
-  private static class LessonProgress{
+  private static class ProgressResponse{
     @Schema(description = "날짜")
     private LocalDate date;
     @Schema(description = "내용")

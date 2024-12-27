@@ -1,41 +1,40 @@
 package com.erp.erp.domain.customer.common.entity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.time.LocalDate;
-import java.util.List;
-
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "progress")
+@Entity
 @Getter
 @NoArgsConstructor
+@Table(name = "progress")
 public class Progress {
 
   @Id
-  private Long customerId;
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-  private List<ProgressItem> progressList;
+  @ManyToOne
+  private Customer customer;
 
-  @Getter
-  @Builder
-  @NoArgsConstructor
-  @AllArgsConstructor
-  public static class ProgressItem {
+  @NotNull
+  private LocalDate date;
 
-    @NotNull
-    private LocalDate date;
-    @NotNull
-    private String content;
-  }
+  @NotNull
+  private String content;
 
   @Builder
-  public Progress(Long customerId, List<ProgressItem> progressList) {
-    this.customerId = customerId;
-    this.progressList = progressList;
+  public Progress(Customer customer, LocalDate date, String content) {
+    this.customer = customer;
+    this.date = date;
+    this.content = content;
   }
 }

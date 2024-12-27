@@ -6,6 +6,7 @@ import com.erp.erp.domain.customer.business.CustomerCreator;
 import com.erp.erp.domain.customer.business.CustomerReader;
 import com.erp.erp.domain.customer.business.CustomerUpdater;
 import com.erp.erp.domain.customer.business.ProgressCreator;
+import com.erp.erp.domain.customer.business.ProgressDeleter;
 import com.erp.erp.domain.customer.business.ProgressReader;
 import com.erp.erp.domain.customer.common.dto.AddCustomerDto;
 import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto;
@@ -42,6 +43,7 @@ public class CustomerService {
   private final PlanReader planReader;
   private final PhotoUtil photoUtil;
   private final ProgressReader progressReader;
+  private final ProgressDeleter progressDeleter;
 
   @Transactional
   public AddCustomerDto.Response addCustomer(AddCustomerDto.Request req) {
@@ -71,12 +73,15 @@ public class CustomerService {
     Institute institute = authProvider.getCurrentInstitute();
     Customer customer = customerReader.findByIdAndInstituteId(institute.getId(),
         req.getCustomerId());
+
     Customer updateCustomer = req.updatedCustomers(customer);
     customerCreator.save(updateCustomer);
-    Progress progress = req.toProgress();
-    progressCreator.save(progress);
 
-    return UpdateCustomerDto.Response.fromEntity(updateCustomer, progress);
+    List<Progress> progresses = req.toProgressList(customer);
+    progressDeleter.deleteAllByCustomerId(customer.getId());
+    progressCreator.saveAll(progresses);
+
+    return UpdateCustomerDto.Response.fromEntity(updateCustomer, progresses);
   }
 
   public List<Customer> getCurrentCustomers(int page) {
@@ -118,7 +123,7 @@ public class CustomerService {
   public GetCustomerDetailDto.Response getCustomerDetail(Long customerId) {
     Institute institute = authProvider.getCurrentInstitute();
     Customer customer = customerReader.findByIdAndInstituteId(customerId, institute.getId());
-    Progress progress = progressReader.findById(customerId);
+    List<Progress> progress = progressReader.findByCustomerId(customerId);
 
     return GetCustomerDetailDto.Response.fromEntity(customer, progress);
   }
