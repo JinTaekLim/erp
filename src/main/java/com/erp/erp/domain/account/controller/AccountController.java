@@ -37,7 +37,7 @@ public class AccountController {
   @Operation(summary = "토큰 재발급")
   @PostMapping("/reissueToken")
   @PermitAll
-  public ApiResult<TokenDto> reissueToken(@RequestParam String refreshToken) {
+  public ApiResult<TokenDto> reissueToken(@RequestParam("refreshToken") String refreshToken) {
     TokenDto response = accountService.reissueToken(refreshToken);
     return ApiResult.success(response);
   }

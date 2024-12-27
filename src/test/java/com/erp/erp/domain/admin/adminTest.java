@@ -8,6 +8,7 @@ import com.erp.erp.domain.institute.common.exception.NotFoundInstituteException;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.domain.plan.common.entity.LicenseType;
 import com.erp.erp.global.response.ApiResult;
+import com.erp.erp.global.util.generator.InstituteGenerator;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.util.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
@@ -34,14 +35,9 @@ class adminTest extends IntegrationTest {
   @Autowired
   private InstituteRepository instituteRepository;
 
-  private Institute getInstitutes() {
-    return fixtureMonkey.giveMeBuilder(Institute.class)
-        .setNull("id")
-        .sample();
-  }
 
   private Institute createInstitute() {
-    return instituteRepository.saveAndFlush(getInstitutes());
+    return instituteRepository.saveAndFlush(InstituteGenerator.get());
   }
 
 

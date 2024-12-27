@@ -27,7 +27,7 @@ public class PlanController {
 
   @Operation(summary = "이용권 조회")
   @GetMapping("/getPlans/{licenseType}")
-  public ApiResult<List<GetPlanDto.Response>> getPlans(@PathVariable LicenseType licenseType) {
+  public ApiResult<List<GetPlanDto.Response>> getPlans(@PathVariable("licenseType") LicenseType licenseType) {
     List<Plan> planList = planService.getPlans(licenseType);
 
     List<GetPlanDto.Response> responses = planList.stream()

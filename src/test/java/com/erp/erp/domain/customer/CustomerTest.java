@@ -31,6 +31,12 @@ import com.erp.erp.domain.payment.common.entity.PlanPayment;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.repository.PlanRepository;
 import com.erp.erp.global.response.ApiResult;
+import com.erp.erp.global.util.generator.AccountGenerator;
+import com.erp.erp.global.util.generator.CustomerGenerator;
+import com.erp.erp.global.util.generator.InstituteGenerator;
+import com.erp.erp.global.util.generator.OtherPaymentGenerator;
+import com.erp.erp.global.util.generator.PlanGenerator;
+import com.erp.erp.global.util.generator.PlanPaymentGenerator;
 import com.erp.erp.global.util.randomValue.Language;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.util.test.IntegrationTest;
@@ -79,82 +85,34 @@ class CustomerTest extends IntegrationTest {
   private PhotoUtil photoUtil;
 
 
-  private Account getAccounts(Institute institute) {
-    return fixtureMonkey.giveMeBuilder(Account.class)
-        .setNull("id")
-        .set("institute", institute)
-        .sample();
+  private Account createAccounts(Institute institute) {
+    return accountRepository.save(AccountGenerator.get(institute));
   }
-  private Institute getInstitutes() {
-    return fixtureMonkey.giveMeBuilder(Institute.class)
-        .setNull("id")
-        .sample();
-  }
-
-  private Account createAccounts(Institute institute) { return accountRepository.save(getAccounts(institute)); }
 
   private Institute createInstitutes() {
-    return instituteRepository.save(getInstitutes());
+    return instituteRepository.save(InstituteGenerator.get());
   }
 
   private Plan createPlans() {
-    return planRepository.save(getPlans());
+    return planRepository.save(PlanGenerator.get());
   }
 
-  private Customer getCustomers(Institute institute, PlanPayment planPayment, List<OtherPayment> otherPaymentList) {
-    return fixtureMonkey.giveMeBuilder(Customer.class)
-            .setNull("id")
-            .set("institute", institute)
-            .set("planPayment", planPayment)
-            .set("otherPayments", otherPaymentList)
-            .set("progress", null)
-            .sample();
-  }
 
   private Customer createCustomers(Plan plan, Institute institute) {
-    PlanPayment planPayment = getPlanPayment(plan);
-    List<OtherPayment> otherPaymentList = getRandomOtherPaymentList(plan);
-    Customer customer = getCustomers(institute, planPayment, otherPaymentList);
+    PlanPayment planPayment = PlanPaymentGenerator.get(plan);
+    List<OtherPayment> otherPaymentList = OtherPaymentGenerator.getList(plan);
+    Customer customer = CustomerGenerator.get(institute, planPayment, otherPaymentList);
     return customerRepository.save(customer);
   }
 
   private Customer createCustomers(Institute institute, Plan plan, CustomerStatus status, String name) {
-    PlanPayment planPayment = getPlanPayment(plan);
-    List<OtherPayment> otherPaymentList = getRandomOtherPaymentList(plan);
-    Customer customer = fixtureMonkey.giveMeBuilder(Customer.class)
-        .setNull("id")
-        .set("institute", institute)
-        .set("planPayment", planPayment)
-        .set("otherPayments", otherPaymentList)
-        .set("progress", null)
-        .set("status", status)
-        .set("name", name)
-        .sample();
+    PlanPayment planPayment = PlanPaymentGenerator.get(plan);
+    List<OtherPayment> otherPaymentList = OtherPaymentGenerator.getList(plan);
+    Customer customer = CustomerGenerator.get(institute, planPayment, otherPaymentList, status, name);
     customerRepository.save(customer);
     return customer;
   }
 
-
-
-  private Plan getPlans() {
-    return fixtureMonkey.giveMeBuilder(Plan.class)
-        .setNull("id")
-        .sample();
-  }
-
-  private PlanPayment getPlanPayment(Plan plan) {
-    return fixtureMonkey.giveMeBuilder(PlanPayment.class)
-            .setNull("id")
-            .set("plan", plan)
-            .sample();
-  }
-  private List<OtherPayment> getRandomOtherPaymentList(Plan plan) {
-    int randomInt = RandomValue.getInt(0, 5);
-    return fixtureMonkey.giveMeBuilder(OtherPayment.class)
-            .setNull("id")
-            .set("plan", plan)
-            .sampleList(randomInt);
-  }
 
 
   // note. 이후 이미지 처리 필요

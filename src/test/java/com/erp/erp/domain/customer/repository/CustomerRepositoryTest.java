@@ -10,7 +10,11 @@ import com.erp.erp.domain.payment.common.entity.OtherPayment;
 import com.erp.erp.domain.payment.common.entity.PlanPayment;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.repository.PlanRepository;
-import com.erp.erp.global.util.randomValue.RandomValue;
+import com.erp.erp.global.util.generator.CustomerGenerator;
+import com.erp.erp.global.util.generator.InstituteGenerator;
+import com.erp.erp.global.util.generator.OtherPaymentGenerator;
+import com.erp.erp.global.util.generator.PlanGenerator;
+import com.erp.erp.global.util.generator.PlanPaymentGenerator;
 import com.erp.erp.global.util.test.JpaTest;
 import java.util.Arrays;
 import java.util.List;
@@ -27,50 +31,12 @@ class CustomerRepositoryTest extends JpaTest {
   @Autowired
   private PlanRepository planRepository;
 
-
-  private Institute getInstitutes() {
-    return fixtureMonkey.giveMeBuilder(Institute.class)
-        .setNull("id")
-        .sample();
-  }
-
   private Institute createInstitutes() {
-    return instituteRepository.save(getInstitutes());
-  }
-
-  private Customer getCustomers(Institute institute, PlanPayment planPayment, List<OtherPayment> otherPaymentList) {
-    return fixtureMonkey.giveMeBuilder(Customer.class)
-            .setNull("id")
-            .set("institute", institute)
-            .set("planPayment", planPayment)
-            .set("otherPayments", otherPaymentList)
-            .set("progress", null)
-            .sample();
-  }
-
-  private Plan getPlans() {
-    return fixtureMonkey.giveMeBuilder(Plan.class)
-            .setNull("id")
-            .sample();
+    return instituteRepository.save(InstituteGenerator.get());
   }
 
   private Plan createPlans() {
-    return planRepository.save(getPlans());
-  }
-
-  private PlanPayment getPlanPayment(Plan plan) {
-    return fixtureMonkey.giveMeBuilder(PlanPayment.class)
-            .setNull("id")
-            .set("plan", plan)
-            .sample();
-  }
-
-  private List<OtherPayment> getRandomOtherPaymentList(Plan plan) {
-    int randomInt = RandomValue.getInt(0, 5);
-    return fixtureMonkey.giveMeBuilder(OtherPayment.class)
-            .setNull("id")
-            .set("plans", plan)
-            .sampleList(randomInt);
+    return planRepository.save(PlanGenerator.get());
   }
 
 
@@ -83,10 +49,10 @@ class CustomerRepositoryTest extends JpaTest {
             .mapToObj(i -> {
               Institute institute = createInstitutes();
               Plan plan = createPlans();
-              PlanPayment planPayment = getPlanPayment(plan);
-              List<OtherPayment> otherPaymentList = getRandomOtherPaymentList(plan);
+              PlanPayment planPayment = PlanPaymentGenerator.get(plan);
+              List<OtherPayment> otherPaymentList = OtherPaymentGenerator.getList(plan);
 
-              return getCustomers(institute, planPayment, otherPaymentList);
+              return CustomerGenerator.get(institute, planPayment, otherPaymentList);
             })
             .toList();
 
@@ -105,9 +71,9 @@ class CustomerRepositoryTest extends JpaTest {
     // Given
     Institute institute = createInstitutes();
     Plan plan = createPlans();
-    PlanPayment planPayment = getPlanPayment(plan);
-    List<OtherPayment> otherPaymentList = getRandomOtherPaymentList(plan);
-    Customer customer = getCustomers(institute, planPayment, otherPaymentList);
+    PlanPayment planPayment = PlanPaymentGenerator.get(plan);
+    List<OtherPayment> otherPaymentList = OtherPaymentGenerator.getList(plan);
+    Customer customer = CustomerGenerator.get(institute, planPayment, otherPaymentList);
     customerRepository.save(customer);
 
     // Then
@@ -125,9 +91,9 @@ class CustomerRepositoryTest extends JpaTest {
     // Given
     Institute institute = createInstitutes();
     Plan plan = createPlans();
-    PlanPayment planPayment = getPlanPayment(plan);
-    List<OtherPayment> otherPaymentList = getRandomOtherPaymentList(plan);
-    Customer customer = getCustomers(institute, planPayment, otherPaymentList);
+    PlanPayment planPayment = PlanPaymentGenerator.get(plan);
+    List<OtherPayment> otherPaymentList = OtherPaymentGenerator.getList(plan);
+    Customer customer = CustomerGenerator.get(institute, planPayment, otherPaymentList);
     customerRepository.save(customer);
     long customersId = customer.getId();
     CustomerStatus status = Arrays.stream(CustomerStatus.values())

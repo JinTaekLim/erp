@@ -8,6 +8,7 @@ import com.erp.erp.domain.plan.common.entity.LicenseType;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.repository.PlanRepository;
 import com.erp.erp.global.response.ApiResult;
+import com.erp.erp.global.util.generator.PlanGenerator;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.util.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
@@ -33,24 +34,12 @@ class PlanControllerTest extends IntegrationTest {
   @Autowired
   private PlanRepository planRepository;
 
-  private Plan getPlan() {
-    return fixtureMonkey.giveMeOne(Plan.class);
-  }
-  private List<Plan> getPlans(int size) {
-    return fixtureMonkey.giveMeBuilder(Plan.class)
-        .sampleList(size);
-  }
-  private List<Plan> getPlans(int size, LicenseType licenseType) {
-    return fixtureMonkey.giveMeBuilder(Plan.class)
-        .set("licenseType", licenseType)
-        .sampleList(size);
+  private Plan createPlan() {
+    return planRepository.save(PlanGenerator.get());
   }
 
-  private Plan createPlan() {
-    return planRepository.save(getPlan());
-  }
   private List<Plan> createPlans(int size) {
-    return planRepository.saveAll(getPlans(size));
+    return planRepository.saveAll(PlanGenerator.planList(size));
   }
 
   @Test
@@ -90,7 +79,7 @@ class PlanControllerTest extends IntegrationTest {
     // given
     int size = RandomValue.getInt(0,5);
     LicenseType licenseType = RandomValue.getRandomEnum(LicenseType.class);
-    List<Plan> plans = planRepository.saveAll(getPlans(size,licenseType));
+    List<Plan> plans = planRepository.saveAll(PlanGenerator.planList(size,licenseType));
 
 
     String url = "http://localhost:" + port + "/api/plan/getPlans/" + licenseType;

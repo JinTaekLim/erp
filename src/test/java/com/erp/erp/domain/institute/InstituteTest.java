@@ -15,6 +15,8 @@ import com.erp.erp.domain.institute.common.dto.UpdateTotalSeatDto.Request;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.global.response.ApiResult;
+import com.erp.erp.global.util.generator.AccountGenerator;
+import com.erp.erp.global.util.generator.InstituteGenerator;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.util.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
@@ -47,25 +49,13 @@ public class InstituteTest extends IntegrationTest {
   @Autowired
   private AccountRepository accountRepository;
 
-
-  private Institute getInstitute() {
-    return fixtureMonkey.giveMeBuilder(Institute.class)
-        .setNull("id")
-        .sample();
-  }
   private Institute createInstitute() {
-    Institute institute = getInstitute();
+    Institute institute = InstituteGenerator.get();
     return instituteRepository.save(institute);
   }
 
-  private Account getAccount(Institute institute) {
-    return fixtureMonkey.giveMeBuilder(Account.class)
-        .setNull("id")
-        .set("institute", institute)
-        .sample();
-  }
   private Account createAccount(Institute institute) {
-    Account account = getAccount(institute);
+    Account account = AccountGenerator.get(institute);
     return accountRepository.save(account);
   }
 

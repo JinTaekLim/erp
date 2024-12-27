@@ -8,19 +8,20 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
   Optional<Reservation> findByIdAndInstituteId(Long id, Long instituteId);
 
   @Query("SELECT r FROM Reservation r WHERE CAST(r.startTime AS DATE) = :date AND r.institute = :institute")
-  List<Reservation> findByInstituteAndStartTimeOn(Institute institute, LocalDate date);
+  List<Reservation> findByInstituteAndStartTimeOn(@Param("institute") Institute institute, @Param("date") LocalDate date);
 
   @Query("SELECT r FROM Reservation r WHERE r.institute = :institute AND r.startTime >= :startTime AND r.startTime < :endTime")
-  List<Reservation> findByInstituteAndTimeRange(Institute institute, LocalDateTime startTime, LocalDateTime endTime);
+  List<Reservation> findByInstituteAndTimeRange(@Param("institute") Institute institute, @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 
   @Query("SELECT r FROM Reservation r WHERE r.institute = :institute AND r.startTime < :endTime AND r.endTime > :startTime")
-  List<Reservation> findByInstituteWithOverlappingTimeRange(Institute institute, LocalDateTime startTime, LocalDateTime endTime);
+  List<Reservation> findByInstituteWithOverlappingTimeRange(@Param("institute") Institute institute, @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 
 //  @Modifying
 //  @Transactional

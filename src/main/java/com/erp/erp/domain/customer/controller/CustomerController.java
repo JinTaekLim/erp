@@ -102,7 +102,7 @@ public class CustomerController {
   @Operation(summary = "고객 이름 검색 ( 글자 기준, 초성X )")
   @GetMapping("/searchCustomerName/{keyword}")
   public ApiResult<List<SearchCustomerNameDto.Response>> searchCustomerName(
-      @PathVariable String keyword
+      @PathVariable("keyword") String keyword
   ) {
     List<SearchCustomerNameDto.Response> response = customerService.searchCustomerName(keyword);
     return ApiResult.success(response);
@@ -110,7 +110,7 @@ public class CustomerController {
 
   @Operation(summary = "고객 상세 조회")
   @GetMapping("/getCustomerDetail/{customerId}")
-  public ApiResult<GetCustomerDetailDto.Response> getCustomerDetail(@PathVariable Long customerId) {
+  public ApiResult<GetCustomerDetailDto.Response> getCustomerDetail(@PathVariable("customerId") Long customerId) {
     GetCustomerDetailDto.Response response = customerService.getCustomerDetail(customerId);
     return ApiResult.success(response);
   }

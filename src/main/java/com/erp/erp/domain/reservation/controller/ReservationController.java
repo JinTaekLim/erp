@@ -36,7 +36,7 @@ public class ReservationController {
   @Operation(summary = "하루 예약 조회")
   @GetMapping("/getDailyReservations")
   public ApiResult<List<GetDailyReservationDto.Response>> getDailyReservations(
-      @RequestParam LocalDate day
+      @RequestParam("day") LocalDate day
   ) {
     List<Reservation> reservationList = reservationService.getDailyReservations(day);
 

@@ -12,6 +12,8 @@ import com.erp.erp.domain.auth.common.dto.TokenDto;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.global.response.ApiResult;
+import com.erp.erp.global.util.generator.AccountGenerator;
+import com.erp.erp.global.util.generator.InstituteGenerator;
 import com.erp.erp.global.util.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 
-public class AccountTest extends IntegrationTest {
+public class AccountGeneratorTest extends IntegrationTest {
 
   private String BASE_URL;
 
@@ -38,22 +40,12 @@ public class AccountTest extends IntegrationTest {
   @Autowired
   private TokenManager tokenManager;
 
-  private Institute getInstitutes() {
-    return fixtureMonkey.giveMeOne(Institute.class);
-  }
-
   private Institute createInstitutes() {
-    return instituteRepository.save(getInstitutes());
-  }
-
-  private Account getAccount(Institute institute) {
-    return fixtureMonkey.giveMeBuilder(Account.class)
-        .set("institute", institute)
-        .sample();
+    return instituteRepository.save(InstituteGenerator.get());
   }
 
   private Account createAccount(Institute institute) {
-    return accountRepository.save(getAccount(institute));
+    return accountRepository.save(AccountGenerator.get(institute));
   }
 
   @Test

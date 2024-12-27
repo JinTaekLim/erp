@@ -20,6 +20,11 @@ import com.erp.erp.domain.reservation.common.exception.InvalidReservationTimeExc
 import com.erp.erp.domain.reservation.common.exception.type.ReservationErrorType;
 import com.erp.erp.domain.reservation.repository.ReservationRepository;
 import com.erp.erp.global.response.ApiResult;
+import com.erp.erp.global.util.generator.CustomerGenerator;
+import com.erp.erp.global.util.generator.InstituteGenerator;
+import com.erp.erp.global.util.generator.OtherPaymentGenerator;
+import com.erp.erp.global.util.generator.PlanGenerator;
+import com.erp.erp.global.util.generator.PlanPaymentGenerator;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.util.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
@@ -47,8 +52,6 @@ class ReservationTest extends IntegrationTest {
     BASE_URL = "http://localhost:" + port + "/api/reservation";
   }
 
-
-
   @Autowired
   private InstituteRepository instituteRepository;
   @Autowired
@@ -59,57 +62,19 @@ class ReservationTest extends IntegrationTest {
   private PlanRepository planRepository;
 
 
-  private Institute getInstitutes() {
-    return fixtureMonkey.giveMeBuilder(Institute.class)
-        .setNull("id")
-        .sample();
-  }
-
-  private Customer getCustomers(Institute institute) {
-    Plan plan = createPlans();
-    PlanPayment planPayment = getPlanPayment(plan);
-    List<OtherPayment> otherPaymentList = getRandomOtherPaymentList(plan);
-
-    return fixtureMonkey.giveMeBuilder(Customer.class)
-            .setNull("id")
-            .set("institute", institute)
-            .set("planPayment", planPayment)
-            .set("otherPayments", otherPaymentList)
-            .set("progress", null)
-            .sample();
-  }
-
   private Institute createInstitutes() {
-    return instituteRepository.save(getInstitutes());
+    return instituteRepository.save(InstituteGenerator.get());
   }
   private Customer createCustomers(Institute institute){
-    Customer customer = getCustomers(institute);
+    Plan plan = createPlans();
+    PlanPayment planPayment = PlanPaymentGenerator.get(plan);
+    List<OtherPayment> otherPaymentList = OtherPaymentGenerator.getList(plan);
+    Customer customer = CustomerGenerator.get(institute, planPayment, otherPaymentList);
     return customerRepository.save(customer);
   }
 
-  private PlanPayment getPlanPayment(Plan plan) {
-    return fixtureMonkey.giveMeBuilder(PlanPayment.class)
-            .setNull("id")
-            .set("plan", plan)
-            .sample();
-  }
-
-  private List<OtherPayment> getRandomOtherPaymentList(Plan plan) {
-    int randomInt = RandomValue.getInt(0, 5);
-    return fixtureMonkey.giveMeBuilder(OtherPayment.class)
-            .setNull("id")
-            .set("plan", plan)
-            .sampleList(randomInt);
-  }
-
-  private Plan getPlans() {
-    return fixtureMonkey.giveMeBuilder(Plan.class)
-            .setNull("id")
-            .sample();
-  }
-
   private Plan createPlans() {
-    return planRepository.save(getPlans());
+    return planRepository.save(PlanGenerator.get());
   }
 
   @Test
