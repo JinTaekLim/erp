@@ -439,7 +439,7 @@ class CustomerTest extends IntegrationTest {
     assertThat(planPaymentResponse.getDiscountRate()).isEqualTo(planPayment.getDiscountRate());
     assertThat(planPaymentResponse.getDiscountPrice()).isEqualTo(discountPrice);
     assertThat(planPaymentResponse.getPaymentsMethod()).isEqualTo(planPayment.getPaymentsMethod());
-    assertThat(planPaymentResponse.getRegistrationAt()).isEqualTo(planPayment.getRegistrationAt());
+    assertThat(planPaymentResponse.getRegistrationAt().withNano(0)).isEqualTo(planPayment.getRegistrationAt().withNano(0));
     assertThat(planPaymentResponse.getPaymentTotal()).isEqualTo(paymentTotal);
     assertThat(planPaymentResponse.isStatus()).isEqualTo(planPayment.isStatus());
 
@@ -447,7 +447,7 @@ class CustomerTest extends IntegrationTest {
     for (int i=0; i<apiResponse.getData().getOtherPayment().size(); i++) {
       OtherPaymentResponse response = apiResponse.getData().getOtherPayment().get(i);
       OtherPayment otherPayment = customer.getOtherPayments().get(i);
-      assertThat(response.getRegistrationAt()).isEqualTo(otherPayment.getRegistrationAt());
+      assertThat(response.getRegistrationAt().withNano(0)).isEqualTo(otherPayment.getRegistrationAt().withNano(0));
       assertThat(response.getContent()).isEqualTo(otherPayment.getContent());
       assertThat(response.getPrice()).isEqualTo(otherPayment.getPrice());
       assertThat(response.isStatus()).isEqualTo(otherPayment.isStatus());
