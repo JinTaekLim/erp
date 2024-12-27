@@ -12,6 +12,12 @@ import com.erp.erp.domain.payment.common.entity.PlanPayment;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.repository.PlanRepository;
 import com.erp.erp.domain.reservation.common.entity.Reservation;
+import com.erp.erp.global.util.generator.CustomerGenerator;
+import com.erp.erp.global.util.generator.InstituteGenerator;
+import com.erp.erp.global.util.generator.OtherPaymentGenerator;
+import com.erp.erp.global.util.generator.PlanGenerator;
+import com.erp.erp.global.util.generator.PlanPaymentGenerator;
+import com.erp.erp.global.util.generator.ReservationGenerator;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.util.test.JpaTest;
 import java.time.LocalDateTime;
@@ -31,105 +37,27 @@ class ReservationRepositoryTest extends JpaTest {
   @Autowired
   private PlanRepository planRepository;
 
-
-  private Institute getInstitutes() {
-    return fixtureMonkey.giveMeBuilder(Institute.class)
-        .setNull("id")
-        .sample();
-  }
-
-  private Customer getCustomers(Institute institute) {
-    Plan plan = createPlans();
-    PlanPayment planPayment = getPlanPayment(plan);
-    List<OtherPayment> otherPaymentList = getRandomOtherPaymentList(plan);
-
-    return fixtureMonkey.giveMeBuilder(Customer.class)
-        .setNull("id")
-        .set("institute", institute)
-        .set("planPayment", planPayment)
-        .set("otherPayments", otherPaymentList)
-        .set("progress", null)
-        .sample();
-  }
-
   private Institute createInstitutes() {
-    return instituteRepository.save(getInstitutes());
+    return instituteRepository.save(InstituteGenerator.get());
   }
 
   private Customer createCustomers(Institute institute) {
-    Customer customer = getCustomers(institute);
+    Plan plan = createPlans();
+    PlanPayment planPayment = PlanPaymentGenerator.get(plan);
+    List<OtherPayment> otherPaymentList = OtherPaymentGenerator.getList(plan);
+    Customer customer = CustomerGenerator.get(institute, planPayment, otherPaymentList);
     return customerRepository.save(customer);
   }
 
-  private PlanPayment getPlanPayment(Plan plan) {
-    return fixtureMonkey.giveMeBuilder(PlanPayment.class)
-        .setNull("id")
-        .set("plan", plan)
-        .sample();
-  }
-
-  private List<OtherPayment> getRandomOtherPaymentList(Plan plan) {
-    int randomInt = RandomValue.getInt(0, 5);
-    return fixtureMonkey.giveMeBuilder(OtherPayment.class)
-        .setNull("id")
-        .set("plan", plan)
-        .sampleList(randomInt);
-  }
-
-  private Plan getPlans() {
-    return fixtureMonkey.giveMeBuilder(Plan.class)
-        .setNull("id")
-        .sample();
-  }
-
   private Plan createPlans() {
-    return planRepository.save(getPlans());
-  }
-
-  private Reservation getReservations(Customer customer, Institute institute,
-      LocalDateTime startTime, LocalDateTime endTime) {
-    return Reservation.builder()
-        .customer(customer)
-        .institute(institute)
-        .startTime(startTime)
-        .endTime(endTime)
-        .build();
+    return planRepository.save(PlanGenerator.get());
   }
 
   private Reservation createReservations(Customer customer, Institute institute,
       LocalDateTime startTime, LocalDateTime endTime) {
-    Reservation reservation = getReservations(customer, institute, startTime, endTime);
+    Reservation reservation = ReservationGenerator.get(customer, institute, startTime, endTime);
     return reservationRepository.save(reservation);
   }
-
-
-//  @Test
-//  void findByInstituteAndTimeRange() {
-//    // given
-//    Institute institute = createInstitutes();
-//    Customer customers = createCustomers(institute);
-//
-//    LocalDateTime startTime = LocalDateTime.of(2024,12,25,9,30);
-//    LocalDateTime endTime = LocalDateTime.of(2024,12,25,10,30);
-//    createReservations(customers, institute, startTime, endTime);
-//
-//    LocalDateTime startTime1 = LocalDateTime.of(2024,12,25,10,30,22,22);
-//    LocalDateTime endTime1 = LocalDateTime.of(2024,12,25,11,30,22,22);
-//    createReservations(customers, institute, startTime1, endTime1);
-//
-//    LocalDateTime startTime2 = LocalDateTime.of(2024,12,25,10,31,22,22);
-//    LocalDateTime endTime2 = LocalDateTime.of(2024,12,25,11,30,22,22);
-//    createReservations(customers, institute, startTime2, endTime2);
-//
-//    // when
-//    List<Reservation> reservations = reservationRepository.findByInstituteAndTimeRange(institute, startTime, endTime);
-//
-//    // then
-//    for (Reservation reservation : reservations) {
-//      System.out.println("예약 " + reservation.getId());
-//    }
-//    assertThat(reservations.size()).isEqualTo(1);
-//  }
 
 
   @Test

@@ -15,6 +15,7 @@ import com.erp.erp.domain.customer.common.dto.AddCustomerDto;
 
 import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto;
 import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto.PlanPaymentResponse;
+import com.erp.erp.domain.customer.common.dto.GetCustomerDto;
 import com.erp.erp.domain.customer.common.dto.SearchCustomerNameDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto.OtherPaymentResponse;
@@ -31,6 +32,12 @@ import com.erp.erp.domain.payment.common.entity.PlanPayment;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.repository.PlanRepository;
 import com.erp.erp.global.response.ApiResult;
+import com.erp.erp.global.util.generator.AccountGenerator;
+import com.erp.erp.global.util.generator.CustomerGenerator;
+import com.erp.erp.global.util.generator.InstituteGenerator;
+import com.erp.erp.global.util.generator.OtherPaymentGenerator;
+import com.erp.erp.global.util.generator.PlanGenerator;
+import com.erp.erp.global.util.generator.PlanPaymentGenerator;
 import com.erp.erp.global.util.randomValue.Language;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.util.test.IntegrationTest;
@@ -79,82 +86,37 @@ class CustomerTest extends IntegrationTest {
   private PhotoUtil photoUtil;
 
 
-  private Account getAccounts(Institute institute) {
-    return fixtureMonkey.giveMeBuilder(Account.class)
-        .setNull("id")
-        .set("institute", institute)
-        .sample();
+  private Account createAccounts(Institute institute) {
+    return accountRepository.save(AccountGenerator.get(institute));
   }
-  private Institute getInstitutes() {
-    return fixtureMonkey.giveMeBuilder(Institute.class)
-        .setNull("id")
-        .sample();
-  }
-
-  private Account createAccounts(Institute institute) { return accountRepository.save(getAccounts(institute)); }
 
   private Institute createInstitutes() {
-    return instituteRepository.save(getInstitutes());
+    return instituteRepository.save(InstituteGenerator.get());
   }
 
   private Plan createPlans() {
-    return planRepository.save(getPlans());
+    return planRepository.save(PlanGenerator.get());
   }
 
-  private Customer getCustomers(Institute institute, PlanPayment planPayment, List<OtherPayment> otherPaymentList) {
-    return fixtureMonkey.giveMeBuilder(Customer.class)
-            .setNull("id")
-            .set("institute", institute)
-            .set("planPayment", planPayment)
-            .set("otherPayments", otherPaymentList)
-            .set("progress", null)
-            .sample();
-  }
 
-  private Customer createCustomers(Plan plan, Institute institute) {
-    PlanPayment planPayment = getPlanPayment(plan);
-    List<OtherPayment> otherPaymentList = getRandomOtherPaymentList(plan);
-    Customer customer = getCustomers(institute, planPayment, otherPaymentList);
+  private Customer createCustomer(Plan plan, Institute institute) {
+    Customer customer = CustomerGenerator.get(plan, institute);
     return customerRepository.save(customer);
   }
 
-  private Customer createCustomers(Institute institute, Plan plan, CustomerStatus status, String name) {
-    PlanPayment planPayment = getPlanPayment(plan);
-    List<OtherPayment> otherPaymentList = getRandomOtherPaymentList(plan);
-    Customer customer = fixtureMonkey.giveMeBuilder(Customer.class)
-        .setNull("id")
-        .set("institute", institute)
-        .set("planPayment", planPayment)
-        .set("otherPayments", otherPaymentList)
-        .set("progress", null)
-        .set("status", status)
-        .set("name", name)
-        .sample();
+  private Customer createCustomer(Plan plan, Institute institute, CustomerStatus customerStatus) {
+    Customer customer = CustomerGenerator.get(plan, institute, customerStatus);
+    return customerRepository.save(customer);
+  }
+
+  private Customer createCustomer(Institute institute, Plan plan, CustomerStatus status, String name) {
+    PlanPayment planPayment = PlanPaymentGenerator.get(plan);
+    List<OtherPayment> otherPaymentList = OtherPaymentGenerator.getList(plan);
+    Customer customer = CustomerGenerator.get(institute, planPayment, otherPaymentList, status, name);
     customerRepository.save(customer);
     return customer;
   }
 
-
-
-  private Plan getPlans() {
-    return fixtureMonkey.giveMeBuilder(Plan.class)
-        .setNull("id")
-        .sample();
-  }
-
-  private PlanPayment getPlanPayment(Plan plan) {
-    return fixtureMonkey.giveMeBuilder(PlanPayment.class)
-            .setNull("id")
-            .set("plan", plan)
-            .sample();
-  }
-  private List<OtherPayment> getRandomOtherPaymentList(Plan plan) {
-    int randomInt = RandomValue.getInt(0, 5);
-    return fixtureMonkey.giveMeBuilder(OtherPayment.class)
-            .setNull("id")
-            .set("plan", plan)
-            .sampleList(randomInt);
-  }
 
 
   // note. 이후 이미지 처리 필요
@@ -259,7 +221,7 @@ class CustomerTest extends IntegrationTest {
     Plan plan = createPlans();
     Institute institute = createInstitutes();
 
-    Customer customer = createCustomers(plan, institute);
+    Customer customer = createCustomer(plan, institute);
     UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
             .set("customerId", customer.getId())
             .sample();
@@ -317,7 +279,7 @@ class CustomerTest extends IntegrationTest {
     //given
     Plan plan = createPlans();
     Institute institute = createInstitutes();
-    Customer customer = createCustomers(plan, institute);
+    Customer customer = createCustomer(plan, institute);
 
     CustomerStatus status = Arrays.stream(CustomerStatus.values())
         .filter(s -> s != customer.getStatus())
@@ -352,18 +314,18 @@ class CustomerTest extends IntegrationTest {
   }
 
 
-  @Test()
+  @Test
   void searchCustomerName_성공() {
     //given
     Plan plan = createPlans();
     Institute institute = createInstitutes();
     CustomerStatus status = ( RandomValue.getInt(0,2) == 0 ) ? CustomerStatus.INACTIVE : CustomerStatus.ACTIVE;
     String name = RandomValue.string(10,20).setNullable(false).setLanguages(Language.ENGLISH).get();
-    Customer customer = createCustomers(institute, plan, status, name);
-////    String keyword = ( name.length() < 2 ) ? name : String.valueOf(name.charAt(0));
+    Customer customer = createCustomer(institute, plan, status, name);
+    String keyword = ( name.length() < 2 ) ? name : String.valueOf(name.charAt(0));
 
 
-    String url = BASE_URL + "/searchCustomerName/" + customer.getName();
+    String url = BASE_URL + "/searchCustomerName/" + keyword;
 
 
     //when
@@ -381,9 +343,9 @@ class CustomerTest extends IntegrationTest {
     //then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertNotNull(apiResponse);
-//    assertThat(apiResponse.getData().get(0).getCustomerId()).isEqualTo(customers.getId());
-//    assertThat(apiResponse.getData().get(0).getName()).isEqualTo(customers.getName());
-//    assertThat(apiResponse.getData().get(0).getStatus()).isEqualTo(status);
+    assertThat(apiResponse.getData().get(0).getCustomerId()).isEqualTo(customer.getId());
+    assertThat(apiResponse.getData().get(0).getName()).isEqualTo(customer.getName());
+    assertThat(apiResponse.getData().get(0).getStatus()).isEqualTo(status);
   }
 
   @Test
@@ -392,7 +354,7 @@ class CustomerTest extends IntegrationTest {
     Plan plan = createPlans();
     Institute institute = createInstitutes();
     Account account = createAccounts(institute);
-    Customer customer = createCustomers(plan, institute);
+    Customer customer = createCustomer(plan, institute);
     TokenDto tokenDto = tokenManager.createToken(account);
 
 
@@ -456,105 +418,76 @@ class CustomerTest extends IntegrationTest {
 
 
 
-//
-//  @Test()
-//  void getCurrentCustomers() {
-//    //given
-//    Accounts accounts = createAccounts();
-//    Institutes institutes = accounts.getInstitutes();
-//
-//    Plan plan = createPlans();
-//    PlanPayment planPayment = getPlanPayment(plan);
-//    List<OtherPayments> otherPayments = getRandomOtherPaymentList(plan);
-//
-//    int randomInt = RandomValue.getInt(0,4);
-//    int page = 0;
-//
-//    for(int i = 0; i<randomInt; i++) {
-//      Customers customers = Customers.builder()
-//          .institutes(institutes)
-//          .name("name")
-//          .gender(Gender.MALE)
-//          .phone("phone")
-//          .address("address")
-//          .photoUrl("photoUrl")
-//          .memo("memo")
-//          .birthDate(LocalDate.now())
-//          .planPayment(planPayment)
-//          .otherPayments(otherPayments)
-//          .build();
-//      customersRepository.save(customers);
-//    }
-//
-//    String url = "http://localhost:" + port + "/api/customers/currentCustomers/" + page;
-//
-//
-//    // when
-//    ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-//        url,
-//        String.class
-//    );
-//
-//    ApiResult<List<GetCustomerDto.Response>> apiResponse = gson.fromJson(
-//        responseEntity.getBody(),
-//        new TypeToken<ApiResult<List<GetCustomerDto.Response>>>(){}.getType()
-//    );
-//
-//    // then
-//    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-//    assertNotNull(apiResponse);
-//
-//    int dataSize = apiResponse.getData().size();
-//    assertThat(dataSize).isEqualTo(randomInt);
-//  }
-//
-//
-//
-//  @Test
-//  void getCurrentCustomers_4명_반환() {
-//    //given
-//    Accounts accounts = createAccounts();
-//    Institutes institutes = accounts.getInstitutes();
-//    Plan plan = createPlans();
-//    PlanPayment planPayment = getPlanPayment(plan);
-//    List<OtherPayments> otherPayments = getRandomOtherPaymentList(plan);
-//
-//    int randomInt = RandomValue.getInt(4,20);
-//    int page = Math.max(0, (randomInt / 4) - 1 );
-//
-//
-//    for(int i = 0; i<randomInt; i++) {
-//      Customers customers = fixtureMonkey.giveMeBuilder(Customers.class)
-//          .setNull("id")
-//          .set("institutes" , institutes)
-//          .set("status", CustomerStatus.ACTIVE)
-//          .set("planPayment" , planPayment)
-//          .set("otherPayments" , otherPayments)
-//          .sample();
-//      customersRepository.save(customers);
-//    }
-//
-//
-//    String url = "http://localhost:" + port + "/api/customers/currentCustomers/" + page;
-//
-//
-//    // when
-//    ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-//        url,
-//        String.class
-//    );
-//
-//    ApiResult<List<GetCustomerDto.Response>> apiResponse = gson.fromJson(
-//        responseEntity.getBody(),
-//        new TypeToken<ApiResult<List<GetCustomerDto.Response>>>(){}.getType()
-//    );
-//
-//    // then
-//    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-//    assertNotNull(apiResponse);
-//
-//    int dataSize = apiResponse.getData().size();
-//    assertThat(dataSize).isEqualTo(4);
-//  }
+
+  @Test()
+  void getCurrentCustomers() {
+    //given
+    Institute institutes = createInstitutes();
+    Account accounts = createAccounts(institutes);
+    Plan plan = createPlans();
+
+    int randomInt = RandomValue.getInt(0,4);
+    IntStream.range(0, randomInt).forEach(i -> {
+      createCustomer(plan, institutes, CustomerStatus.ACTIVE);
+    });
+
+    String url = "http://localhost:" + port + "/api/customer/currentCustomers/" + 0;
+
+
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+        url,
+        String.class
+    );
+
+    ApiResult<List<GetCustomerDto.Response>> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<List<GetCustomerDto.Response>>>(){}.getType()
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertNotNull(apiResponse);
+
+    int dataSize = apiResponse.getData().size();
+    assertThat(dataSize).isEqualTo(randomInt);
+  }
+
+  @Test
+  void getCurrentCustomers_4명_반환() {
+    //given
+    Institute institutes = createInstitutes();
+    Account accounts = createAccounts(institutes);
+    Plan plan = createPlans();
+
+    int randomInt = RandomValue.getInt(4,20);
+    int page = Math.max(0, (randomInt / 4) - 1 );
+
+    IntStream.range(0, randomInt).forEach(i -> {
+      createCustomer(plan, institutes, CustomerStatus.ACTIVE);
+    });
+
+
+    String url = "http://localhost:" + port + "/api/customer/currentCustomers/" + page;
+
+
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+        url,
+        String.class
+    );
+
+    ApiResult<List<GetCustomerDto.Response>> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<List<GetCustomerDto.Response>>>(){}.getType()
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertNotNull(apiResponse);
+
+    int dataSize = apiResponse.getData().size();
+    assertThat(dataSize).isEqualTo(4);
+  }
 
 }

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
@@ -23,7 +24,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
       "AND c.status IN (:statuses)",
       nativeQuery = true)
   List<Customer> findByInstituteIdAndNameStartingWithAndStatusIn(
-      Long instituteId, String name, List<CustomerStatus> statuses);
+      @Param("instituteId") Long instituteId, @Param("name") String name, @Param("statuses") List<CustomerStatus> statuses);
 
 
 
@@ -31,7 +32,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
   @Modifying
   @Transactional
   @Query("UPDATE Customer c SET c.status = :newStatus WHERE c.id = :customerId")
-  void updateStatusById(Long customerId, CustomerStatus newStatus);
+  void updateStatusById(@Param("customerId") Long customerId, @Param("newStatus") CustomerStatus newStatus);
 
 
 }
