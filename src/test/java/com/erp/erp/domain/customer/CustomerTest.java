@@ -9,8 +9,13 @@ import static org.mockito.Mockito.when;
 import com.erp.erp.domain.account.business.PhotoUtil;
 import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.account.repository.AccountRepository;
+import com.erp.erp.domain.auth.business.TokenManager;
+import com.erp.erp.domain.auth.common.dto.TokenDto;
 import com.erp.erp.domain.customer.common.dto.AddCustomerDto;
 
+import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto;
+import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto.OtherPaymentResponse;
+import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto.PlanPaymentResponse;
 import com.erp.erp.domain.customer.common.dto.SearchCustomerNameDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customer.common.dto.UpdateStatusDto;
@@ -18,6 +23,7 @@ import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.Progress;
 import com.erp.erp.domain.customer.repository.CustomerRepository;
+import com.erp.erp.domain.institute.common.dto.UpdateTotalSeatDto.Request;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.domain.payment.common.entity.OtherPayment;
@@ -34,6 +40,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,12 +72,14 @@ class CustomerTest extends IntegrationTest {
   @Autowired
   private PlanRepository planRepository;
 
+  @Autowired
+  private TokenManager tokenManager;
+
   @MockBean
   private PhotoUtil photoUtil;
 
 
-  private Account getAccounts() {
-    Institute institute = createInstitutes();
+  private Account getAccounts(Institute institute) {
     return fixtureMonkey.giveMeBuilder(Account.class)
         .setNull("id")
         .set("institute", institute)
@@ -81,7 +91,7 @@ class CustomerTest extends IntegrationTest {
         .sample();
   }
 
-  private Account createAccounts() { return accountRepository.save(getAccounts()); }
+  private Account createAccounts(Institute institute) { return accountRepository.save(getAccounts(institute)); }
 
   private Institute createInstitutes() {
     return instituteRepository.save(getInstitutes());
@@ -374,6 +384,74 @@ class CustomerTest extends IntegrationTest {
 //    assertThat(apiResponse.getData().get(0).getCustomerId()).isEqualTo(customers.getId());
 //    assertThat(apiResponse.getData().get(0).getName()).isEqualTo(customers.getName());
 //    assertThat(apiResponse.getData().get(0).getStatus()).isEqualTo(status);
+  }
+
+  @Test
+  void getCustomerDetail() {
+    // given
+    Plan plan = createPlans();
+    Institute institute = createInstitutes();
+    Account account = createAccounts(institute);
+    Customer customer = createCustomers(plan, institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+
+
+    String url = BASE_URL + "/getCustomerDetail/" + customer.getId();
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setBearerAuth(tokenDto.getAccessToken());
+
+    HttpEntity<Request> requestEntity = new HttpEntity<>(headers);
+
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
+        url,
+        HttpMethod.GET,
+        requestEntity,
+        String.class
+    );
+
+    ApiResult<GetCustomerDetailDto.Response> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<GetCustomerDetailDto.Response>>(){}
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(apiResponse.getData()).isNotNull();
+    assertThat(apiResponse.getData().getPhotoUrl()).isEqualTo(customer.getPhotoUrl());
+    assertThat(apiResponse.getData().getName()).isEqualTo(customer.getName());
+    assertThat(apiResponse.getData().getGender()).isEqualTo(customer.getGender());
+    assertThat(apiResponse.getData().getPhone()).isEqualTo(customer.getPhone());
+    assertThat(apiResponse.getData().getAddress()).isEqualTo(customer.getAddress());
+//    assertThat(apiResponse.getData().getVisitPath()).isEqualTo(null);
+    assertThat(apiResponse.getData().getMemo()).isEqualTo(customer.getMemo());
+//    assertThat(apiResponse.getData().getProgressList()).isEqualTo(null);
+
+    PlanPaymentResponse planPaymentResponse = apiResponse.getData().getPlanPayment();
+    PlanPayment planPayment = customer.getPlanPayment();
+    int planPrice = planPayment.getPlan().getPrice();
+    int discountPrice = (int) (planPrice * planPayment.getDiscountRate());
+    int paymentTotal = planPrice - discountPrice;
+    assertThat(planPaymentResponse.getLicenseType()).isEqualTo(planPayment.getPlan().getLicenseType());
+    assertThat(planPaymentResponse.getPlanName()).isEqualTo(planPayment.getPlan().getName());
+    assertThat(planPaymentResponse.getPlanPrice()).isEqualTo(planPayment.getPlan().getPrice());
+    assertThat(planPaymentResponse.getDiscountRate()).isEqualTo(planPayment.getDiscountRate());
+    assertThat(planPaymentResponse.getDiscountPrice()).isEqualTo(discountPrice);
+    assertThat(planPaymentResponse.getPaymentsMethod()).isEqualTo(planPayment.getPaymentsMethod());
+    assertThat(planPaymentResponse.getRegistrationAt().withNano(0)).isEqualTo(planPayment.getRegistrationAt().withNano(0));
+    assertThat(planPaymentResponse.getPaymentTotal()).isEqualTo(paymentTotal);
+    assertThat(planPaymentResponse.isStatus()).isEqualTo(planPayment.isStatus());
+
+
+    for (int i=0; i<apiResponse.getData().getOtherPayment().size(); i++) {
+      OtherPaymentResponse response = apiResponse.getData().getOtherPayment().get(i);
+      OtherPayment otherPayment = customer.getOtherPayments().get(i);
+      assertThat(response.getRegistrationAt().withNano(0)).isEqualTo(otherPayment.getRegistrationAt().withNano(0));
+      assertThat(response.getContent()).isEqualTo(otherPayment.getContent());
+      assertThat(response.getPrice()).isEqualTo(otherPayment.getPrice());
+      assertThat(response.isStatus()).isEqualTo(otherPayment.isStatus());
+    }
   }
 
 

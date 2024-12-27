@@ -2,6 +2,7 @@ package com.erp.erp.domain.customer.controller;
 
 import com.erp.erp.domain.customer.common.dto.AddCustomerDto;
 import com.erp.erp.domain.customer.common.dto.GetAvailableCustomerNamesDto;
+import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto;
 import com.erp.erp.domain.customer.common.dto.GetCustomerDto;
 import com.erp.erp.domain.customer.common.dto.SearchCustomerNameDto;
 import com.erp.erp.domain.customer.common.dto.UpdateStatusDto;
@@ -107,4 +108,10 @@ public class CustomerController {
     return ApiResult.success(response);
   }
 
+  @Operation(summary = "고객 상세 조회")
+  @GetMapping("/getCustomerDetail/{customerId}")
+  public ApiResult<GetCustomerDetailDto.Response> getCustomerDetail(@PathVariable Long customerId) {
+    GetCustomerDetailDto.Response response = customerService.getCustomerDetail(customerId);
+    return ApiResult.success(response);
+  }
 }

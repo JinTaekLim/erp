@@ -20,8 +20,9 @@ public class CustomerReader {
 
   private final CustomerRepository customerRepository;
 
-  public Customer findById(Long customersId) {
-    return customerRepository.findById(customersId).orElseThrow(NotFoundCustomerException::new);
+  public Customer findByIdAndInstituteId(Long customersId, Long instituteId) {
+    return customerRepository.findByIdAndInstituteId(customersId, instituteId)
+        .orElseThrow(NotFoundCustomerException::new);
   }
 
   public Page<Customer> findByInstitutesIdAndStatusActive(Institute institute, Pageable page) {

@@ -5,10 +5,13 @@ import com.erp.erp.domain.reservation.common.entity.Reservation;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
+
+  Optional<Reservation> findByIdAndInstituteId(Long id, Long instituteId);
 
   @Query("SELECT r FROM Reservation r WHERE CAST(r.startTime AS DATE) = :date AND r.institute = :institute")
   List<Reservation> findByInstituteAndStartTimeOn(Institute institute, LocalDate date);

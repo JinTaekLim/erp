@@ -115,7 +115,7 @@ public class ReservationController {
   public ApiResult<GetReservationCustomerDetailsDto.Response> getReservationCustomerDetails(
       @PathVariable long reservationId
   ) {
-    GetReservationCustomerDetailsDto.Response response = reservationService.getReservationsForCurrentInstitute(
+    GetReservationCustomerDetailsDto.Response response = reservationService.getReservationCustomerDetails(
         reservationId
     );
 

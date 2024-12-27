@@ -3,7 +3,9 @@ package com.erp.erp.domain.customer.common.dto;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.Gender;
 import com.erp.erp.domain.institute.common.entity.Institute;
+import com.erp.erp.domain.payment.common.entity.OtherPayment;
 import com.erp.erp.domain.payment.common.entity.PaymentsMethod;
+import com.erp.erp.domain.payment.common.entity.PlanPayment;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -60,16 +62,16 @@ public class AddCustomerDto {
 
     @Schema(description = "이용권 결제")
     @NotNull(message = "이용권 결제 내용을 입력해주세요.")
-    private PlanPayment planPayment;
+    private PlanPaymentResponse planPayment;
 
     @Schema(description = "기타 결제")
-    private List<OtherPayment> otherPayment;
+    private List<OtherPaymentResponse> otherPayment;
 
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     @Getter
-    public static class PlanPayment {
+    public static class PlanPaymentResponse {
 
       @Schema(description = "결제 일자")
       @NotNull(message = "결제 일자를 입력해주세요.")
@@ -88,7 +90,7 @@ public class AddCustomerDto {
     @NoArgsConstructor
     @AllArgsConstructor
     @Getter
-    public static class OtherPayment {
+    public static class OtherPaymentResponse {
 
       @Schema(description = "결제 일자")
       @NotNull(message = "결제 일자를 입력해주세요.")
@@ -108,8 +110,8 @@ public class AddCustomerDto {
     }
 
     public Customer toCustomers(Institute institute, Plan plan, String photoUrl) {
-      com.erp.erp.domain.payment.common.entity.PlanPayment planPayment = getPayments(plan);
-      List<com.erp.erp.domain.payment.common.entity.OtherPayment> otherPayments = getOtherPayments();
+      PlanPayment planPayment = getPayments(plan);
+      List<OtherPayment> otherPayments = getOtherPayments();
 
       return Customer.builder()
           .institute(institute)
@@ -125,9 +127,9 @@ public class AddCustomerDto {
           .build();
     }
 
-    private List<com.erp.erp.domain.payment.common.entity.OtherPayment> getOtherPayments() {
+    private List<OtherPayment> getOtherPayments() {
       return this.otherPayment.stream()
-              .map(o -> com.erp.erp.domain.payment.common.entity.OtherPayment.builder()
+              .map(o -> OtherPayment.builder()
                       .status(o.status)
                       .registrationAt(o.registrationAt)
                       .content(o.content)
@@ -137,12 +139,12 @@ public class AddCustomerDto {
     }
 
 
-    private com.erp.erp.domain.payment.common.entity.PlanPayment getPayments(Plan plan) {
-      return com.erp.erp.domain.payment.common.entity.PlanPayment.builder()
+    private PlanPayment getPayments(Plan plan) {
+      return PlanPayment.builder()
           .plan(plan)
           .status(this.planPayment.status)
           .paymentsMethod(this.paymentsMethod)
-          .discount(this.planPayment.discount)
+          .discountRate(this.planPayment.discount)
           .registrationAt(this.planPayment.registrationAt)
           .build();
     }
