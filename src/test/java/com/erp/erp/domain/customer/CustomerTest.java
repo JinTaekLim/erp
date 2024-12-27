@@ -9,6 +9,8 @@ import static org.mockito.Mockito.when;
 import com.erp.erp.domain.account.business.PhotoUtil;
 import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.account.repository.AccountRepository;
+import com.erp.erp.domain.auth.business.TokenManager;
+import com.erp.erp.domain.auth.common.dto.TokenDto;
 import com.erp.erp.domain.customer.common.dto.AddCustomerDto;
 
 import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto;
@@ -21,6 +23,7 @@ import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.Progress;
 import com.erp.erp.domain.customer.repository.CustomerRepository;
+import com.erp.erp.domain.institute.common.dto.UpdateTotalSeatDto.Request;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.domain.payment.common.entity.OtherPayment;
@@ -37,6 +40,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,12 +72,14 @@ class CustomerTest extends IntegrationTest {
   @Autowired
   private PlanRepository planRepository;
 
+  @Autowired
+  private TokenManager tokenManager;
+
   @MockBean
   private PhotoUtil photoUtil;
 
 
-  private Account getAccounts() {
-    Institute institute = createInstitutes();
+  private Account getAccounts(Institute institute) {
     return fixtureMonkey.giveMeBuilder(Account.class)
         .setNull("id")
         .set("institute", institute)
@@ -84,7 +91,7 @@ class CustomerTest extends IntegrationTest {
         .sample();
   }
 
-  private Account createAccounts() { return accountRepository.save(getAccounts()); }
+  private Account createAccounts(Institute institute) { return accountRepository.save(getAccounts(institute)); }
 
   private Institute createInstitutes() {
     return instituteRepository.save(getInstitutes());
@@ -384,17 +391,26 @@ class CustomerTest extends IntegrationTest {
     // given
     Plan plan = createPlans();
     Institute institute = createInstitutes();
+    Account account = createAccounts(institute);
     Customer customer = createCustomers(plan, institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+
 
     String url = BASE_URL + "/getCustomerDetail/" + customer.getId();
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setBearerAuth(tokenDto.getAccessToken());
+
+    HttpEntity<Request> requestEntity = new HttpEntity<>(headers);
 
     // when
     ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
         HttpMethod.GET,
-        null,
+        requestEntity,
         String.class
     );
+
     ApiResult<GetCustomerDetailDto.Response> apiResponse = gson.fromJson(
         responseEntity.getBody(),
         new TypeToken<ApiResult<GetCustomerDetailDto.Response>>(){}

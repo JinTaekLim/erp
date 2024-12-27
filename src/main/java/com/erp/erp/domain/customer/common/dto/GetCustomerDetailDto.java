@@ -48,14 +48,17 @@ public class GetCustomerDetailDto {
 
     public static Response fromEntity(Customer customer, Progress progress) {
 
-      List<ProgressResponse> progressResponseList = progress.getProgressList().stream()
+      List<ProgressResponse> progressResponseList = (progress != null && progress.getProgressList() != null && !progress.getProgressList().isEmpty())
+          ? progress.getProgressList().stream()
           .map(ProgressResponse::fromEntity)
-          .toList();
+          .toList()
+          : null;
 
-      List<OtherPaymentResponse> otherPaymentResponseList = customer.getOtherPayments().stream()
+      List<OtherPaymentResponse> otherPaymentResponseList = (customer.getOtherPayments() != null) ?
+          customer.getOtherPayments().stream()
           .map(OtherPaymentResponse::fromEntity)
-          .toList();
-
+          .toList()
+          : null;
 
 
       return Response.builder()
