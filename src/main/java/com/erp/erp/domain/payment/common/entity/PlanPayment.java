@@ -36,15 +36,15 @@ public class PlanPayment {
   @NotNull
   private PaymentsMethod paymentsMethod;
 
-  private int discount;
+  private double discountRate;
 
   @Builder
   public PlanPayment(boolean status, Plan plan,
-                     LocalDateTime registrationAt, PaymentsMethod paymentsMethod, int discount) {
+                     LocalDateTime registrationAt, PaymentsMethod paymentsMethod, double discountRate) {
     this.status = status;
     this.plan = plan;
     this.registrationAt = registrationAt;
     this.paymentsMethod = paymentsMethod;
-    this.discount = discount;
+    this.discountRate = discountRate;
   }
 }
