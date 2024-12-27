@@ -57,7 +57,7 @@ public class ReservationController {
   @Operation(summary = "특정 시간 예약 조회")
   @GetMapping("/getReservationByTime")
   public ApiResult<List<GetDailyReservationDto.Response>> getReservationByTime(
-      @RequestParam LocalDateTime time) {
+      @RequestParam("time") LocalDateTime time) {
     List<Reservation> reservationList = reservationService.getReservationByTime(time);
 
     List<GetDailyReservationDto.Response> response = reservationList.stream()

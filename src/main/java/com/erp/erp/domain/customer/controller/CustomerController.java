@@ -62,7 +62,7 @@ public class CustomerController {
 
   @Operation(summary = "이용 중 고객 조회")
   @GetMapping("currentCustomers/{page}")
-  public ApiResult<List<GetCustomerDto.Response>> getCurrentCustomers(@PathVariable int page) {
+  public ApiResult<List<GetCustomerDto.Response>> getCurrentCustomers(@PathVariable("page") int page) {
 
     List<Customer> customerList = customerService.getCurrentCustomers(page);
 
@@ -76,7 +76,7 @@ public class CustomerController {
 
   @Operation(summary = "만료된 고객 조회")
   @GetMapping("expiredCustomer/{page}")
-  public ApiResult<List<GetCustomerDto.Response>> getExpiredCustomers(@PathVariable int page) {
+  public ApiResult<List<GetCustomerDto.Response>> getExpiredCustomers(@PathVariable("page") int page) {
     List<Customer> customerList = customerService.getExpiredCustomers(page);
 
     List<GetCustomerDto.Response> response = customerList.stream()

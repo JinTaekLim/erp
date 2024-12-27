@@ -60,35 +60,6 @@ class ReservationRepositoryTest extends JpaTest {
   }
 
 
-//  @Test
-//  void findByInstituteAndTimeRange() {
-//    // given
-//    Institute institute = createInstitutes();
-//    Customer customers = createCustomers(institute);
-//
-//    LocalDateTime startTime = LocalDateTime.of(2024,12,25,9,30);
-//    LocalDateTime endTime = LocalDateTime.of(2024,12,25,10,30);
-//    createReservations(customers, institute, startTime, endTime);
-//
-//    LocalDateTime startTime1 = LocalDateTime.of(2024,12,25,10,30,22,22);
-//    LocalDateTime endTime1 = LocalDateTime.of(2024,12,25,11,30,22,22);
-//    createReservations(customers, institute, startTime1, endTime1);
-//
-//    LocalDateTime startTime2 = LocalDateTime.of(2024,12,25,10,31,22,22);
-//    LocalDateTime endTime2 = LocalDateTime.of(2024,12,25,11,30,22,22);
-//    createReservations(customers, institute, startTime2, endTime2);
-//
-//    // when
-//    List<Reservation> reservations = reservationRepository.findByInstituteAndTimeRange(institute, startTime, endTime);
-//
-//    // then
-//    for (Reservation reservation : reservations) {
-//      System.out.println("예약 " + reservation.getId());
-//    }
-//    assertThat(reservations.size()).isEqualTo(1);
-//  }
-
-
   @Test
   void findByInstituteAndTimeRange() {
     // given
