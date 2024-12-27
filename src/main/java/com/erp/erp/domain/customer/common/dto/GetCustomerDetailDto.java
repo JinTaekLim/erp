@@ -3,7 +3,6 @@ package com.erp.erp.domain.customer.common.dto;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.Gender;
 import com.erp.erp.domain.customer.common.entity.Progress;
-import com.erp.erp.domain.customer.common.entity.Progress.ProgressItem;
 import com.erp.erp.domain.payment.common.entity.OtherPayment;
 import com.erp.erp.domain.payment.common.entity.PaymentsMethod;
 import com.erp.erp.domain.payment.common.entity.PlanPayment;
@@ -46,10 +45,10 @@ public class GetCustomerDetailDto {
     @Schema(description = "기타 결제")
     private List<OtherPaymentResponse> otherPayment;
 
-    public static Response fromEntity(Customer customer, Progress progress) {
+    public static Response fromEntity(Customer customer, List<Progress> progresses) {
 
-      List<ProgressResponse> progressResponseList = (progress != null && progress.getProgressList() != null && !progress.getProgressList().isEmpty())
-          ? progress.getProgressList().stream()
+      List<ProgressResponse> progressResponseList = (progresses != null && !progresses.isEmpty())
+          ? progresses.stream()
           .map(ProgressResponse::fromEntity)
           .toList()
           : null;
@@ -154,7 +153,7 @@ public class GetCustomerDetailDto {
     @Schema(description = "내용")
     private String content;
 
-    public static ProgressResponse fromEntity(ProgressItem progress) {
+    public static ProgressResponse fromEntity(Progress progress) {
       return ProgressResponse.builder()
           .content(progress.getContent())
           .date(progress.getDate())

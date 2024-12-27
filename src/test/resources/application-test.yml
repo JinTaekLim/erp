@@ -19,10 +19,3 @@ logging:
   level.org.hibernate:
 #    SQL: DEBUG
     orm.jdbc.bind: TRACE
-
-
-de:
-  flapdoodle:
-    mongodb:
-      embedded:
-        version: 4.0.21

@@ -14,14 +14,14 @@ import com.erp.erp.domain.auth.common.dto.TokenDto;
 import com.erp.erp.domain.customer.common.dto.AddCustomerDto;
 
 import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto;
-import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto.OtherPaymentResponse;
 import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto.PlanPaymentResponse;
 import com.erp.erp.domain.customer.common.dto.SearchCustomerNameDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto;
+import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto.OtherPaymentResponse;
+import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto.ProgressResponse;
 import com.erp.erp.domain.customer.common.dto.UpdateStatusDto;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import com.erp.erp.domain.customer.common.entity.Customer;
-import com.erp.erp.domain.customer.common.entity.Progress;
 import com.erp.erp.domain.customer.repository.CustomerRepository;
 import com.erp.erp.domain.institute.common.dto.UpdateTotalSeatDto.Request;
 import com.erp.erp.domain.institute.common.entity.Institute;
@@ -290,8 +290,8 @@ class CustomerTest extends IntegrationTest {
     assertThat(apiResponse.getData().getAddress()).isEqualTo(request.getAddress());
     assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
 
-    List<Progress.ProgressItem> actualProgress = apiResponse.getData().getProgress();
-    List<Progress.ProgressItem> expectedProgress = request.getProgress();
+    List<ProgressResponse> actualProgress = apiResponse.getData().getProgress();
+    List<ProgressResponse> expectedProgress = request.getProgress();
     assertThat(actualProgress).hasSameSizeAs(expectedProgress);
     IntStream.range(0, actualProgress.size())
             .forEach(i -> assertThat(actualProgress.get(i))
@@ -300,8 +300,8 @@ class CustomerTest extends IntegrationTest {
 
 
 
-    List<UpdateCustomerDto.OtherPayment> actualPayments = apiResponse.getData().getOtherPayment();
-    List<UpdateCustomerDto.OtherPayment> expectedPayments = request.getOtherPayment();
+    List<OtherPaymentResponse> actualPayments = apiResponse.getData().getOtherPayment();
+    List<OtherPaymentResponse> expectedPayments = request.getOtherPayment();
     assertThat(actualPayments).hasSameSizeAs(expectedPayments);
     IntStream.range(0, actualPayments.size())
             .forEach(i -> assertThat(actualPayments.get(i))
@@ -445,7 +445,7 @@ class CustomerTest extends IntegrationTest {
 
 
     for (int i=0; i<apiResponse.getData().getOtherPayment().size(); i++) {
-      OtherPaymentResponse response = apiResponse.getData().getOtherPayment().get(i);
+      GetCustomerDetailDto.OtherPaymentResponse response = apiResponse.getData().getOtherPayment().get(i);
       OtherPayment otherPayment = customer.getOtherPayments().get(i);
       assertThat(response.getRegistrationAt().withNano(0)).isEqualTo(otherPayment.getRegistrationAt().withNano(0));
       assertThat(response.getContent()).isEqualTo(otherPayment.getContent());

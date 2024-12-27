@@ -1,8 +1,8 @@
 package com.erp.erp.domain.customer.business;
 
 import com.erp.erp.domain.customer.common.entity.Progress;
-import com.erp.erp.domain.customer.common.exception.NotFoundCustomerException;
 import com.erp.erp.domain.customer.repository.ProgressRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -12,8 +12,8 @@ public class ProgressReader {
 
   private final ProgressRepository progressRepository;
 
-  public Progress findById(Long id) {
-    return progressRepository.findById(id).orElse(null);
+  public List<Progress> findByCustomerId(Long id) {
+    return progressRepository.findByCustomerId(id);
   }
 
 }

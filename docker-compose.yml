@@ -14,17 +14,6 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
 
-  mongo:
-    container_name: mongo-erp
-    image: mongo:7.0.12
-    hostname: mongo
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_DATABASE: erp
-    volumes:
-      - mongo_data:/data/db
-
   redis:
     container_name: redis-erp
     image: redis:alpine
@@ -36,5 +25,4 @@ services:
 
 volumes:
   mysql_data:
-  mongo_data:
   redis_data:
