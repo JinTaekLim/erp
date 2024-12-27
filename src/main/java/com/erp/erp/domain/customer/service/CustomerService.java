@@ -114,4 +114,12 @@ public class CustomerService {
         .map(SearchCustomerNameDto.Response::fromEntity)
         .toList();
   }
+
+  public GetCustomerDetailDto.Response getCustomerDetail(Long customerId) {
+    Institute institute = authProvider.getCurrentInstitute();
+    Customer customer = customerReader.findByIdAndInstituteId(customerId, institute.getId());
+    Progress progress = progressReader.findById(customerId);
+
+    return GetCustomerDetailDto.Response.fromEntity(customer, progress);
+  }
 }

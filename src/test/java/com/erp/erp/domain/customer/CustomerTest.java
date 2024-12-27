@@ -11,6 +11,9 @@ import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.account.repository.AccountRepository;
 import com.erp.erp.domain.customer.common.dto.AddCustomerDto;
 
+import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto;
+import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto.OtherPaymentResponse;
+import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto.PlanPaymentResponse;
 import com.erp.erp.domain.customer.common.dto.SearchCustomerNameDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customer.common.dto.UpdateStatusDto;
@@ -374,6 +377,65 @@ class CustomerTest extends IntegrationTest {
 //    assertThat(apiResponse.getData().get(0).getCustomerId()).isEqualTo(customers.getId());
 //    assertThat(apiResponse.getData().get(0).getName()).isEqualTo(customers.getName());
 //    assertThat(apiResponse.getData().get(0).getStatus()).isEqualTo(status);
+  }
+
+  @Test
+  void getCustomerDetail() {
+    // given
+    Plan plan = createPlans();
+    Institute institute = createInstitutes();
+    Customer customer = createCustomers(plan, institute);
+
+    String url = BASE_URL + "/getCustomerDetail/" + customer.getId();
+
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
+        url,
+        HttpMethod.GET,
+        null,
+        String.class
+    );
+    ApiResult<GetCustomerDetailDto.Response> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<GetCustomerDetailDto.Response>>(){}
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(apiResponse.getData()).isNotNull();
+    assertThat(apiResponse.getData().getPhotoUrl()).isEqualTo(customer.getPhotoUrl());
+    assertThat(apiResponse.getData().getName()).isEqualTo(customer.getName());
+    assertThat(apiResponse.getData().getGender()).isEqualTo(customer.getGender());
+    assertThat(apiResponse.getData().getPhone()).isEqualTo(customer.getPhone());
+    assertThat(apiResponse.getData().getAddress()).isEqualTo(customer.getAddress());
+//    assertThat(apiResponse.getData().getVisitPath()).isEqualTo(null);
+    assertThat(apiResponse.getData().getMemo()).isEqualTo(customer.getMemo());
+//    assertThat(apiResponse.getData().getProgressList()).isEqualTo(null);
+
+    PlanPaymentResponse planPaymentResponse = apiResponse.getData().getPlanPayment();
+    PlanPayment planPayment = customer.getPlanPayment();
+    int planPrice = planPayment.getPlan().getPrice();
+    int discountPrice = (int) (planPrice * planPayment.getDiscountRate());
+    int paymentTotal = planPrice - discountPrice;
+    assertThat(planPaymentResponse.getLicenseType()).isEqualTo(planPayment.getPlan().getLicenseType());
+    assertThat(planPaymentResponse.getPlanName()).isEqualTo(planPayment.getPlan().getName());
+    assertThat(planPaymentResponse.getPlanPrice()).isEqualTo(planPayment.getPlan().getPrice());
+    assertThat(planPaymentResponse.getDiscountRate()).isEqualTo(planPayment.getDiscountRate());
+    assertThat(planPaymentResponse.getDiscountPrice()).isEqualTo(discountPrice);
+    assertThat(planPaymentResponse.getPaymentsMethod()).isEqualTo(planPayment.getPaymentsMethod());
+    assertThat(planPaymentResponse.getRegistrationAt()).isEqualTo(planPayment.getRegistrationAt());
+    assertThat(planPaymentResponse.getPaymentTotal()).isEqualTo(paymentTotal);
+    assertThat(planPaymentResponse.isStatus()).isEqualTo(planPayment.isStatus());
+
+
+    for (int i=0; i<apiResponse.getData().getOtherPayment().size(); i++) {
+      OtherPaymentResponse response = apiResponse.getData().getOtherPayment().get(i);
+      OtherPayment otherPayment = customer.getOtherPayments().get(i);
+      assertThat(response.getRegistrationAt()).isEqualTo(otherPayment.getRegistrationAt());
+      assertThat(response.getContent()).isEqualTo(otherPayment.getContent());
+      assertThat(response.getPrice()).isEqualTo(otherPayment.getPrice());
+      assertThat(response.isStatus()).isEqualTo(otherPayment.isStatus());
+    }
   }
 
 
