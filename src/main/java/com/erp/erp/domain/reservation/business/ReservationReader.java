@@ -38,8 +38,8 @@ public class ReservationReader {
     );
   };
 
-  public Reservation findById(Long reservationsId) {
-    return reservationRepository.findById(reservationsId)
+  public Reservation findByIdAndInstituteId(Long reservationId, Long instituteId) {
+    return reservationRepository.findByIdAndInstituteId(reservationId, instituteId)
         .orElseThrow(NotFoundReservationException::new);
   }
 

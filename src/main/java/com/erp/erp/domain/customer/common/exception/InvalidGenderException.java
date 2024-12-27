@@ -8,11 +8,11 @@ public class InvalidGenderException extends RuntimeException{
 
   private final String code;
   public InvalidGenderException() {
-    this(CustomerErrorType.Invalid_Gender.getMessage());
+    this(CustomerErrorType.INVALID_GENDER.getMessage());
   }
 
   public InvalidGenderException(final String message) {
     super(message);
-    this.code = CustomerErrorType.Invalid_Gender.name();
+    this.code = CustomerErrorType.INVALID_GENDER.name();
   }
 }

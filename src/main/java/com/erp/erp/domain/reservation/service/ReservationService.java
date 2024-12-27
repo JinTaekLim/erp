@@ -37,9 +37,10 @@ public class ReservationService {
 
   public Reservation addReservations(AddReservationDto.Request req) {
     Institute institute = authProvider.getCurrentInstitute();
-    Customer customer = customerReader.findById(req.getCustomerId());
+    Customer customer = customerReader.findByIdAndInstituteId(institute.getId(),
+        req.getCustomerId());
 
-    instituteValidator.validateCustomerBelongsToInstitute(institute, customer);
+//    instituteValidator.validateCustomerBelongsToInstitute(institute, customer);
     instituteValidator.isValidSeatNumber(institute, req.getSeatNumber());
 
     LocalDateTime startTime = reservationValidator.validateReservationTime(req.getStartTime());
@@ -73,11 +74,10 @@ public class ReservationService {
   public Reservation updateReservation(UpdatedReservationDto.Request req) {
 
     Institute institute = authProvider.getCurrentInstitute();
-    Reservation reservation = reservationReader.findById(req.getReservationId());
+    Reservation reservation = reservationReader.findByIdAndInstituteId(req.getReservationId(),
+        institute.getId());
 
     instituteValidator.isValidSeatNumber(institute, req.getSeatNumber());
-
-    instituteValidator.validateCustomerBelongsToInstitute(institute, reservation.getCustomer());
 
     return reservationUpdater.updatedReservations(reservation, req.getStartTime(), req.getEndTime(),
         req.getMemo(), req.getSeatNumber());
@@ -85,10 +85,8 @@ public class ReservationService {
 
   public Reservation updatedSeatNumber(UpdatedSeatNumberDto.Request req) {
     Institute institute = authProvider.getCurrentInstitute();
-    long reservationsId = req.getReservationId();
-    Reservation reservation = reservationReader.findById(reservationsId);
-    Customer customer = reservation.getCustomer();
-    instituteValidator.validateCustomerBelongsToInstitute(institute, customer);
+    Reservation reservation = reservationReader.findByIdAndInstituteId(req.getReservationId(),
+        institute.getId());
 
     return reservationUpdater.updateSeatNumber(reservation, req.getSeatNumber());
   }
@@ -96,18 +94,16 @@ public class ReservationService {
 
   public void deleteReservations(DeleteReservationDto.Request req) {
     Institute institute = authProvider.getCurrentInstitute();
-    long reservationsId = req.getReservationId();
-    Reservation reservation = reservationReader.findById(reservationsId);
-    Customer customer = reservation.getCustomer();
-    instituteValidator.validateCustomerBelongsToInstitute(institute, customer);
+    Reservation reservation = reservationReader.findByIdAndInstituteId(req.getReservationId(),
+        institute.getId());
     reservationDelete.delete(reservation);
   }
 
-  public GetReservationCustomerDetailsDto.Response getReservationsForCurrentInstitute(
+  public GetReservationCustomerDetailsDto.Response getReservationCustomerDetails(
       Long reservationsId) {
     Institute institute = authProvider.getCurrentInstitute();
-    Reservation reservation = reservationReader.findById(reservationsId);
-    instituteValidator.validateReservationBelongsToInstitute(institute, reservation);
+    Reservation reservation = reservationReader.findByIdAndInstituteId(reservationsId,
+        institute.getId());
     return GetReservationCustomerDetailsDto.Response.fromEntity(reservation);
   }
 

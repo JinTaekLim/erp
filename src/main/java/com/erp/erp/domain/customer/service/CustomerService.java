@@ -6,7 +6,9 @@ import com.erp.erp.domain.customer.business.CustomerCreator;
 import com.erp.erp.domain.customer.business.CustomerReader;
 import com.erp.erp.domain.customer.business.CustomerUpdater;
 import com.erp.erp.domain.customer.business.ProgressCreator;
+import com.erp.erp.domain.customer.business.ProgressReader;
 import com.erp.erp.domain.customer.common.dto.AddCustomerDto;
+import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto;
 import com.erp.erp.domain.customer.common.dto.SearchCustomerNameDto;
 import com.erp.erp.domain.customer.common.dto.UpdateStatusDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto;
@@ -39,6 +41,7 @@ public class CustomerService {
   private final ProgressCreator progressCreator;
   private final PlanReader planReader;
   private final PhotoUtil photoUtil;
+  private final ProgressReader progressReader;
 
   @Transactional
   public AddCustomerDto.Response addCustomer(AddCustomerDto.Request req) {
@@ -51,20 +54,23 @@ public class CustomerService {
     customerCreator.save(customer);
 
     return AddCustomerDto.Response.fromEntity(customer);
-  };
+  }
 
 
   // note. 본인 매장의 고객 정보만 변경할 수 있도록 별도의 처리 필요
   public CustomerStatus updateStatus(UpdateStatusDto.Request req) {
+    Institute institute = authProvider.getCurrentInstitute();
     Long customersId = req.getCustomerId();
     CustomerStatus status = req.getStatus();
     customerUpdater.updateStatus(customersId, status);
-    return customerReader.findById(customersId).getStatus();
+    return customerReader.findByIdAndInstituteId(institute.getId(), customersId).getStatus();
   }
 
   @Transactional
   public UpdateCustomerDto.Response updateCustomer(UpdateCustomerDto.Request req) {
-    Customer customer = customerReader.findById(req.getCustomerId());
+    Institute institute = authProvider.getCurrentInstitute();
+    Customer customer = customerReader.findByIdAndInstituteId(institute.getId(),
+        req.getCustomerId());
     Customer updateCustomer = req.updatedCustomers(customer);
     customerCreator.save(updateCustomer);
     Progress progress = req.toProgress();
@@ -93,7 +99,7 @@ public class CustomerService {
     return customersPage.getContent();
   }
 
-  public List<Customer> getCurrentCustomers(){
+  public List<Customer> getCurrentCustomers() {
     Institute institute = authProvider.getCurrentInstitute();
     return customerReader.findByInstitutesIdAndStatusActive(institute);
   }
