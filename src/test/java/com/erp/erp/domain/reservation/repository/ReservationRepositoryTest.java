@@ -66,8 +66,8 @@ class ReservationRepositoryTest extends JpaTest {
     Institute institute = createInstitutes();
     Customer customers = createCustomers(institute);
 
-    int returnCount = 3;
-    int reservationCount = 3;
+    int returnCount = RandomValue.getInt(0,5);;
+    int reservationCount = RandomValue.getInt(0,5);;
 
     LocalDateTime startTime = RandomValue.getRandomLocalDateTime();
     LocalDateTime endTime = startTime.plusMinutes(RandomValue.getInt(30,180));
@@ -86,5 +86,67 @@ class ReservationRepositoryTest extends JpaTest {
 
     // then
     assertThat(reservations.size()).isEqualTo(returnCount);
+  }
+
+  @Test
+  void findByInstituteAndStartDate() {
+    // given
+    Institute institute = createInstitutes();
+
+    int reservationCount = RandomValue.getInt(0,5);
+    int nonReturnCount = RandomValue.getInt(0,5);
+
+    LocalDateTime startTime = RandomValue.getRandomLocalDateTime();
+    LocalDateTime endTime = startTime.plusMinutes(RandomValue.getInt(30,180));
+
+    IntStream.range(0, reservationCount).forEach(i -> {
+      Customer customers = createCustomers(institute);
+      createReservations(customers, institute, startTime, endTime);
+    });
+
+    LocalDateTime start = endTime.plusDays(RandomValue.getInt(1,10));
+    LocalDateTime end = start.plusDays(RandomValue.getInt(1,10));
+
+    IntStream.range(0, nonReturnCount).forEach(i -> {
+      Customer customers = createCustomers(institute);
+      createReservations(customers, institute, start, end);
+    });
+
+    // when
+    List<Reservation> reservations = reservationRepository.findByInstituteAndStartDate(institute, startTime.toLocalDate());
+
+    // then
+    assertThat(reservations.size()).isEqualTo(reservationCount);
+  }
+
+  @Test
+  void findByInstituteWithOverlappingTimeRange() {
+    // given
+    Institute institute = createInstitutes();
+
+    int reservationCount = RandomValue.getInt(0,5);
+    int nonReturnCount = RandomValue.getInt(0,5);
+
+    LocalDateTime startTime = RandomValue.getRandomLocalDateTime();
+    LocalDateTime endTime = startTime.plusMinutes(RandomValue.getInt(30,180));
+
+    IntStream.range(0, reservationCount).forEach(i -> {
+      Customer customers = createCustomers(institute);
+      createReservations(customers, institute, startTime, endTime);
+    });
+
+    LocalDateTime start = endTime.plusDays(RandomValue.getInt(1,10));
+    LocalDateTime end = start.plusDays(RandomValue.getInt(1,10));
+
+    IntStream.range(0, nonReturnCount).forEach(i -> {
+      Customer customers = createCustomers(institute);
+      createReservations(customers, institute, start, end);
+    });
+
+    // when
+    List<Reservation> reservations = reservationRepository.findByInstituteWithOverlappingTimeRange(institute, startTime, endTime);
+
+    // then
+    assertThat(reservations.size()).isEqualTo(reservationCount);
   }
 }

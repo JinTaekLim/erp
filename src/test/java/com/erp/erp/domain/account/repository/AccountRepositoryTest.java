@@ -11,7 +11,7 @@ import com.erp.erp.global.util.test.JpaTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class AccountGeneratorRepositoryTest extends JpaTest {
+class AccountRepositoryTest extends JpaTest {
 
   @Autowired
   private InstituteRepository instituteRepository;
