@@ -9,12 +9,14 @@ import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.account.repository.AccountRepository;
 import com.erp.erp.domain.auth.business.TokenManager;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
+import com.erp.erp.domain.auth.common.exception.InvalidTokenException;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.global.response.ApiResult;
 import com.erp.erp.global.util.generator.AccountGenerator;
 import com.erp.erp.global.util.generator.InstituteGenerator;
-import com.erp.erp.global.util.test.IntegrationTest;
+import com.erp.erp.global.util.randomValue.RandomValue;
+import com.erp.erp.global.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -49,7 +51,8 @@ public class AccountTest extends IntegrationTest {
   }
 
   @Test
-  void login_성공() {
+  @DisplayName("성공")
+  void login() {
     //given
     Institute institute = createInstitutes();
     Account account = createAccount(institute);
@@ -131,6 +134,7 @@ public class AccountTest extends IntegrationTest {
   }
 
   @Test
+  @DisplayName("성공")
   void reissueToken() {
     //given
     Institute institute = createInstitutes();

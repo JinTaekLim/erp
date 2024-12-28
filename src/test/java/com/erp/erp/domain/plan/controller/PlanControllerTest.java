@@ -10,7 +10,7 @@ import com.erp.erp.domain.plan.repository.PlanRepository;
 import com.erp.erp.global.response.ApiResult;
 import com.erp.erp.global.util.generator.PlanGenerator;
 import com.erp.erp.global.util.randomValue.RandomValue;
-import com.erp.erp.global.util.test.IntegrationTest;
+import com.erp.erp.global.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
 import java.util.Comparator;
 import java.util.List;

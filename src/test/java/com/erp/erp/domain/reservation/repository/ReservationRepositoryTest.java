@@ -1,7 +1,6 @@
 package com.erp.erp.domain.reservation.repository;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.repository.CustomerRepository;
@@ -19,7 +18,7 @@ import com.erp.erp.global.util.generator.PlanGenerator;
 import com.erp.erp.global.util.generator.PlanPaymentGenerator;
 import com.erp.erp.global.util.generator.ReservationGenerator;
 import com.erp.erp.global.util.randomValue.RandomValue;
-import com.erp.erp.global.util.test.JpaTest;
+import com.erp.erp.global.test.JpaTest;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.IntStream;

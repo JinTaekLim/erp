@@ -15,7 +15,7 @@ import com.erp.erp.global.util.generator.InstituteGenerator;
 import com.erp.erp.global.util.generator.OtherPaymentGenerator;
 import com.erp.erp.global.util.generator.PlanGenerator;
 import com.erp.erp.global.util.generator.PlanPaymentGenerator;
-import com.erp.erp.global.util.test.JpaTest;
+import com.erp.erp.global.test.JpaTest;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;

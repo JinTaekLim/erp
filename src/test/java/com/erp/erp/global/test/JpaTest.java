@@ -1,4 +1,4 @@
-package com.erp.erp.global.util.test;
+package com.erp.erp.global.test;
 
 
 import com.erp.erp.global.config.QuerydslConfig;

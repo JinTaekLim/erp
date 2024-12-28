@@ -10,7 +10,7 @@ import com.erp.erp.domain.plan.common.entity.LicenseType;
 import com.erp.erp.global.response.ApiResult;
 import com.erp.erp.global.util.generator.InstituteGenerator;
 import com.erp.erp.global.util.randomValue.RandomValue;
-import com.erp.erp.global.util.test.IntegrationTest;
+import com.erp.erp.global.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

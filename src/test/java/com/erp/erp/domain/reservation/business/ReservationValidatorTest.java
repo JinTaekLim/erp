@@ -10,7 +10,7 @@ import com.erp.erp.domain.reservation.common.exception.NoAvailableSeatException;
 import com.erp.erp.domain.reservation.common.exception.TimeNotOnHalfHourException;
 import com.erp.erp.domain.reservation.repository.ReservationRepository;
 import com.erp.erp.global.util.randomValue.RandomValue;
-import com.erp.erp.global.util.test.ServiceTest;
+import com.erp.erp.global.test.ServiceTest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

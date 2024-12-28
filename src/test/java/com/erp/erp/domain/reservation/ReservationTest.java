@@ -26,7 +26,7 @@ import com.erp.erp.global.util.generator.OtherPaymentGenerator;
 import com.erp.erp.global.util.generator.PlanGenerator;
 import com.erp.erp.global.util.generator.PlanPaymentGenerator;
 import com.erp.erp.global.util.randomValue.RandomValue;
-import com.erp.erp.global.util.test.IntegrationTest;
+import com.erp.erp.global.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
