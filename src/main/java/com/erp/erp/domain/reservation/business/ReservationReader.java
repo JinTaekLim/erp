@@ -18,7 +18,7 @@ public class ReservationReader {
   private final ReservationRepository reservationRepository;
 
   public List<Reservation> findByInstitutesAndStartTimeOn(Institute institute, LocalDate date) {
-    List<Reservation> reservationList = reservationRepository.findByInstituteAndStartTimeOn(
+    List<Reservation> reservationList = reservationRepository.findByInstituteAndStartDate(
         institute,
         date
     );

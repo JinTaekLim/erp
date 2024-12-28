@@ -5,7 +5,6 @@ import com.erp.erp.domain.institute.common.entity.Institute;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -15,7 +14,7 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom{
   private final JPAQueryFactory queryFactory;
 
   @Override
-  public Optional<Institute> findInstitutesByAccountId(@Param("accountId") Long accountId) {
+  public Optional<Institute> findInstitutesByAccountId(Long accountId) {
     QAccount account = QAccount.account;
 
     return Optional.ofNullable(
