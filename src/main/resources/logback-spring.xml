@@ -15,7 +15,9 @@
     <file>./logs/application.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <fileNamePattern>./logs/application-%d{yyyyMMdd}.log</fileNamePattern>
-      <maxHistory>-1</maxHistory> <!-- 최대 보관일수 미지정, 삭제 x -->
+      <maxHistory>30</maxHistory>
+      <totalSizeCap>500MB</totalSizeCap>
+      <cleanHistoryOnStart>false</cleanHistoryOnStart>
     </rollingPolicy>
     <encoder>
       <pattern>${LOG_PATTERN}</pattern>
