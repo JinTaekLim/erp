@@ -2,6 +2,7 @@ package com.erp.erp.domain.account.common.entity;
 
 
 import com.erp.erp.domain.institute.common.entity.Institute;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,6 +29,7 @@ public class Account {
   private Institute institute;
 
   @NotNull
+  @Column(unique = true)
   private String accountId;
 
   @NotNull

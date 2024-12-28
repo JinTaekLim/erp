@@ -7,7 +7,7 @@ import com.erp.erp.global.gson.LocalTimeAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.BuilderArbitraryIntrospector;
 import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPlugin;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -50,7 +50,7 @@ abstract public class IntegrationTest {
       .create();
 
   protected FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-      .objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
+      .objectIntrospector(BuilderArbitraryIntrospector.INSTANCE)
       .plugin(new JakartaValidationPlugin())
       .build();
 

@@ -6,18 +6,14 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.time.LocalTime;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 public class AddInstituteDto {
 
   @Schema(name = "AddInstituteDto_Request" , description = "매장 추가 요청")
   @Builder
   @Getter
-  @NoArgsConstructor
-  @AllArgsConstructor
   public static class Request{
 
     @Schema(description = "매장명", example = "1호점")
@@ -49,8 +45,6 @@ public class AddInstituteDto {
   @Schema(name = "AddInstituteDto_Response" , description = "매장 추가 반환")
   @Builder
   @Getter
-  @NoArgsConstructor
-  @AllArgsConstructor
   public static class Response{
 
     @Schema(description = "매장명")
