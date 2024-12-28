@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-
 public class AccountTest extends IntegrationTest {
 
   private String BASE_URL;
@@ -166,4 +165,33 @@ public class AccountTest extends IntegrationTest {
     assertNotNull(response.getRefreshToken());
   }
 
+  @Test
+  @DisplayName("잘못된 accessToken")
+  void reissueToken_fail_1() {
+    //given
+    String accessToken = RandomValue.string(1,5).setNullable(false).get();
+
+    String url = BASE_URL + "/reissueToken?refreshToken=" + accessToken;
+
+    InvalidTokenException exception = new InvalidTokenException();
+
+    //when
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+        url,
+        null,
+        String.class
+    );
+
+    ApiResult<TokenDto> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<TokenDto>>() {
+        }.getType()
+    );
+
+    //then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    assertNull(apiResponse.getData());
+    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
+    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
+  }
 }
