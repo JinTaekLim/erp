@@ -28,7 +28,7 @@ public class Account {
   private Institute institute;
 
   @NotNull
-  private String account;
+  private String accountId;
 
   @NotNull
   private String password;
@@ -37,9 +37,9 @@ public class Account {
 
 
   @Builder
-  public Account(Institute institute, String account, String password) {
+  public Account(Institute institute, String accountId, String password) {
     this.institute = institute;
-    this.account = account;
+    this.accountId = accountId;
     this.password = password;
   }
 }

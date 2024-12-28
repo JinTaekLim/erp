@@ -32,7 +32,7 @@ public class AddAccountDto {
     private String password;
 
     public Account toEntityWithInstitute(Institute institute) {
-      return Account.builder().institute(institute).account(account).password(password).build();
+      return Account.builder().institute(institute).accountId(account).password(password).build();
     }
 
   }
@@ -55,7 +55,7 @@ public class AddAccountDto {
     public static AddAccountDto.Response fromEntity(Account account) {
       return Response.builder()
           .instituteId(account.getInstitute().getId())
-          .account(account.getAccount())
+          .account(account.getAccountId())
           .build();
     }
   }
