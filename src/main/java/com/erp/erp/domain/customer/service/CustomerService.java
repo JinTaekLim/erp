@@ -63,8 +63,7 @@ public class CustomerService {
   public CustomerStatus updateStatus(UpdateStatusDto.Request req) {
     Institute institute = authProvider.getCurrentInstitute();
     Long customersId = req.getCustomerId();
-    CustomerStatus status = req.getStatus();
-    customerUpdater.updateStatus(customersId, status);
+    customerUpdater.updateStatus(customersId, req.getStatus());
     return customerReader.findByIdAndInstituteId(institute.getId(), customersId).getStatus();
   }
 

@@ -3,7 +3,6 @@ package com.erp.erp.domain.admin.common.dto;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.time.LocalTime;
 import lombok.Builder;
@@ -25,11 +24,9 @@ public class AddInstituteDto {
     private int totalSeat;
 
     @Schema(description = "영업 시작 시간", example = "08:00:00.00")
-    @NotNull
     private LocalTime openTime;
 
     @Schema(description = "영업 종료 시간", example = "22:00:00.00")
-    @NotNull
     private LocalTime closeTime;
 
     public Institute toEntity() {

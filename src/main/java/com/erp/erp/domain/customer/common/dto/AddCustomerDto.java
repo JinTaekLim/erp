@@ -15,18 +15,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 public class AddCustomerDto {
 
   @Schema(name = "AddCustomerDto_Request" , description = "회원 등록 요청")
   @Getter
   @Builder
-  @NoArgsConstructor
-  @AllArgsConstructor
   public static class Request {
 
     @Schema(description = "이용권 ID")
@@ -38,8 +34,8 @@ public class AddCustomerDto {
     private String name;
 
     @Schema(description = "성별")
-    @NotBlank(message = "성별을 입력해주세요")
-    private String gender;
+    @NotNull(message = "성별을 입력해주세요")
+    private Gender gender;
 
     @Schema(description = "전화번호")
     @NotBlank(message = "전화번호를 입력해주세요")
@@ -68,8 +64,6 @@ public class AddCustomerDto {
     private List<OtherPaymentResponse> otherPayment;
 
     @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
     @Getter
     public static class PlanPaymentResponse {
 
@@ -87,8 +81,6 @@ public class AddCustomerDto {
     }
 
     @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
     @Getter
     public static class OtherPaymentResponse {
 
@@ -116,7 +108,7 @@ public class AddCustomerDto {
       return Customer.builder()
           .institute(institute)
           .name(this.name)
-          .gender(Gender.getString(this.gender))
+          .gender(this.gender)
           .phone(this.phone)
           .address(this.address)
           .photoUrl(photoUrl)
@@ -187,6 +179,7 @@ public class AddCustomerDto {
           .gender(customer.getGender())
           .phone(customer.getPhone())
           .address(customer.getAddress())
+          .memo(customer.getMemo())
           .birthDate(customer.getBirthDate())
           .photoUrl(customer.getPhotoUrl())
           .build();

@@ -1,22 +1,19 @@
 package com.erp.erp.domain.customer.common.dto;
 
 import com.erp.erp.domain.customer.common.entity.Customer;
+import com.erp.erp.domain.customer.common.entity.Gender;
 import com.erp.erp.domain.plan.common.entity.LicenseType;
 import com.erp.erp.domain.plan.common.entity.PlanType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 public class GetCustomerDto {
 
   @Schema(name = "GetCustomerDto_Response" , description = "회원 정보 반환")
   @Getter
   @Builder
-  @NoArgsConstructor
-  @AllArgsConstructor
   public static class Response{
 
     @Schema(description = "프로필 URL")
@@ -24,7 +21,7 @@ public class GetCustomerDto {
     @Schema(description = "이름")
     private String name;
     @Schema(description = "성별")
-    private String gender;
+    private Gender gender;
     @Schema(description = "전화번호")
     private String phone;
     @Schema(description = "1/2종 구분")
@@ -58,7 +55,7 @@ public class GetCustomerDto {
       return Response.builder()
           .photoUrl(customer.getPhotoUrl())
           .name(customer.getName())
-          .gender(String.valueOf(customer.getGender()))
+          .gender(customer.getGender())
           .phone(customer.getPhone())
           .licenseType(customer.getPlanPayment().getPlan().getLicenseType())
           .planName(customer.getPlanPayment().getPlan().getName())

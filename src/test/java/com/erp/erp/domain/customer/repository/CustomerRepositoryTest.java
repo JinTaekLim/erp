@@ -6,19 +6,17 @@ import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
-import com.erp.erp.domain.payment.common.entity.OtherPayment;
-import com.erp.erp.domain.payment.common.entity.PlanPayment;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.repository.PlanRepository;
 import com.erp.erp.global.util.generator.CustomerGenerator;
 import com.erp.erp.global.util.generator.InstituteGenerator;
-import com.erp.erp.global.util.generator.OtherPaymentGenerator;
 import com.erp.erp.global.util.generator.PlanGenerator;
-import com.erp.erp.global.util.generator.PlanPaymentGenerator;
 import com.erp.erp.global.test.JpaTest;
-import java.util.Arrays;
+import com.erp.erp.global.util.randomValue.RandomValue;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -39,69 +37,53 @@ class CustomerRepositoryTest extends JpaTest {
     return planRepository.save(PlanGenerator.get());
   }
 
+  private Customer createCustomers() {
+    Institute institute = createInstitutes();
+    Plan plan = createPlans();
+    Customer customer = CustomerGenerator.get(plan, institute);
+    return customerRepository.save(customer);
+  }
+
 
   @Test
   void findAll() {
-    // Given
-    int randomInt = faker.random().nextInt(0, 100);
+    // given
+    int randomInt = RandomValue.getInt(0, 5);
 
-    List<Customer> customerToSave = IntStream.range(0, randomInt)
-            .mapToObj(i -> {
-              Institute institute = createInstitutes();
-              Plan plan = createPlans();
-              PlanPayment planPayment = PlanPaymentGenerator.get(plan);
-              List<OtherPayment> otherPaymentList = OtherPaymentGenerator.getList(plan);
+    IntStream.range(0, randomInt)
+        .forEach(i -> createCustomers());
 
-              return CustomerGenerator.get(institute, planPayment, otherPaymentList);
-            })
-            .toList();
-
-
-    customerRepository.saveAll(customerToSave);
-
-    // When
+    // when
     List<Customer> customerList = customerRepository.findAll();
 
-    // Then
+    // then
     assertThat(customerList).hasSize(randomInt);
   }
 
   @Test
   void save() {
-    // Given
-    Institute institute = createInstitutes();
-    Plan plan = createPlans();
-    PlanPayment planPayment = PlanPaymentGenerator.get(plan);
-    List<OtherPayment> otherPaymentList = OtherPaymentGenerator.getList(plan);
-    Customer customer = CustomerGenerator.get(institute, planPayment, otherPaymentList);
-    customerRepository.save(customer);
+    // given
+    Customer customer = createCustomers();
 
-    // Then
+    // when
     Long customersId = customer.getId();
     Customer testCustomer = customerRepository.findById(customersId)
         .orElseThrow(AssertionError::new);
 
-    // When
+    // then
     assertThat(testCustomer)
         .usingRecursiveComparison()
         .isEqualTo(customer);
   }
+
   @Test
   void updateStatusById() {
-    // Given
-    Institute institute = createInstitutes();
-    Plan plan = createPlans();
-    PlanPayment planPayment = PlanPaymentGenerator.get(plan);
-    List<OtherPayment> otherPaymentList = OtherPaymentGenerator.getList(plan);
-    Customer customer = CustomerGenerator.get(institute, planPayment, otherPaymentList);
-    customerRepository.save(customer);
+    // given
+    Customer customer = createCustomers();
     long customersId = customer.getId();
-    CustomerStatus status = Arrays.stream(CustomerStatus.values())
-        .filter(s -> s != customer.getStatus())
-        .findAny()
-        .orElseThrow(IllegalStateException::new);
+    CustomerStatus status = RandomValue.getRandomEnum(CustomerStatus.class);
 
-    // Then
+    // when
     customerRepository.updateStatusById(customersId, status);
 
     Customer testCustomer = customerRepository.findById(customersId)
@@ -109,7 +91,51 @@ class CustomerRepositoryTest extends JpaTest {
 
     CustomerStatus testStatus = testCustomer.getStatus();
 
-    // When
+    // then
     assertThat(status).isNotEqualTo(testStatus);
+  }
+
+  @Test
+  @DisplayName("성공")
+  void findByInstituteIdAndNameStartingWithAndStatusIn() {
+    // given
+    Institute institute = createInstitutes();
+    Plan plan = createPlans();
+
+    Customer activeCustomer = CustomerGenerator.get(plan, institute, CustomerStatus.ACTIVE);
+    customerRepository.save(activeCustomer);
+
+    Customer inactiveCustomer = CustomerGenerator.get(plan, institute, CustomerStatus.INACTIVE);
+    customerRepository.save(inactiveCustomer);
+    Customer deletedCustomer = CustomerGenerator.get(plan, institute, CustomerStatus.DELETED);
+    customerRepository.save(deletedCustomer);
+
+    int randomI = RandomValue.getInt(0, 3);
+    Customer customer = (randomI == 0) ? activeCustomer :
+                        (randomI == 1) ? inactiveCustomer : deletedCustomer;
+
+    String name = customer.getName();
+    String expectedName = String.valueOf(name.charAt(0));
+
+    int randomJ = RandomValue.getInt(0, 3);
+    List<CustomerStatus> statuses = new ArrayList<>();
+    if (randomJ == 0) {
+      statuses.add(CustomerStatus.ACTIVE);
+    } else if (randomJ == 1) {
+      statuses.add(CustomerStatus.INACTIVE);
+    } else if (randomJ == 2) {
+      statuses.add(CustomerStatus.DELETED);
+    }
+
+    // when
+    List<Customer> customers = customerRepository.findByInstituteIdAndNameStartingWithAndStatusIn(
+        institute.getId(), expectedName, statuses);
+
+    // then
+    if (randomI == randomJ) {
+      assertThat(customers.get(0)).usingRecursiveComparison().isEqualTo(customer);
+    } else {
+      assertThat(customers).isEmpty();
+    }
   }
 }

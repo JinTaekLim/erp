@@ -13,8 +13,8 @@ public class UpdateTotalSeatDto {
   @Schema(name = "UpdateTotalSeatDto_Request" , description = "좌석 갯수 변경 요청")
   @Builder
   @Getter
-  @NoArgsConstructor
   @AllArgsConstructor
+  @NoArgsConstructor
   public static class Request {
 
     @Schema(description = "좌석 갯수")
@@ -26,8 +26,6 @@ public class UpdateTotalSeatDto {
   @Schema(name = "UpdateTotalSeatDto_Response", description = "좌석 갯수 변경 응답")
   @Getter
   @Builder
-  @NoArgsConstructor
-  @AllArgsConstructor
   public static class Response {
 
     @Schema(description = "매장 이름")

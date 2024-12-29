@@ -11,20 +11,6 @@ import java.util.List;
 public class CustomerGenerator extends EntityGenerator {
 
   public static Customer get(
-      Institute institute) {
-    Plan plan = PlanGenerator.get();
-    PlanPayment planPayment = PlanPaymentGenerator.get(plan);
-    List<OtherPayment> otherPaymentList = OtherPaymentGenerator.getList(plan);
-    return fixtureMonkey.giveMeBuilder(Customer.class)
-        .setNull("id")
-        .set("institute", institute)
-        .set("planPayment", planPayment)
-        .set("otherPayments", otherPaymentList)
-        .set("progress", null)
-        .sample();
-  }
-
-  public static Customer get(
       Plan plan, Institute institute) {
     PlanPayment planPayment = PlanPaymentGenerator.get(plan);
     List<OtherPayment> otherPaymentList = OtherPaymentGenerator.getList(plan);

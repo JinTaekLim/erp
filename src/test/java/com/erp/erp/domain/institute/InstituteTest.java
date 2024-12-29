@@ -59,23 +59,59 @@ public class InstituteTest extends IntegrationTest {
     return accountRepository.save(account);
   }
 
+
   @Test
+  @DisplayName("성공")
+  void info() {
+    //given
+    Institute institute = createInstitute();
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+
+    String url = BASE_URL + "/info";
+
+    //when
+    HttpHeaders headers = new HttpHeaders();
+    headers.setBearerAuth(tokenDto.getAccessToken());
+    HttpEntity<Request> request = new HttpEntity<>(headers);
+
+
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
+        url,
+        HttpMethod.GET,
+        request,
+        String.class
+    );
+
+
+    ApiResult<GetInstituteInfoDto.Response> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<GetInstituteInfoDto.Response>>(){}
+    );
+
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertNotNull(apiResponse.getData());
+    assertThat(apiResponse.getData().getTotalSeat()).isEqualTo(institute.getTotalSeat());
+    assertThat(apiResponse.getData().getOpenTime()).isEqualTo(institute.getOpenTime());
+    assertThat(apiResponse.getData().getCloseTime()).isEqualTo(institute.getCloseTime());
+  }
+
+  @Test
+  @DisplayName("성공")
   void updateTotalSeat() {
     //given
     Institute institute = createInstitute();
     Account account = createAccount(institute);
     TokenDto tokenDto = tokenManager.createToken(account);
-    int totalSeat = RandomValue.getInt(1,5);
 
     String url = BASE_URL + "/updateTotalSeat";
 
-    UpdateTotalSeatDto.Request request = UpdateTotalSeatDto.Request.builder()
-        .totalSeat(totalSeat)
-        .build();
+    UpdateTotalSeatDto.Request request = fixtureMonkey.giveMeOne(UpdateTotalSeatDto.Request.class);
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(tokenDto.getAccessToken());
-
     HttpEntity<Request> requestEntity = new HttpEntity<>(request, headers);
 
     //when
@@ -94,7 +130,7 @@ public class InstituteTest extends IntegrationTest {
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertNotNull(apiResponse);
     assertThat(apiResponse.getData().getName()).isEqualTo(institute.getName());
-    assertThat(apiResponse.getData().getTotalSeat()).isEqualTo(totalSeat);
+    assertThat(apiResponse.getData().getTotalSeat()).isEqualTo(request.getTotalSeat());
   }
 
 
@@ -175,41 +211,4 @@ public class InstituteTest extends IntegrationTest {
     // 이후 Dto 내부 오류 메세지 검증 코드 필요
   }
 
-  @Test()
-  void info() {
-    //given
-    Institute institute = createInstitute();
-    Account account = createAccount(institute);
-    TokenDto tokenDto = tokenManager.createToken(account);
-
-    String url = BASE_URL + "/info";
-
-    //when
-    HttpHeaders headers = new HttpHeaders();
-    headers.setBearerAuth(tokenDto.getAccessToken());
-
-    HttpEntity<Request> request = new HttpEntity<>(headers);
-
-
-    ResponseEntity<String> responseEntity = restTemplate.exchange(
-        url,
-        HttpMethod.GET,
-        request,
-        String.class
-    );
-
-
-    ApiResult<GetInstituteInfoDto.Response> apiResponse = gson.fromJson(
-        responseEntity.getBody(),
-        new TypeToken<ApiResult<GetInstituteInfoDto.Response>>(){}
-    );
-
-
-    // then
-    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertNotNull(apiResponse.getData());
-    assertThat(apiResponse.getData().getTotalSeat()).isEqualTo(institute.getTotalSeat());
-    assertThat(apiResponse.getData().getOpenTime()).isEqualTo(institute.getOpenTime());
-    assertThat(apiResponse.getData().getCloseTime()).isEqualTo(institute.getCloseTime());
-  }
 }

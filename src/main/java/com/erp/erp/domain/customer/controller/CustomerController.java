@@ -34,7 +34,6 @@ public class CustomerController {
   private final CustomerService customerService;
 
   // note. 이후 프로필 사진 관련 처리 필요
-  // 로직 책임 분리 필요
   @Operation(summary = "고객 추가")
   @PostMapping("/addCustomer")
   public ApiResult<AddCustomerDto.Response> addCustomer(
@@ -55,7 +54,7 @@ public class CustomerController {
 
   @Operation(summary = "고객 상태 값 변경")
   @PostMapping("/updateStatus")
-  public ApiResult<CustomerStatus> updateStatus(@RequestBody UpdateStatusDto.Request req) {
+  public ApiResult<CustomerStatus> updateStatus(@RequestBody @Valid UpdateStatusDto.Request req) {
     CustomerStatus status = customerService.updateStatus(req);
     return ApiResult.success(status);
   }

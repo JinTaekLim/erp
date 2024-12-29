@@ -13,6 +13,7 @@ import com.erp.erp.domain.auth.business.TokenManager;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
 import com.erp.erp.domain.customer.common.dto.AddCustomerDto;
 
+import com.erp.erp.domain.customer.common.dto.GetAvailableCustomerNamesDto;
 import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto;
 import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto.PlanPaymentResponse;
 import com.erp.erp.domain.customer.common.dto.GetCustomerDto;
@@ -23,6 +24,7 @@ import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto.ProgressResponse
 import com.erp.erp.domain.customer.common.dto.UpdateStatusDto;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import com.erp.erp.domain.customer.common.entity.Customer;
+import com.erp.erp.domain.customer.common.exception.NotFoundCustomerException;
 import com.erp.erp.domain.customer.repository.CustomerRepository;
 import com.erp.erp.domain.institute.common.dto.UpdateTotalSeatDto.Request;
 import com.erp.erp.domain.institute.common.entity.Institute;
@@ -30,6 +32,7 @@ import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.domain.payment.common.entity.OtherPayment;
 import com.erp.erp.domain.payment.common.entity.PlanPayment;
 import com.erp.erp.domain.plan.common.entity.Plan;
+import com.erp.erp.domain.plan.common.exception.NotFoundPlanException;
 import com.erp.erp.domain.plan.repository.PlanRepository;
 import com.erp.erp.global.response.ApiResult;
 import com.erp.erp.global.util.generator.AccountGenerator;
@@ -42,8 +45,8 @@ import com.erp.erp.global.util.randomValue.Language;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
-import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -59,6 +62,7 @@ import java.util.stream.IntStream;
 
 class CustomerTest extends IntegrationTest {
 
+  int PAGE_LIMIT = 4;
 
   private String BASE_URL;
 
@@ -99,9 +103,19 @@ class CustomerTest extends IntegrationTest {
   }
 
 
+  private Customer createCustomer() {
+    Institute institute = createInstitutes();
+    Plan plan = createPlans();
+    return customerRepository.save(CustomerGenerator.get(plan, institute));
+  }
+
+  private Customer createCustomer(Institute institute) {
+    Plan plan = createPlans();
+    return customerRepository.save(CustomerGenerator.get(plan, institute));
+  }
+
   private Customer createCustomer(Plan plan, Institute institute) {
-    Customer customer = CustomerGenerator.get(plan, institute);
-    return customerRepository.save(customer);
+    return customerRepository.save(CustomerGenerator.get(plan, institute));
   }
 
   private Customer createCustomer(Plan plan, Institute institute, CustomerStatus customerStatus) {
@@ -121,20 +135,17 @@ class CustomerTest extends IntegrationTest {
 
   // note. 이후 이미지 처리 필요
   @Test
-  void addCustomer_성공() {
+  @DisplayName("성공")
+  void addCustomer() {
     //given
     Plan plan = createPlans();
     AddCustomerDto.Request request = fixtureMonkey.giveMeBuilder(AddCustomerDto.Request.class)
-        .set("gender","M")
         .set("planId", plan.getId())
         .sample();
 
     String url = BASE_URL + "/addCustomer";
 
-
     //when
-    when(photoUtil.upload(any())).thenReturn(RandomValue.string(50).get());
-
     ResponseEntity<String> responseEntity = restTemplate.postForEntity(
         url,
         request,
@@ -149,20 +160,24 @@ class CustomerTest extends IntegrationTest {
     //then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertNotNull(apiResponse);
+    assertThat(apiResponse.getData().getName()).isEqualTo(request.getName());
+    assertThat(apiResponse.getData().getGender()).isEqualTo(request.getGender());
+    assertThat(apiResponse.getData().getPhone()).isEqualTo(request.getPhone());
+    assertThat(apiResponse.getData().getAddress()).isEqualTo(request.getAddress());
+    assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
+//    assertThat(apiResponse.getData().getPhotoUrl()).isEqualTo(photoUrl);
+    assertThat(apiResponse.getData().getBirthDate()).isEqualTo(request.getBirthDate());
   }
 
-   // note. 이후 이미지 처리 필요
   @Test
-  void addCustomer_잘못된_성별() {
+  @DisplayName("필수 값 미전달")
+  void addCustomer_fail_1() {
     //given
-    AddCustomerDto.Request request = fixtureMonkey.giveMeOne(AddCustomerDto.Request.class);
+    AddCustomerDto.Request request = AddCustomerDto.Request.builder().build();
 
     String url = BASE_URL + "/addCustomer";
 
-
     //when
-    when(photoUtil.upload(any())).thenReturn(RandomValue.string(50).get());
-
     ResponseEntity<String> responseEntity = restTemplate.postForEntity(
         url,
         request,
@@ -180,24 +195,16 @@ class CustomerTest extends IntegrationTest {
   }
 
   @Test
-  void addCustomer_이용권_미입력() {
+  @DisplayName("존재하지 않는 이용권 전달")
+  void addCustomer_fail_2() {
     //given
-    Plan plan = createPlans();
-    AddCustomerDto.Request request = AddCustomerDto.Request.builder()
-            .planId(plan.getId())
-            .name("name")
-            .gender("M")
-            .phone("01024214214")
-            .address("adress")
-            .birthDate(LocalDate.now())
-            .build();
+    AddCustomerDto.Request request = fixtureMonkey.giveMeOne(AddCustomerDto.Request.class);
 
     String url = BASE_URL + "/addCustomer";
 
+    NotFoundPlanException exception = new NotFoundPlanException();
 
     //when
-    when(photoUtil.upload(any())).thenReturn(RandomValue.string(50).get());
-
     ResponseEntity<String> responseEntity = restTemplate.postForEntity(
             url,
             request,
@@ -213,15 +220,16 @@ class CustomerTest extends IntegrationTest {
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     assertNotNull(apiResponse);
     assertNull(apiResponse.getData());
+    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
+    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
   }
 
   @Test
+  @DisplayName("성공")
   void updateCustomer() {
     // given
-    Plan plan = createPlans();
-    Institute institute = createInstitutes();
+    Customer customer = createCustomer();
 
-    Customer customer = createCustomer(plan, institute);
     UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
             .set("customerId", customer.getId())
             .sample();
@@ -260,8 +268,6 @@ class CustomerTest extends IntegrationTest {
                     .usingRecursiveComparison()
                     .isEqualTo(expectedProgress.get(i)));
 
-
-
     List<OtherPaymentResponse> actualPayments = apiResponse.getData().getOtherPayment();
     List<OtherPaymentResponse> expectedPayments = request.getOtherPayment();
     assertThat(actualPayments).hasSameSizeAs(expectedPayments);
@@ -269,28 +275,117 @@ class CustomerTest extends IntegrationTest {
             .forEach(i -> assertThat(actualPayments.get(i))
                     .usingRecursiveComparison()
                     .isEqualTo(expectedPayments.get(i)));
-
-
-
   }
 
   @Test
-  void updateStatus_성공() {
+  @DisplayName("필수 값 미입력")
+  void updateCustomer_fail_1() {
+    // given
+    UpdateCustomerDto.Request request = UpdateCustomerDto.Request.builder().build();
+
+    String url = BASE_URL + "/updateCustomer";
+
+    // then
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+        url,
+        request,
+        String.class
+    );
+
+    ApiResult<UpdateCustomerDto.Response> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<UpdateCustomerDto.Response>>(){}
+    );
+
+    // when
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertNull(apiResponse.getData());
+  }
+
+  @Test
+  @DisplayName("존재하지 않는 Customer 입력")
+  void updateCustomer_fail_2() {
+    // given
+    UpdateCustomerDto.Request request = fixtureMonkey.giveMeOne(UpdateCustomerDto.Request.class);
+
+    String url = BASE_URL + "/updateCustomer";
+
+    NotFoundCustomerException exception = new NotFoundCustomerException();
+
+    // then
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+        url,
+        request,
+        String.class
+    );
+
+    ApiResult<UpdateCustomerDto.Response> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<UpdateCustomerDto.Response>>(){}
+    );
+
+    // when
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertNull(apiResponse.getData());
+    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
+    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
+  }
+
+
+  @Test
+  @DisplayName("다른 매장 Customer 입력")
+  void updateCustomer_fail_3() {
+    // given
+    Institute institute = createInstitutes();
+    Account account = createAccounts(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+
+    Customer customer = createCustomer();
+    UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
+        .set("customerId", customer.getId())
+        .sample();
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setBearerAuth(tokenDto.getAccessToken());
+    HttpEntity<UpdateCustomerDto.Request> requestEntity = new HttpEntity<>(request, headers);
+
+    String url = BASE_URL + "/updateCustomer";
+
+    NotFoundCustomerException exception = new NotFoundCustomerException();
+
+    // then
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+        url,
+        requestEntity,
+        String.class
+    );
+
+    ApiResult<UpdateCustomerDto.Response> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<UpdateCustomerDto.Response>>(){}
+    );
+
+    // when
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertNull(apiResponse.getData());
+    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
+    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
+  }
+
+  @Test
+  @DisplayName("성공")
+  void updateStatus() {
     //given
     Plan plan = createPlans();
     Institute institute = createInstitutes();
     Customer customer = createCustomer(plan, institute);
 
-    CustomerStatus status = Arrays.stream(CustomerStatus.values())
-        .filter(s -> s != customer.getStatus())
-        .findAny()
-        .orElseThrow(IllegalStateException::new);
+    CustomerStatus status = RandomValue.getRandomEnum(CustomerStatus.class);
 
     UpdateStatusDto.Request request = UpdateStatusDto.Request.builder()
         .customerId(customer.getId())
         .status(status)
         .build();
-
 
     String url = BASE_URL + "/updateStatus";
 
@@ -313,9 +408,300 @@ class CustomerTest extends IntegrationTest {
     assertThat(customer.getStatus()).isNotEqualTo(status);
   }
 
+  @Test
+  @DisplayName("status 미전달")
+  void updateStatus_fail_1() {
+    //given
+    Plan plan = createPlans();
+    Institute institute = createInstitutes();
+    Customer customer = createCustomer(plan, institute);
+
+    UpdateStatusDto.Request request = UpdateStatusDto.Request.builder()
+        .customerId(customer.getId())
+        .build();
+
+    String url = BASE_URL + "/updateStatus";
+
+    //when
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+        url,
+        request,
+        String.class
+    );
+
+    ApiResult<?> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        ApiResult.class
+    );
+
+    //then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertNull(apiResponse.getData());
+  }
 
   @Test
-  void searchCustomerName_성공() {
+  @DisplayName("customerId 미전달")
+  void updateStatus_fail_2() {
+    //given
+    CustomerStatus status = RandomValue.getRandomEnum(CustomerStatus.class);
+
+    UpdateStatusDto.Request request = UpdateStatusDto.Request.builder()
+        .status(status)
+        .build();
+
+    String url = BASE_URL + "/updateStatus";
+
+
+    //when
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+        url,
+        request,
+        String.class
+    );
+
+    ApiResult<?> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        ApiResult.class
+    );
+
+    //then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertNull(apiResponse.getData());
+  }
+
+  @Test
+  @DisplayName("잘못된 customerId 전달")
+  void updateStatus_fail_3() {
+    //given
+    CustomerStatus status = RandomValue.getRandomEnum(CustomerStatus.class);
+
+    UpdateStatusDto.Request request = UpdateStatusDto.Request.builder()
+        .customerId(RandomValue.getRandomLong(99999))
+        .status(status)
+        .build();
+
+    String url = BASE_URL + "/updateStatus";
+
+    NotFoundCustomerException exception = new NotFoundCustomerException();
+
+    //when
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+        url,
+        request,
+        String.class
+    );
+
+    ApiResult<?> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        ApiResult.class
+    );
+
+    //then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertNull(apiResponse.getData());
+    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
+    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
+  }
+
+  @Test
+  @DisplayName("다른 매장 customerId 전달")
+  void updateStatus_fail_4() {
+    //given
+    Institute institute = createInstitutes();
+    Account account = createAccounts(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+
+    Customer customer = createCustomer();
+    CustomerStatus status = RandomValue.getRandomEnum(CustomerStatus.class);
+
+    UpdateStatusDto.Request request = UpdateStatusDto.Request.builder()
+        .customerId(customer.getId())
+        .status(status)
+        .build();
+
+    String url = BASE_URL + "/updateStatus";
+
+    NotFoundCustomerException exception = new NotFoundCustomerException();
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setBearerAuth(tokenDto.getAccessToken());
+    HttpEntity<UpdateStatusDto.Request> requestEntity = new HttpEntity<>(request, headers);
+
+    //when
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+        url,
+        requestEntity,
+        String.class
+    );
+
+    ApiResult<?> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        ApiResult.class
+    );
+
+    //then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertNull(apiResponse.getData());
+    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
+    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
+  }
+
+
+  @Test
+  @DisplayName("성공")
+  void getCurrentCustomers() {
+    //given
+    Institute institutes = createInstitutes();
+    Plan plan = createPlans();
+
+    int randomInt = RandomValue.getInt(0,20);
+    int page = randomInt / PAGE_LIMIT;
+
+    List<Customer> customers = IntStream.range(0, randomInt)
+        .mapToObj(i -> {
+      return createCustomer(plan, institutes, CustomerStatus.ACTIVE);
+        }).toList();
+
+    String url = BASE_URL + "/currentCustomers/" + page;
+
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+        url,
+        String.class
+    );
+
+    ApiResult<List<GetCustomerDto.Response>> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<List<GetCustomerDto.Response>>>(){}.getType()
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+    int dataSize = randomInt - (page * PAGE_LIMIT);
+    assertThat(apiResponse.getData().size()).isEqualTo(dataSize);
+
+    IntStream.range(0 , dataSize).forEach(i -> {
+      GetCustomerDto.Response response = apiResponse.getData().get(i);
+      int index = randomInt - dataSize + i;
+      Customer customer = customers.get(index);
+
+      assertThat(response.getPhotoUrl()).isEqualTo(customer.getPhotoUrl());
+      assertThat(response.getName()).isEqualTo(customer.getName());
+      assertThat(response.getGender()).isEqualTo(customer.getGender());
+      assertThat(response.getPhone()).isEqualTo(customer.getPhone());
+      assertThat(response.getLicenseType()).isEqualTo(customer.getPlanPayment().getPlan().getLicenseType());
+      assertThat(response.getPlanName()).isEqualTo(customer.getPlanPayment().getPlan().getName());
+//      assertThat(response.getRemainingTime())
+//      assertThat(response.getRemainingPeriod())
+//      assertThat(response.getUsedTime())
+      assertThat(response.getRegistrationDate()).isEqualTo(customer.getPlanPayment().getRegistrationAt());
+//      assertThat(response.getTardinessCount())
+//      assertThat(response.getAbsenceCount())
+    });
+  }
+
+  @Test
+  @DisplayName("성공")
+  void getExpiredCustomers() {
+    //given
+    Institute institutes = createInstitutes();
+    Plan plan = createPlans();
+
+    int randomInt = RandomValue.getInt(0,20);
+    int page = randomInt / PAGE_LIMIT;
+
+    List<Customer> customers = IntStream.range(0, randomInt)
+        .mapToObj(i -> {
+          return createCustomer(plan, institutes, CustomerStatus.INACTIVE);
+        }).toList();
+
+    String url = BASE_URL + "/expiredCustomer/" + page;
+
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+        url,
+        String.class
+    );
+
+    ApiResult<List<GetCustomerDto.Response>> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<List<GetCustomerDto.Response>>>(){}.getType()
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+    int dataSize = randomInt - (page * PAGE_LIMIT);
+    assertThat(apiResponse.getData().size()).isEqualTo(dataSize);
+
+    IntStream.range(0 , dataSize).forEach(i -> {
+      GetCustomerDto.Response response = apiResponse.getData().get(i);
+      int index = randomInt - dataSize + i;
+      Customer customer = customers.get(index);
+
+      assertThat(response.getPhotoUrl()).isEqualTo(customer.getPhotoUrl());
+      assertThat(response.getName()).isEqualTo(customer.getName());
+      assertThat(response.getGender()).isEqualTo(customer.getGender());
+      assertThat(response.getPhone()).isEqualTo(customer.getPhone());
+      assertThat(response.getLicenseType()).isEqualTo(customer.getPlanPayment().getPlan().getLicenseType());
+      assertThat(response.getPlanName()).isEqualTo(customer.getPlanPayment().getPlan().getName());
+//      assertThat(response.getRemainingTime())
+//      assertThat(response.getRemainingPeriod())
+//      assertThat(response.getUsedTime())
+      assertThat(response.getRegistrationDate()).isEqualTo(customer.getPlanPayment().getRegistrationAt());
+//      assertThat(response.getTardinessCount())
+//      assertThat(response.getAbsenceCount())
+    });
+  }
+
+  @Test
+  @DisplayName("성공")
+  void getAvailableCustomerNames() {
+    // given
+    Institute institutes = createInstitutes();
+    Plan plan = createPlans();
+
+    int customerCount = RandomValue.getInt(0,5);
+    List<Customer> customers = IntStream.range(0, customerCount)
+        .mapToObj(i -> {
+          return createCustomer(plan, institutes, CustomerStatus.ACTIVE);
+        }).toList();
+
+    int InactiveCustomerCount = RandomValue.getInt(0,5);
+    IntStream.range(0, InactiveCustomerCount)
+        .forEach(i -> createCustomer(plan, institutes, CustomerStatus.INACTIVE));
+
+    int deletedCustomerCount = RandomValue.getInt(0,5);
+    IntStream.range(0, deletedCustomerCount)
+        .forEach(i -> createCustomer(plan, institutes, CustomerStatus.DELETED));
+
+
+    String url = BASE_URL + "/getAvailableCustomerNames";
+
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+        url,
+        String.class
+    );
+
+    ApiResult<List<GetAvailableCustomerNamesDto.Response>> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<List<GetAvailableCustomerNamesDto.Response>>>(){}.getType()
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(apiResponse.getData().size()).isEqualTo(customerCount);
+    IntStream.range(0, customerCount).forEach(i -> {
+      assertThat(apiResponse.getData().get(i).getId()).isEqualTo(customers.get(i).getId());
+      assertThat(apiResponse.getData().get(i).getName()).isEqualTo(customers.get(i).getName());
+    });
+  }
+
+  @Test
+  @DisplayName("성공")
+  void searchCustomerName() {
     //given
     Plan plan = createPlans();
     Institute institute = createInstitutes();
@@ -324,9 +710,7 @@ class CustomerTest extends IntegrationTest {
     Customer customer = createCustomer(institute, plan, status, name);
     String keyword = ( name.length() < 2 ) ? name : String.valueOf(name.charAt(0));
 
-
     String url = BASE_URL + "/searchCustomerName/" + keyword;
-
 
     //when
     ResponseEntity<String> responseEntity = restTemplate.exchange(
@@ -349,6 +733,39 @@ class CustomerTest extends IntegrationTest {
   }
 
   @Test
+  @DisplayName("다른 매장 회원 검색")
+  void searchCustomerName_2() {
+    //given
+    Institute institute = createInstitutes();
+    Account account = createAccounts(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+    Customer customer = createCustomer();
+
+    String url = BASE_URL + "/searchCustomerName/" + customer.getName();
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setBearerAuth(tokenDto.getAccessToken());
+    HttpEntity<UpdateCustomerDto.Request> requestEntity = new HttpEntity<>(headers);
+
+    //when
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
+        url,
+        HttpMethod.GET,
+        requestEntity,
+        String.class
+    );
+    ApiResult<List<SearchCustomerNameDto.Response>> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<List<SearchCustomerNameDto.Response>>>(){}
+    );
+
+    //then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(apiResponse.getData()).isEmpty();
+  }
+
+  @Test
+  @DisplayName("성공")
   void getCustomerDetail() {
     // given
     Plan plan = createPlans();
@@ -418,76 +835,82 @@ class CustomerTest extends IntegrationTest {
 
 
 
+  @Test
+  @DisplayName("잘못된 customerId 전달")
+  void getCustomerDetail_fail_1() {
+    // given
+    Institute institute = createInstitutes();
+    Account account = createAccounts(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
 
-  @Test()
-  void getCurrentCustomers() {
-    //given
-    Institute institutes = createInstitutes();
-    Account accounts = createAccounts(institutes);
-    Plan plan = createPlans();
+    String customerId = String.valueOf(RandomValue.getRandomLong(999));
 
-    int randomInt = RandomValue.getInt(0,4);
-    IntStream.range(0, randomInt).forEach(i -> {
-      createCustomer(plan, institutes, CustomerStatus.ACTIVE);
-    });
 
-    String url = "http://localhost:" + port + "/api/customer/currentCustomers/" + 0;
+    String url = BASE_URL + "/getCustomerDetail/" + customerId;
 
+    HttpHeaders headers = new HttpHeaders();
+    headers.setBearerAuth(tokenDto.getAccessToken());
+    HttpEntity<Request> requestEntity = new HttpEntity<>(headers);
+
+    NotFoundCustomerException exception = new NotFoundCustomerException();
 
     // when
-    ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
+        HttpMethod.GET,
+        requestEntity,
         String.class
     );
 
-    ApiResult<List<GetCustomerDto.Response>> apiResponse = gson.fromJson(
+    ApiResult<GetCustomerDetailDto.Response> apiResponse = gson.fromJson(
         responseEntity.getBody(),
-        new TypeToken<ApiResult<List<GetCustomerDto.Response>>>(){}.getType()
+        new TypeToken<ApiResult<GetCustomerDetailDto.Response>>(){}
     );
 
     // then
-    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertNotNull(apiResponse);
-
-    int dataSize = apiResponse.getData().size();
-    assertThat(dataSize).isEqualTo(randomInt);
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertNull(apiResponse.getData());
+    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
+    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
   }
 
   @Test
-  void getCurrentCustomers_4명_반환() {
-    //given
-    Institute institutes = createInstitutes();
-    Account accounts = createAccounts(institutes);
-    Plan plan = createPlans();
+  @DisplayName("다른 매장 회원 전달")
+  void getCustomerDetail_fail_2() {
+    // given
+    Institute institute = createInstitutes();
+    Account account = createAccounts(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
 
-    int randomInt = RandomValue.getInt(4,20);
-    int page = Math.max(0, (randomInt / 4) - 1 );
+    Customer customer = createCustomer();
 
-    IntStream.range(0, randomInt).forEach(i -> {
-      createCustomer(plan, institutes, CustomerStatus.ACTIVE);
-    });
+    String url = BASE_URL + "/getCustomerDetail/" + customer.getId();
 
+    HttpHeaders headers = new HttpHeaders();
+    headers.setBearerAuth(tokenDto.getAccessToken());
+    HttpEntity<Request> requestEntity = new HttpEntity<>(headers);
 
-    String url = "http://localhost:" + port + "/api/customer/currentCustomers/" + page;
-
+    NotFoundCustomerException exception = new NotFoundCustomerException();
 
     // when
-    ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
+        HttpMethod.GET,
+        requestEntity,
         String.class
     );
 
-    ApiResult<List<GetCustomerDto.Response>> apiResponse = gson.fromJson(
+    ApiResult<GetCustomerDetailDto.Response> apiResponse = gson.fromJson(
         responseEntity.getBody(),
-        new TypeToken<ApiResult<List<GetCustomerDto.Response>>>(){}.getType()
+        new TypeToken<ApiResult<GetCustomerDetailDto.Response>>(){}
     );
 
     // then
-    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertNotNull(apiResponse);
-
-    int dataSize = apiResponse.getData().size();
-    assertThat(dataSize).isEqualTo(4);
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertNull(apiResponse.getData());
+    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
+    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
   }
+
 
 }
