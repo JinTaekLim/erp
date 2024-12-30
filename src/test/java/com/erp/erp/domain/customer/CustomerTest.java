@@ -21,6 +21,7 @@ import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customer.common.dto.UpdateStatusDto;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import com.erp.erp.domain.customer.common.entity.Customer;
+import com.erp.erp.domain.customer.common.entity.Gender;
 import com.erp.erp.domain.customer.common.entity.Progress;
 import com.erp.erp.domain.customer.repository.CustomerRepository;
 import com.erp.erp.domain.institute.common.dto.UpdateTotalSeatDto.Request;
@@ -102,6 +103,18 @@ class CustomerTest extends IntegrationTest {
   }
 
   private Customer getCustomers(Institute institute, PlanPayment planPayment, List<OtherPayment> otherPaymentList) {
+//    return Customer.builder()
+//        .institute(institute)
+//        .name(RandomValue.string(1,10).setNullable(false).get())
+//        .gender(RandomValue.getRandomEnum(Gender.class))
+//        .phone(RandomValue.string(1,10).setNullable(false).get())
+//        .address(RandomValue.string(1,10).setNullable(false).get())
+//        .photoUrl(RandomValue.string(1,10).setNullable(false).get())
+//        .memo(RandomValue.string(1,10).setNullable(false).get())
+//        .birthDate(RandomValue.getRandomLocalDate())
+//        .planPayment(planPayment)
+//        .otherPayments(otherPaymentList)
+//        .build();
     return fixtureMonkey.giveMeBuilder(Customer.class)
             .setNull("id")
             .set("institute", institute)
