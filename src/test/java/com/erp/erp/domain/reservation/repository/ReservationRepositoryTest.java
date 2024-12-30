@@ -1,25 +1,20 @@
 package com.erp.erp.domain.reservation.repository;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.repository.CustomerRepository;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
-import com.erp.erp.domain.payment.common.entity.OtherPayment;
-import com.erp.erp.domain.payment.common.entity.PlanPayment;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.repository.PlanRepository;
 import com.erp.erp.domain.reservation.common.entity.Reservation;
 import com.erp.erp.global.util.generator.CustomerGenerator;
 import com.erp.erp.global.util.generator.InstituteGenerator;
-import com.erp.erp.global.util.generator.OtherPaymentGenerator;
 import com.erp.erp.global.util.generator.PlanGenerator;
-import com.erp.erp.global.util.generator.PlanPaymentGenerator;
 import com.erp.erp.global.util.generator.ReservationGenerator;
 import com.erp.erp.global.util.randomValue.RandomValue;
-import com.erp.erp.global.util.test.JpaTest;
+import com.erp.erp.global.test.JpaTest;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -43,9 +38,7 @@ class ReservationRepositoryTest extends JpaTest {
 
   private Customer createCustomers(Institute institute) {
     Plan plan = createPlans();
-    PlanPayment planPayment = PlanPaymentGenerator.get(plan);
-    List<OtherPayment> otherPaymentList = OtherPaymentGenerator.getList(plan);
-    Customer customer = CustomerGenerator.get(institute, planPayment, otherPaymentList);
+    Customer customer = CustomerGenerator.get(plan, institute);
     return customerRepository.save(customer);
   }
 
@@ -69,7 +62,7 @@ class ReservationRepositoryTest extends JpaTest {
     int returnCount = RandomValue.getInt(0,5);;
     int reservationCount = RandomValue.getInt(0,5);;
 
-    LocalDateTime startTime = RandomValue.getRandomLocalDateTime();
+    LocalDateTime startTime = RandomValue.getRandomLocalDateTime().withSecond(0);
     LocalDateTime endTime = startTime.plusMinutes(RandomValue.getInt(30,180));
     IntStream.range(0, returnCount).forEach(i -> {
       createReservations(customers, institute, startTime, endTime);
@@ -82,7 +75,7 @@ class ReservationRepositoryTest extends JpaTest {
     });
 
     // when
-    List<Reservation> reservations = reservationRepository.findByInstituteAndTimeRange(institute, startTime.withSecond(0).withNano(0), endTime.withSecond(0).withNano(0));
+    List<Reservation> reservations = reservationRepository.findByInstituteAndTimeRange(institute, startTime, endTime);
 
     // then
     assertThat(reservations.size()).isEqualTo(returnCount);

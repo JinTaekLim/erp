@@ -17,6 +17,7 @@ public class InstituteUpdater {
   @Transactional
   public Institute updateSpotsNumber(Institute institute, int num) {
     institute.changeTotalSpots(num);
+    instituteRepository.save(institute);
     return institute;
   }
 }

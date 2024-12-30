@@ -1,5 +1,7 @@
 package com.erp.erp.domain.admin;
 
+import com.erp.erp.domain.account.common.entity.Account;
+import com.erp.erp.domain.account.repository.AccountRepository;
 import com.erp.erp.domain.admin.common.dto.AddAccountDto;
 import com.erp.erp.domain.admin.common.dto.AddInstituteDto;
 import com.erp.erp.domain.admin.common.dto.AddPlanDto;
@@ -8,11 +10,13 @@ import com.erp.erp.domain.institute.common.exception.NotFoundInstituteException;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.domain.plan.common.entity.LicenseType;
 import com.erp.erp.global.response.ApiResult;
+import com.erp.erp.global.util.generator.AccountGenerator;
 import com.erp.erp.global.util.generator.InstituteGenerator;
 import com.erp.erp.global.util.randomValue.RandomValue;
-import com.erp.erp.global.util.test.IntegrationTest;
+import com.erp.erp.global.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,14 +38,20 @@ class adminTest extends IntegrationTest {
 
   @Autowired
   private InstituteRepository instituteRepository;
+  @Autowired
+  private AccountRepository accountRepository;
 
 
   private Institute createInstitute() {
-    return instituteRepository.saveAndFlush(InstituteGenerator.get());
+    return instituteRepository.save(InstituteGenerator.get());
+  }
+  private Account createAccount(Institute institute) {
+    return accountRepository.save(AccountGenerator.get(institute));
   }
 
 
   @Test
+  @DisplayName("addPlans 성공")
   void addPlans() {
     //given
     AddPlanDto.Request request = fixtureMonkey.giveMeBuilder(AddPlanDto.Request.class)
@@ -71,7 +81,34 @@ class adminTest extends IntegrationTest {
     assertEquals(apiResponse.getData().getName(), request.getName());
   }
 
-  @Test()
+  @Test
+  @DisplayName("필수값 미입력")
+  void addPlans_fail_1() {
+    //given
+    AddPlanDto.Request request = AddPlanDto.Request.builder().build();
+
+    String url = BASE_URL + "/addPlan";
+
+    //when
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+        url,
+        request,
+        String.class
+    );
+
+    ApiResult<AddPlanDto.Response> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<AddPlanDto.Response>>() {
+        }
+    );
+
+    //then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertNotNull(apiResponse);
+  }
+
+  @Test
+  @DisplayName("성공")
   void addInstitute() {
     // given
     AddInstituteDto.Request req = fixtureMonkey.giveMeOne(AddInstituteDto.Request.class);
@@ -100,8 +137,35 @@ class adminTest extends IntegrationTest {
     assertThat(apiResponse.getData().getCloseTime()).isEqualTo(req.getCloseTime());
   }
 
+  @Test
+  @DisplayName("필수값 미입력")
+  void addInstitute_fail() {
+    // given
+    AddInstituteDto.Request req = AddInstituteDto.Request.builder().build();
 
-  @Test()
+    String url = BASE_URL + "/addInstitute";
+
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+        url,
+        req,
+        String.class
+    );
+
+    ApiResult<AddInstituteDto.Response> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<AddInstituteDto.Response>>() {
+        }
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertNull(apiResponse.getData());
+  }
+
+
+  @Test
+  @DisplayName("성공")
   void addAccount() {
     // given
     Institute institute = createInstitute();
@@ -127,12 +191,11 @@ class adminTest extends IntegrationTest {
     // then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertNotNull(apiResponse.getData());
-//        assertThat(apiResponse.getData().getName()).isEqualTo(req.getName());
-//        assertThat(apiResponse.getData().getTotalSpots()).isEqualTo(req.getTotalSpots());
   }
 
 
   @Test
+  @DisplayName("존재하지 않는 매장 값 전달")
   void addAccount_fail() {
     // given
     long randomLong = RandomValue.getRandomLong(0, 9999);
@@ -141,6 +204,7 @@ class adminTest extends IntegrationTest {
         .sample();
 
     NotFoundInstituteException exception = new NotFoundInstituteException();
+
     String url = BASE_URL + "/addAccount";
 
     // when
@@ -163,5 +227,37 @@ class adminTest extends IntegrationTest {
     assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
   }
 
+  @Test
+  @DisplayName("존재하는 아이디 값 전달")
+  void addAccount_fail_2() {
+    // given
+    Institute institute = createInstitute();
+    Account account = createAccount(institute);
 
+    AddAccountDto.Request req = AddAccountDto.Request.builder()
+        .accountId(account.getAccountId())
+        .password(account.getPassword())
+        .instituteId(institute.getId())
+        .build();
+
+
+    String url = BASE_URL + "/addAccount";
+
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+        url,
+        req,
+        String.class
+    );
+
+    ApiResult<AddAccountDto.Response> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<AddAccountDto.Response>>() {
+        }
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertNull(apiResponse.getData());
+  }
 }

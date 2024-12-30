@@ -10,18 +10,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 public class UpdateCustomerDto {
 
   @Schema(name = "UpdatedCustomerInfoDto_Request", description = "회원 정보 수정 요청")
   @Getter
   @Builder
-  @NoArgsConstructor
-  @AllArgsConstructor
   public static class Request {
 
     @Schema(description = "회원 ID")
@@ -84,8 +80,6 @@ public class UpdateCustomerDto {
     @Schema(name = "UpdatedCustomerInfoDto_Response", description = "회원 정보 수정 반환")
     @Getter
     @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class Response {
 
       @Schema(description = "회원 ID")
@@ -144,8 +138,6 @@ public class UpdateCustomerDto {
     }
 
   @Builder
-  @NoArgsConstructor
-  @AllArgsConstructor
   @Getter
   public static class OtherPaymentResponse {
 
@@ -167,8 +159,6 @@ public class UpdateCustomerDto {
   }
 
   @Builder
-  @NoArgsConstructor
-  @AllArgsConstructor
   @Getter
   public static class ProgressResponse {
 

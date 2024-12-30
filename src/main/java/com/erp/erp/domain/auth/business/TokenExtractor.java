@@ -54,9 +54,9 @@ public class TokenExtractor {
         } catch (SignatureException e) {
             throw new InvalidJwtSignatureException();
         } catch (JwtException e) {
-            throw new InvalidTokenException(e.getMessage());
+            throw new InvalidTokenException();
         } catch (Exception e) {
-            throw new UnAuthenticatedException(e.getMessage());
+            throw new UnAuthenticatedException();
         }
     }
 }

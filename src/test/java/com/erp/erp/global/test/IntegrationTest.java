@@ -1,13 +1,14 @@
-package com.erp.erp.global.util.test;
+package com.erp.erp.global.test;
 
+import com.erp.erp.global.fixtureMonkey.LocalDateTimeJqwikPlugin;
 import com.erp.erp.global.gson.LocalDateSerializer;
 import com.erp.erp.global.gson.LocalDateTimeAdapter;
-import com.erp.erp.global.gson.LocalDateTimeSerializer;
 import com.erp.erp.global.gson.LocalTimeAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.BuilderArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.jqwik.JqwikPlugin;
 import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPlugin;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -43,15 +44,15 @@ abstract public class IntegrationTest {
 
   protected Gson gson = new GsonBuilder()
       .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
-      .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
       .registerTypeAdapter(LocalTime.class, new LocalTimeAdapter())
       .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
       .setPrettyPrinting()
       .create();
 
   protected FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-      .objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
+      .objectIntrospector(BuilderArbitraryIntrospector.INSTANCE)
       .plugin(new JakartaValidationPlugin())
+      .plugin(new JqwikPlugin().javaTimeTypeArbitraryGenerator(new LocalDateTimeJqwikPlugin()))
       .build();
 
   @BeforeEach

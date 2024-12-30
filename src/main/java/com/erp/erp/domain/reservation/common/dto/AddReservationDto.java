@@ -9,18 +9,14 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 public class AddReservationDto {
 
   @Schema(name = "AddReservationDto_Request" , description = "회원 예약 추가 요청")
   @Builder
   @Getter
-  @NoArgsConstructor
-  @AllArgsConstructor
   public static class Request{
 
     @Schema(description = "회원 ID")
@@ -55,8 +51,6 @@ public class AddReservationDto {
   @Schema(name = "AddReservationDto_Request" , description = "회원 예약 추가 반환")
   @Builder
   @Getter
-  @NoArgsConstructor
-  @AllArgsConstructor
   public static class Response{
 
     @Schema(description = "예약 ID")

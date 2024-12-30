@@ -9,12 +9,14 @@ import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.account.repository.AccountRepository;
 import com.erp.erp.domain.auth.business.TokenManager;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
+import com.erp.erp.domain.auth.common.exception.InvalidTokenException;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.global.response.ApiResult;
 import com.erp.erp.global.util.generator.AccountGenerator;
 import com.erp.erp.global.util.generator.InstituteGenerator;
-import com.erp.erp.global.util.test.IntegrationTest;
+import com.erp.erp.global.util.randomValue.RandomValue;
+import com.erp.erp.global.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 
 public class AccountTest extends IntegrationTest {
 
@@ -49,7 +50,8 @@ public class AccountTest extends IntegrationTest {
   }
 
   @Test
-  void login_성공() {
+  @DisplayName("login 성공")
+  void login() {
     //given
     Institute institute = createInstitutes();
     Account account = createAccount(institute);
@@ -84,7 +86,7 @@ public class AccountTest extends IntegrationTest {
 
 
   @Test
-  @DisplayName("필수값 미전달")
+  @DisplayName("login 필수값 미전달")
   void login_fail_1() {
     //given
     AccountLoginDto.Request request = AccountLoginDto.Request.builder().build();
@@ -111,7 +113,7 @@ public class AccountTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("존재하지 않거나 잘못된 아이디 혹은 비밀번호")
+  @DisplayName("login 존재하지 않거나 잘못된 아이디 혹은 비밀번호")
   void login_fail_2() {
     //given
     AccountLoginDto.Request request = fixtureMonkey.giveMeOne(AccountLoginDto.Request.class);
@@ -131,6 +133,7 @@ public class AccountTest extends IntegrationTest {
   }
 
   @Test
+  @DisplayName("reissueToken 성공")
   void reissueToken() {
     //given
     Institute institute = createInstitutes();
@@ -162,4 +165,33 @@ public class AccountTest extends IntegrationTest {
     assertNotNull(response.getRefreshToken());
   }
 
+  @Test
+  @DisplayName("reissueToken 잘못된 accessToken")
+  void reissueToken_fail_1() {
+    //given
+    String accessToken = RandomValue.string(1,5).setNullable(false).get();
+
+    String url = BASE_URL + "/reissueToken?refreshToken=" + accessToken;
+
+    InvalidTokenException exception = new InvalidTokenException();
+
+    //when
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+        url,
+        null,
+        String.class
+    );
+
+    ApiResult<TokenDto> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<TokenDto>>() {
+        }.getType()
+    );
+
+    //then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    assertNull(apiResponse.getData());
+    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
+    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
+  }
 }

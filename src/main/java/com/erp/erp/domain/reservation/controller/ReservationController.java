@@ -76,7 +76,7 @@ public class ReservationController {
 
 
   @Operation(summary = "예약 수정")
-  @PostMapping("/updatedReservation")
+  @PutMapping("/updatedReservation")
   public ApiResult<UpdatedReservationDto.Response> updatedReservation(
       @Valid @RequestBody UpdatedReservationDto.Request req) {
     Reservation reservation = reservationService.updateReservation(req);
@@ -88,9 +88,9 @@ public class ReservationController {
   }
 
   @Operation(summary = "좌석 번호 변경")
-  @PostMapping("/updatedSeatNumber")
+  @PutMapping("/updatedSeatNumber")
   public ApiResult<UpdatedSeatNumberDto.Response> updatedSeatNumber(
-      UpdatedSeatNumberDto.Request req
+      @Valid @RequestBody UpdatedSeatNumberDto.Request req
   ) {
     Reservation reservation = reservationService.updatedSeatNumber(req);
 
@@ -103,10 +103,10 @@ public class ReservationController {
   }
 
   @Operation(summary = "예약 삭제")
-  @PostMapping("/deleteReservation")
+  @DeleteMapping("/deleteReservation/{reservationId}")
   public ApiResult<Boolean> deleteReservation(
-      @Valid @RequestBody DeleteReservationDto.Request req) {
-    reservationService.deleteReservations(req);
+      @Valid @PathVariable("reservationId") Long reservationId) {
+    reservationService.deleteReservations(reservationId);
     return ApiResult.success(true);
   }
 

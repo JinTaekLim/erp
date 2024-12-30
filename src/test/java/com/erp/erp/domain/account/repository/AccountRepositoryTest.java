@@ -7,7 +7,7 @@ import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.global.util.generator.AccountGenerator;
 import com.erp.erp.global.util.generator.InstituteGenerator;
-import com.erp.erp.global.util.test.JpaTest;
+import com.erp.erp.global.test.JpaTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

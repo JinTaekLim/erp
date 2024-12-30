@@ -1,4 +1,4 @@
-package com.erp.erp.global.util.test;
+package com.erp.erp.global.test;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;

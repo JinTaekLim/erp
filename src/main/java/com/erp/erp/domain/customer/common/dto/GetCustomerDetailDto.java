@@ -11,18 +11,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 public class GetCustomerDetailDto {
 
   @Schema(name = "GetCustomerDetailDto_Response" , description = "고객 상세 조회 반환")
   @Getter
   @Builder
-  @NoArgsConstructor
-  @AllArgsConstructor
   public static class Response{
     @Schema(description = "프로필 URL")
     private String photoUrl;
@@ -77,8 +73,6 @@ public class GetCustomerDetailDto {
 
   @Getter
   @Builder
-  @NoArgsConstructor
-  @AllArgsConstructor
   public static class PlanPaymentResponse {
     @Schema(description = "1/2종 구분")
     private LicenseType licenseType;
@@ -121,8 +115,6 @@ public class GetCustomerDetailDto {
 
   @Getter
   @Builder
-  @NoArgsConstructor
-  @AllArgsConstructor
   public static class OtherPaymentResponse {
     @Schema(description = "결제일")
     private LocalDateTime registrationAt;
@@ -145,8 +137,6 @@ public class GetCustomerDetailDto {
 
   @Getter
   @Builder
-  @NoArgsConstructor
-  @AllArgsConstructor
   public static class ProgressResponse {
     @Schema(description = "날짜")
     private LocalDate date;

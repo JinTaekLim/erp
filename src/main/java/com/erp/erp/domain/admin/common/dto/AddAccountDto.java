@@ -5,18 +5,14 @@ import com.erp.erp.domain.institute.common.entity.Institute;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 public class AddAccountDto {
 
   @Schema(name = "AddAccountDto_Request" , description = "계정 추가 요청")
   @Builder
   @Getter
-  @NoArgsConstructor
-  @AllArgsConstructor
   public static class Request{
 
     @Schema(description = "매장 ID")
@@ -25,14 +21,14 @@ public class AddAccountDto {
 
     @Schema(description = "아이디")
     @NotNull
-    private String account;
+    private String accountId;
 
     @Schema(description = "비밀번호")
     @NotNull
     private String password;
 
     public Account toEntityWithInstitute(Institute institute) {
-      return Account.builder().institute(institute).accountId(account).password(password).build();
+      return Account.builder().institute(institute).accountId(accountId).password(password).build();
     }
 
   }
@@ -40,8 +36,6 @@ public class AddAccountDto {
   @Schema(name = "AddAccountDto_Response" , description = "계정 추가 반환")
   @Builder
   @Getter
-  @NoArgsConstructor
-  @AllArgsConstructor
   public static class Response{
 
     @Schema(description = "매장 ID")

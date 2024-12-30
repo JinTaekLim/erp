@@ -66,7 +66,7 @@ public class ReservationValidator {
   private void checkSlotOccupancy(long[] slotOccupancy, int startIndex, int endIndex,
       int totalSpots) {
     for (int slotIndex = startIndex; slotIndex < endIndex; slotIndex++) {
-      if (slotOccupancy[slotIndex] >= totalSpots) {
+      if (slotOccupancy[slotIndex] >= totalSpots-1) {
         throw new NoAvailableSeatException();
       }
       slotOccupancy[slotIndex]++;
