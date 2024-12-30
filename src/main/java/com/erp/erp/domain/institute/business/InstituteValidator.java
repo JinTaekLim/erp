@@ -27,6 +27,6 @@ public class InstituteValidator {
 //  }
 
   public void isValidSeatNumber(Institute institute, int seatNumber) {
-    if (institute.getTotalSeat() < seatNumber) throw new InvalidSeatRangeException();
+    if (institute.getTotalSeat() < seatNumber || seatNumber == 0) throw new InvalidSeatRangeException();
   }
 }

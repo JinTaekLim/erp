@@ -40,16 +40,13 @@ public class ReservationService {
     Customer customer = customerReader.findByIdAndInstituteId(institute.getId(),
         req.getCustomerId());
 
-//    instituteValidator.validateCustomerBelongsToInstitute(institute, customer);
     instituteValidator.isValidSeatNumber(institute, req.getSeatNumber());
 
     LocalDateTime startTime = reservationValidator.validateReservationTime(req.getStartTime());
     LocalDateTime endTime = reservationValidator.validateReservationTime(req.getEndTime());
-
     reservationValidator.isTimeSlotAvailable(institute, startTime, endTime);
 
     Reservation reservation = req.toEntity(institute, customer);
-
     return reservationCreator.save(reservation);
   }
 
@@ -71,6 +68,7 @@ public class ReservationService {
     );
   }
 
+  // note. 전달받은 시간 값 검증, 예약 가능 좌석인지 검증 필요
   public Reservation updateReservation(UpdatedReservationDto.Request req) {
 
     Institute institute = authProvider.getCurrentInstitute();
@@ -83,8 +81,10 @@ public class ReservationService {
         req.getMemo(), req.getSeatNumber());
   }
 
+  // note. 변경된 좌석에 예약이 존재하는지 검증 필요
   public Reservation updatedSeatNumber(UpdatedSeatNumberDto.Request req) {
     Institute institute = authProvider.getCurrentInstitute();
+    instituteValidator.isValidSeatNumber(institute, req.getSeatNumber());
     Reservation reservation = reservationReader.findByIdAndInstituteId(req.getReservationId(),
         institute.getId());
 
@@ -92,9 +92,9 @@ public class ReservationService {
   }
 
 
-  public void deleteReservations(DeleteReservationDto.Request req) {
+  public void deleteReservations(Long reservationId) {
     Institute institute = authProvider.getCurrentInstitute();
-    Reservation reservation = reservationReader.findByIdAndInstituteId(req.getReservationId(),
+    Reservation reservation = reservationReader.findByIdAndInstituteId(reservationId,
         institute.getId());
     reservationDelete.delete(reservation);
   }

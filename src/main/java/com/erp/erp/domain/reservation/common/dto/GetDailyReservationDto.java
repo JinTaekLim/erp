@@ -2,17 +2,13 @@ package com.erp.erp.domain.reservation.common.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 public class GetDailyReservationDto {
   @Schema(name = "GetDailyReservationDto_Response" , description = "하루 예약 조회 반환")
   @Builder
   @Getter
-  @NoArgsConstructor
-  @AllArgsConstructor
   public static class Response {
 
     @Schema(description = "예약 번호")

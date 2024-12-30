@@ -10,4 +10,11 @@ public class InstituteGenerator extends EntityGenerator{
         .setNull("id")
         .sample();
   }
+
+  public static Institute get(int totalSeat) {
+    return fixtureMonkey.giveMeBuilder(Institute.class)
+        .setNull("id")
+        .set("totalSeat", totalSeat)
+        .sample();
+  }
 }

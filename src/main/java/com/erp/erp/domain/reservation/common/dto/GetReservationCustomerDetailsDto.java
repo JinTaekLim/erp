@@ -9,18 +9,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 public class GetReservationCustomerDetailsDto {
 
   @Schema(name = "GetCustomerDetailsDto_Response" , description = "회원 상세 정보 반환")
   @Getter
   @Builder
-  @NoArgsConstructor
-  @AllArgsConstructor
   public static class Response{
 
     @Schema(description = "예약 시작 시간")
@@ -38,7 +34,7 @@ public class GetReservationCustomerDetailsDto {
     @Schema(description = "이용권")
     private String planName;
     @Schema(description = "이용권 종료 날짜")
-    private LocalDate endDate;
+    private LocalDateTime endDate;
     @Schema(description = "남은 시간")
     private int remainingTime;
     @Schema(description = "사용 시간")
@@ -55,10 +51,9 @@ public class GetReservationCustomerDetailsDto {
       Plan plan = customer.getPlanPayment().getPlan();
 
 
-      LocalDateTime registrationAt = customer.getPlanPayment().getRegistrationAt();
+      LocalDateTime registrationAt = customer.getPlanPayment().getRegistrationAt().withNano(0);
       int availablePeriod = plan.getAvailablePeriod();
-      LocalDate endDate = registrationAt.plusDays(availablePeriod).toLocalDate();
-
+      LocalDateTime endDate = registrationAt.plusDays(availablePeriod);
 
       return Response.builder()
           .startTime(reservation.getStartTime())

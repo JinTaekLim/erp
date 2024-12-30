@@ -42,9 +42,7 @@ class ReservationRepositoryTest extends JpaTest {
 
   private Customer createCustomers(Institute institute) {
     Plan plan = createPlans();
-    PlanPayment planPayment = PlanPaymentGenerator.get(plan);
-    List<OtherPayment> otherPaymentList = OtherPaymentGenerator.getList(plan);
-    Customer customer = CustomerGenerator.get(institute, planPayment, otherPaymentList);
+    Customer customer = CustomerGenerator.get(plan, institute);
     return customerRepository.save(customer);
   }
 

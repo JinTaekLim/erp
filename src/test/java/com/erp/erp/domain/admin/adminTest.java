@@ -51,7 +51,7 @@ class adminTest extends IntegrationTest {
 
 
   @Test
-  @DisplayName("성공")
+  @DisplayName("addPlans 성공")
   void addPlans() {
     //given
     AddPlanDto.Request request = fixtureMonkey.giveMeBuilder(AddPlanDto.Request.class)

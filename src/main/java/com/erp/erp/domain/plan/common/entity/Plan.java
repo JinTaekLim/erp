@@ -2,6 +2,7 @@ package com.erp.erp.domain.plan.common.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,9 +29,11 @@ public class Plan {
   @NotNull
   private int price;
 
+  @PositiveOrZero
   private int availableTime;
 
   @NotNull
+  @PositiveOrZero
   private int availablePeriod;
 
   @Builder

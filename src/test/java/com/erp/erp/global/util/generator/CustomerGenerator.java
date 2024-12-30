@@ -37,20 +37,9 @@ public class CustomerGenerator extends EntityGenerator {
         .sample();
   }
 
-
-  public static Customer get(Institute institute, PlanPayment planPayment,
-      List<OtherPayment> otherPaymentList) {
-    return fixtureMonkey.giveMeBuilder(Customer.class)
-        .setNull("id")
-        .set("institute", institute)
-        .set("planPayment", planPayment)
-        .set("otherPayments", otherPaymentList)
-        .set("progress", null)
-        .sample();
-  }
-
-  public static Customer get(Institute institute, PlanPayment planPayment,
-      List<OtherPayment> otherPaymentList, CustomerStatus status, String name) {
+  public static Customer get(Plan plan, Institute institute, CustomerStatus status, String name) {
+    PlanPayment planPayment = PlanPaymentGenerator.get(plan);
+    List<OtherPayment> otherPaymentList = OtherPaymentGenerator.getList(plan);
     return fixtureMonkey.giveMeBuilder(Customer.class)
         .setNull("id")
         .set("institute", institute)
@@ -61,5 +50,4 @@ public class CustomerGenerator extends EntityGenerator {
         .set("name", name)
         .sample();
   }
-
 }

@@ -18,12 +18,7 @@ public class ReservationReader {
   private final ReservationRepository reservationRepository;
 
   public List<Reservation> findByInstitutesAndStartTimeOn(Institute institute, LocalDate date) {
-    List<Reservation> reservationList = reservationRepository.findByInstituteAndStartDate(
-        institute,
-        date
-    );
-    if (reservationList.isEmpty()) throw new NotFoundReservationException();
-    return reservationList;
+    return reservationRepository.findByInstituteAndStartDate(institute, date);
   }
 
   public List<Reservation> findByInstitutesAndReservationTimeBetween(

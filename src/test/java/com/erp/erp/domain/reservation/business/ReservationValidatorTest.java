@@ -25,6 +25,7 @@ class ReservationValidatorTest extends ServiceTest {
 
   @Mock
   private ReservationRepository reservationRepository;
+
   @Test
   void isTimeSlotAvailable_성공() {
     // given
@@ -39,7 +40,7 @@ class ReservationValidatorTest extends ServiceTest {
 
     List<Reservation> reservationList = new ArrayList<>();
 
-    for(int i=0; i< randomSpots ; i++) {
+    for(int i=0; i< randomSpots-1 ; i++) {
       Reservation reservation = Reservation.builder()
           .startTime(startTime)
           .endTime(endTime)

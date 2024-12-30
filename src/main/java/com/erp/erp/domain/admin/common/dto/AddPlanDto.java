@@ -5,6 +5,7 @@ import com.erp.erp.domain.plan.common.entity.PlanType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -33,10 +34,12 @@ public class AddPlanDto {
 
     @Schema(description = "이용권 시간", example = "5")
     @NotNull
+    @PositiveOrZero
     private int availableTime;
 
     @Schema(description = "이용권 기간(일)", example = "30")
     @NotNull
+    @PositiveOrZero
     private int availablePeriod;
 
   }

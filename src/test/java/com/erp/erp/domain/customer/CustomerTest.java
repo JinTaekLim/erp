@@ -36,16 +36,13 @@ import com.erp.erp.global.response.ApiResult;
 import com.erp.erp.global.util.generator.AccountGenerator;
 import com.erp.erp.global.util.generator.CustomerGenerator;
 import com.erp.erp.global.util.generator.InstituteGenerator;
-import com.erp.erp.global.util.generator.OtherPaymentGenerator;
 import com.erp.erp.global.util.generator.PlanGenerator;
-import com.erp.erp.global.util.generator.PlanPaymentGenerator;
 import com.erp.erp.global.util.randomValue.Language;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -55,7 +52,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -89,7 +85,7 @@ class CustomerTest extends IntegrationTest {
   private PhotoUtil photoUtil;
 
 
-  private Account createAccounts(Institute institute) {
+  private Account createAccount(Institute institute) {
     return accountRepository.save(AccountGenerator.get(institute));
   }
 
@@ -123,9 +119,7 @@ class CustomerTest extends IntegrationTest {
   }
 
   private Customer createCustomer(Institute institute, Plan plan, CustomerStatus status, String name) {
-    PlanPayment planPayment = PlanPaymentGenerator.get(plan);
-    List<OtherPayment> otherPaymentList = OtherPaymentGenerator.getList(plan);
-    Customer customer = CustomerGenerator.get(institute, planPayment, otherPaymentList, status, name);
+    Customer customer = CustomerGenerator.get(plan, institute, status, name);
     customerRepository.save(customer);
     return customer;
   }
@@ -336,7 +330,7 @@ class CustomerTest extends IntegrationTest {
   void updateCustomer_fail_3() {
     // given
     Institute institute = createInstitutes();
-    Account account = createAccounts(institute);
+    Account account = createAccount(institute);
     TokenDto tokenDto = tokenManager.createToken(account);
 
     Customer customer = createCustomer();
@@ -507,7 +501,7 @@ class CustomerTest extends IntegrationTest {
   void updateStatus_fail_4() {
     //given
     Institute institute = createInstitutes();
-    Account account = createAccounts(institute);
+    Account account = createAccount(institute);
     TokenDto tokenDto = tokenManager.createToken(account);
 
     Customer customer = createCustomer();
@@ -736,7 +730,7 @@ class CustomerTest extends IntegrationTest {
   void searchCustomerName_2() {
     //given
     Institute institute = createInstitutes();
-    Account account = createAccounts(institute);
+    Account account = createAccount(institute);
     TokenDto tokenDto = tokenManager.createToken(account);
     Customer customer = createCustomer();
 
@@ -769,7 +763,7 @@ class CustomerTest extends IntegrationTest {
     // given
     Plan plan = createPlans();
     Institute institute = createInstitutes();
-    Account account = createAccounts(institute);
+    Account account = createAccount(institute);
     Customer customer = createCustomer(plan, institute);
     TokenDto tokenDto = tokenManager.createToken(account);
 
@@ -839,7 +833,7 @@ class CustomerTest extends IntegrationTest {
   void getCustomerDetail_fail_1() {
     // given
     Institute institute = createInstitutes();
-    Account account = createAccounts(institute);
+    Account account = createAccount(institute);
     TokenDto tokenDto = tokenManager.createToken(account);
 
     String customerId = String.valueOf(RandomValue.getRandomLong(999));
@@ -878,7 +872,7 @@ class CustomerTest extends IntegrationTest {
   void getCustomerDetail_fail_2() {
     // given
     Institute institute = createInstitutes();
-    Account account = createAccounts(institute);
+    Account account = createAccount(institute);
     TokenDto tokenDto = tokenManager.createToken(account);
 
     Customer customer = createCustomer();
