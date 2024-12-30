@@ -58,8 +58,6 @@ public class CustomerService {
     return AddCustomerDto.Response.fromEntity(customer);
   }
 
-
-  // note. 본인 매장의 고객 정보만 변경할 수 있도록 별도의 처리 필요
   public CustomerStatus updateStatus(UpdateStatusDto.Request req) {
     Institute institute = authProvider.getCurrentInstitute();
     Long customersId = req.getCustomerId();
