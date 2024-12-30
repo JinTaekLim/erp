@@ -103,25 +103,25 @@ class CustomerTest extends IntegrationTest {
   }
 
   private Customer getCustomers(Institute institute, PlanPayment planPayment, List<OtherPayment> otherPaymentList) {
-//    return Customer.builder()
-//        .institute(institute)
-//        .name(RandomValue.string(1,10).setNullable(false).get())
-//        .gender(RandomValue.getRandomEnum(Gender.class))
-//        .phone(RandomValue.string(1,10).setNullable(false).get())
-//        .address(RandomValue.string(1,10).setNullable(false).get())
-//        .photoUrl(RandomValue.string(1,10).setNullable(false).get())
-//        .memo(RandomValue.string(1,10).setNullable(false).get())
-//        .birthDate(RandomValue.getRandomLocalDate())
-//        .planPayment(planPayment)
-//        .otherPayments(otherPaymentList)
-//        .build();
-    return fixtureMonkey.giveMeBuilder(Customer.class)
-            .setNull("id")
-            .set("institute", institute)
-            .set("planPayment", planPayment)
-            .set("otherPayments", otherPaymentList)
-            .set("progress", null)
-            .sample();
+    return Customer.builder()
+        .institute(institute)
+        .name(RandomValue.string(1,10).setNullable(false).get())
+        .gender(RandomValue.getRandomEnum(Gender.class))
+        .phone(RandomValue.string(1,10).setNullable(false).get())
+        .address(RandomValue.string(1,10).setNullable(false).get())
+        .photoUrl(RandomValue.string(1,10).setNullable(false).get())
+        .memo(RandomValue.string(1,10).setNullable(false).get())
+        .birthDate(RandomValue.getRandomLocalDate())
+        .planPayment(planPayment)
+        .otherPayments(otherPaymentList)
+        .build();
+//    return fixtureMonkey.giveMeBuilder(Customer.class)
+//            .setNull("id")
+//            .set("institute", institute)
+//            .set("planPayment", planPayment)
+//            .set("otherPayments", otherPaymentList)
+//            .set("progress", null)
+//            .sample();
   }
 
   private Customer createCustomers(Plan plan, Institute institute) {
