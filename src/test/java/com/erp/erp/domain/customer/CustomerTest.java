@@ -430,6 +430,7 @@ class CustomerTest extends IntegrationTest {
 
     PlanPaymentResponse planPaymentResponse = apiResponse.getData().getPlanPayment();
     PlanPayment planPayment = customer.getPlanPayment();
+
     int planPrice = planPayment.getPlan().getPrice();
     int discountPrice = (int) (planPrice * planPayment.getDiscountRate());
     int paymentTotal = planPrice - discountPrice;
@@ -440,6 +441,8 @@ class CustomerTest extends IntegrationTest {
     assertThat(planPaymentResponse.getDiscountPrice()).isEqualTo(discountPrice);
     assertThat(planPaymentResponse.getPaymentsMethod()).isEqualTo(planPayment.getPaymentsMethod());
     assertThat(planPaymentResponse.getRegistrationAt()).isEqualTo(planPayment.getRegistrationAt());
+    System.out.println("response 시간 : " + planPaymentResponse.getRegistrationAt());
+    System.out.println("객체 시간 : "  + planPayment.getRegistrationAt());
     assertThat(planPaymentResponse.getPaymentTotal()).isEqualTo(paymentTotal);
     assertThat(planPaymentResponse.isStatus()).isEqualTo(planPayment.isStatus());
 
