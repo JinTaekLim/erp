@@ -45,6 +45,7 @@ import com.erp.erp.global.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -395,15 +396,15 @@ class CustomerTest extends IntegrationTest {
         String.class
     );
 
-    ApiResult<?> apiResponse = gson.fromJson(
+    ApiResult<CustomerStatus> apiResponse = gson.fromJson(
         responseEntity.getBody(),
-        ApiResult.class
+        new TypeToken<ApiResult<CustomerStatus>>(){}
     );
 
     //then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertNotNull(apiResponse);
-    assertThat(customer.getStatus()).isNotEqualTo(status);
+    assertThat(apiResponse.getData()).isEqualTo(status);
   }
 
   @Test
