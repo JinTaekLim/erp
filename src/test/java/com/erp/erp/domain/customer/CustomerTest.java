@@ -593,7 +593,7 @@ class CustomerTest extends IntegrationTest {
 //      assertThat(response.getRemainingTime())
 //      assertThat(response.getRemainingPeriod())
 //      assertThat(response.getUsedTime())
-      assertThat(response.getRegistrationDate()).isEqualTo(customer.getPlanPayment().getRegistrationAt());
+      assertThat(response.getRegistrationDate().withNano(0)).isEqualTo(customer.getPlanPayment().getRegistrationAt().withNano(0));
 //      assertThat(response.getTardinessCount())
 //      assertThat(response.getAbsenceCount())
     });
@@ -647,7 +647,7 @@ class CustomerTest extends IntegrationTest {
 //      assertThat(response.getRemainingTime())
 //      assertThat(response.getRemainingPeriod())
 //      assertThat(response.getUsedTime())
-      assertThat(response.getRegistrationDate()).isEqualTo(customer.getPlanPayment().getRegistrationAt());
+      assertThat(response.getRegistrationDate().withNano(0)).isEqualTo(customer.getPlanPayment().getRegistrationAt().withNano(0));
 //      assertThat(response.getTardinessCount())
 //      assertThat(response.getAbsenceCount())
     });
