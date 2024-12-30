@@ -588,7 +588,7 @@ class CustomerTest extends IntegrationTest {
 //      assertThat(response.getRemainingTime())
 //      assertThat(response.getRemainingPeriod())
 //      assertThat(response.getUsedTime())
-      assertThat(response.getRegistrationDate().withNano(0)).isEqualTo(customer.getPlanPayment().getRegistrationAt().withNano(0));
+      assertThat(response.getRegistrationDate()).isEqualTo(customer.getPlanPayment().getRegistrationAt());
 //      assertThat(response.getTardinessCount())
 //      assertThat(response.getAbsenceCount())
     });
@@ -642,7 +642,7 @@ class CustomerTest extends IntegrationTest {
 //      assertThat(response.getRemainingTime())
 //      assertThat(response.getRemainingPeriod())
 //      assertThat(response.getUsedTime())
-      assertThat(response.getRegistrationDate().withNano(0)).isEqualTo(customer.getPlanPayment().getRegistrationAt().withNano(0));
+      assertThat(response.getRegistrationDate()).isEqualTo(customer.getPlanPayment().getRegistrationAt());
 //      assertThat(response.getTardinessCount())
 //      assertThat(response.getAbsenceCount())
     });
@@ -811,7 +811,7 @@ class CustomerTest extends IntegrationTest {
     assertThat(planPaymentResponse.getDiscountRate()).isEqualTo(planPayment.getDiscountRate());
     assertThat(planPaymentResponse.getDiscountPrice()).isEqualTo(discountPrice);
     assertThat(planPaymentResponse.getPaymentsMethod()).isEqualTo(planPayment.getPaymentsMethod());
-    assertThat(planPaymentResponse.getRegistrationAt().withNano(0)).isEqualTo(planPayment.getRegistrationAt().withNano(0));
+    assertThat(planPaymentResponse.getRegistrationAt()).isEqualTo(planPayment.getRegistrationAt());
     assertThat(planPaymentResponse.getPaymentTotal()).isEqualTo(paymentTotal);
     assertThat(planPaymentResponse.isStatus()).isEqualTo(planPayment.isStatus());
 
@@ -819,7 +819,7 @@ class CustomerTest extends IntegrationTest {
     for (int i=0; i<apiResponse.getData().getOtherPayment().size(); i++) {
       GetCustomerDetailDto.OtherPaymentResponse response = apiResponse.getData().getOtherPayment().get(i);
       OtherPayment otherPayment = customer.getOtherPayments().get(i);
-      assertThat(response.getRegistrationAt().withNano(0)).isEqualTo(otherPayment.getRegistrationAt().withNano(0));
+      assertThat(response.getRegistrationAt()).isEqualTo(otherPayment.getRegistrationAt());
       assertThat(response.getContent()).isEqualTo(otherPayment.getContent());
       assertThat(response.getPrice()).isEqualTo(otherPayment.getPrice());
       assertThat(response.isStatus()).isEqualTo(otherPayment.isStatus());
