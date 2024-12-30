@@ -37,6 +37,7 @@ import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.util.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
 import java.util.Arrays;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.IntStream;
 
+@Slf4j
 class CustomerTest extends IntegrationTest {
 
 
@@ -455,7 +457,9 @@ class CustomerTest extends IntegrationTest {
     assertThat(planPaymentResponse.getPaymentsMethod()).isEqualTo(planPayment.getPaymentsMethod());
     assertThat(planPaymentResponse.getRegistrationAt()).isEqualTo(planPayment.getRegistrationAt());
     System.out.println("response 시간 : " + planPaymentResponse.getRegistrationAt());
+    log.info("response 시간 : " + planPaymentResponse.getRegistrationAt());
     System.out.println("객체 시간 : "  + planPayment.getRegistrationAt());
+    log.info("객체 시간 : "  + planPayment.getRegistrationAt());
     assertThat(planPaymentResponse.getPaymentTotal()).isEqualTo(paymentTotal);
     assertThat(planPaymentResponse.isStatus()).isEqualTo(planPayment.isStatus());
 
