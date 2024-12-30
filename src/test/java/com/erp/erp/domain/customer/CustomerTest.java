@@ -3,8 +3,6 @@ package com.erp.erp.domain.customer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 import com.erp.erp.domain.account.business.PhotoUtil;
 import com.erp.erp.domain.account.common.entity.Account;
@@ -135,7 +133,7 @@ class CustomerTest extends IntegrationTest {
 
   // note. 이후 이미지 처리 필요
   @Test
-  @DisplayName("성공")
+  @DisplayName("addCustomer 성공")
   void addCustomer() {
     //given
     Plan plan = createPlans();
@@ -170,7 +168,7 @@ class CustomerTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("필수 값 미전달")
+  @DisplayName("addCustomer 필수 값 미전달")
   void addCustomer_fail_1() {
     //given
     AddCustomerDto.Request request = AddCustomerDto.Request.builder().build();
@@ -195,7 +193,7 @@ class CustomerTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("존재하지 않는 이용권 전달")
+  @DisplayName("addCustomer 존재하지 않는 이용권 전달")
   void addCustomer_fail_2() {
     //given
     AddCustomerDto.Request request = fixtureMonkey.giveMeOne(AddCustomerDto.Request.class);
@@ -225,7 +223,7 @@ class CustomerTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("성공")
+  @DisplayName("updateCustomer 성공")
   void updateCustomer() {
     // given
     Customer customer = createCustomer();
@@ -278,7 +276,7 @@ class CustomerTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("필수 값 미입력")
+  @DisplayName("updateCustomer 필수 값 미입력")
   void updateCustomer_fail_1() {
     // given
     UpdateCustomerDto.Request request = UpdateCustomerDto.Request.builder().build();
@@ -303,7 +301,7 @@ class CustomerTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("존재하지 않는 Customer 입력")
+  @DisplayName("updateCustomer 존재하지 않는 Customer 입력")
   void updateCustomer_fail_2() {
     // given
     UpdateCustomerDto.Request request = fixtureMonkey.giveMeOne(UpdateCustomerDto.Request.class);
@@ -333,7 +331,7 @@ class CustomerTest extends IntegrationTest {
 
 
   @Test
-  @DisplayName("다른 매장 Customer 입력")
+  @DisplayName("updateCustomer 다른 매장 Customer 입력")
   void updateCustomer_fail_3() {
     // given
     Institute institute = createInstitutes();
@@ -373,7 +371,7 @@ class CustomerTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("성공")
+  @DisplayName("updateStatus 성공")
   void updateStatus() {
     //given
     Plan plan = createPlans();
@@ -409,7 +407,7 @@ class CustomerTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("status 미전달")
+  @DisplayName("updateStatus status 미전달")
   void updateStatus_fail_1() {
     //given
     Plan plan = createPlans();
@@ -440,7 +438,7 @@ class CustomerTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("customerId 미전달")
+  @DisplayName("updateStatus customerId 미전달")
   void updateStatus_fail_2() {
     //given
     CustomerStatus status = RandomValue.getRandomEnum(CustomerStatus.class);
@@ -470,7 +468,7 @@ class CustomerTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("잘못된 customerId 전달")
+  @DisplayName("updateStatus 잘못된 customerId 전달")
   void updateStatus_fail_3() {
     //given
     CustomerStatus status = RandomValue.getRandomEnum(CustomerStatus.class);
@@ -504,7 +502,7 @@ class CustomerTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("다른 매장 customerId 전달")
+  @DisplayName("updateStatus 다른 매장 customerId 전달")
   void updateStatus_fail_4() {
     //given
     Institute institute = createInstitutes();
@@ -548,7 +546,7 @@ class CustomerTest extends IntegrationTest {
 
 
   @Test
-  @DisplayName("성공")
+  @DisplayName("getCurrentCustomers 성공")
   void getCurrentCustomers() {
     //given
     Institute institutes = createInstitutes();
@@ -602,7 +600,7 @@ class CustomerTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("성공")
+  @DisplayName("getExpiredCustomers 성공")
   void getExpiredCustomers() {
     //given
     Institute institutes = createInstitutes();
@@ -656,7 +654,7 @@ class CustomerTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("성공")
+  @DisplayName("getAvailableCustomerNames 성공")
   void getAvailableCustomerNames() {
     // given
     Institute institutes = createInstitutes();
@@ -700,7 +698,7 @@ class CustomerTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("성공")
+  @DisplayName("searchCustomerName 성공")
   void searchCustomerName() {
     //given
     Plan plan = createPlans();
@@ -733,7 +731,7 @@ class CustomerTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("다른 매장 회원 검색")
+  @DisplayName("searchCustomerName 다른 매장 회원 검색")
   void searchCustomerName_2() {
     //given
     Institute institute = createInstitutes();
@@ -765,7 +763,7 @@ class CustomerTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("성공")
+  @DisplayName("getCustomerDetail 성공")
   void getCustomerDetail() {
     // given
     Plan plan = createPlans();
@@ -836,7 +834,7 @@ class CustomerTest extends IntegrationTest {
 
 
   @Test
-  @DisplayName("잘못된 customerId 전달")
+  @DisplayName("getCustomerDetail 잘못된 customerId 전달")
   void getCustomerDetail_fail_1() {
     // given
     Institute institute = createInstitutes();
@@ -875,7 +873,7 @@ class CustomerTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("다른 매장 회원 전달")
+  @DisplayName("getCustomerDetail 다른 매장 회원 전달")
   void getCustomerDetail_fail_2() {
     // given
     Institute institute = createInstitutes();

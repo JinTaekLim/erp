@@ -50,7 +50,7 @@ public class AccountTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("성공")
+  @DisplayName("login 성공")
   void login() {
     //given
     Institute institute = createInstitutes();
@@ -86,7 +86,7 @@ public class AccountTest extends IntegrationTest {
 
 
   @Test
-  @DisplayName("필수값 미전달")
+  @DisplayName("login 필수값 미전달")
   void login_fail_1() {
     //given
     AccountLoginDto.Request request = AccountLoginDto.Request.builder().build();
@@ -113,7 +113,7 @@ public class AccountTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("존재하지 않거나 잘못된 아이디 혹은 비밀번호")
+  @DisplayName("login 존재하지 않거나 잘못된 아이디 혹은 비밀번호")
   void login_fail_2() {
     //given
     AccountLoginDto.Request request = fixtureMonkey.giveMeOne(AccountLoginDto.Request.class);
@@ -133,7 +133,7 @@ public class AccountTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("성공")
+  @DisplayName("reissueToken 성공")
   void reissueToken() {
     //given
     Institute institute = createInstitutes();
@@ -166,7 +166,7 @@ public class AccountTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("잘못된 accessToken")
+  @DisplayName("reissueToken 잘못된 accessToken")
   void reissueToken_fail_1() {
     //given
     String accessToken = RandomValue.string(1,5).setNullable(false).get();

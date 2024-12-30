@@ -61,7 +61,7 @@ public class InstituteTest extends IntegrationTest {
 
 
   @Test
-  @DisplayName("성공")
+  @DisplayName("info 성공")
   void info() {
     //given
     Institute institute = createInstitute();
@@ -99,7 +99,7 @@ public class InstituteTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("성공")
+  @DisplayName("updateTotalSeat 성공")
   void updateTotalSeat() {
     //given
     Institute institute = createInstitute();
@@ -135,7 +135,7 @@ public class InstituteTest extends IntegrationTest {
 
 
   @Test
-  @DisplayName("잘못된 Num 값")
+  @DisplayName("updateTotalSeat 잘못된 Num 값")
   void updateTotalSeat_fail_1() {
     Institute institute = createInstitute();
     Account account = createAccount(institute);
@@ -169,14 +169,12 @@ public class InstituteTest extends IntegrationTest {
     // then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     assertNull(apiResponse.getData());
-
-    // 이후 Dto 내부 오류 메세지 검증 코드 필요
   }
 
 
 
   @Test
-  @DisplayName("필수 값 미전달")
+  @DisplayName("updateTotalSeat 필수 값 미전달")
   void updateTotalSeat_fail_2() {
     //given
     Institute institute = createInstitute();
@@ -207,8 +205,6 @@ public class InstituteTest extends IntegrationTest {
     // then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     assertNull(apiResponse.getData());
-
-    // 이후 Dto 내부 오류 메세지 검증 코드 필요
   }
 
 }
