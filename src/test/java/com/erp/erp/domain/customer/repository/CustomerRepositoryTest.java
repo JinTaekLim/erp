@@ -16,7 +16,6 @@ import com.erp.erp.global.util.randomValue.RandomValue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -80,23 +79,19 @@ class CustomerRepositoryTest extends JpaTest {
   void updateStatusById() {
     // given
     Customer customer = createCustomers();
-    long customersId = customer.getId();
     CustomerStatus status = RandomValue.getRandomEnum(CustomerStatus.class);
 
     // when
-    customerRepository.updateStatusById(customersId, status);
-
-    Customer testCustomer = customerRepository.findById(customersId)
+    customerRepository.updateStatusById(customer.getId() , status);
+    entityManager.clear();
+    Customer testCustomer = customerRepository.findById(customer.getId())
         .orElseThrow(AssertionError::new);
 
-    CustomerStatus testStatus = testCustomer.getStatus();
-
     // then
-    assertThat(status).isNotEqualTo(testStatus);
+    assertThat(testCustomer.getStatus()).isEqualTo(status);
   }
 
   @Test
-  @DisplayName("성공")
   void findByInstituteIdAndNameStartingWithAndStatusIn() {
     // given
     Institute institute = createInstitutes();
