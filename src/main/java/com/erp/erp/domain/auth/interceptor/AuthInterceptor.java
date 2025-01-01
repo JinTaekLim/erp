@@ -87,7 +87,7 @@ public class AuthInterceptor implements HandlerInterceptor {
     Account account = accountReader.findOptionalById(1L)
         .orElseGet(() -> {
           Account newAccount = Account.builder()
-              .accountId("test").password("test").institute(institute).build();
+              .identifier("test").password("test").institute(institute).build();
           return accountCreator.save(newAccount);
         });
     TokenDto tokenDto = tokenManager.createToken(account);

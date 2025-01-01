@@ -1,7 +1,5 @@
 package com.erp.erp.domain.admin.common.dto;
 
-import com.erp.erp.domain.account.common.entity.Account;
-import com.erp.erp.domain.institute.common.entity.Institute;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -21,16 +19,11 @@ public class AddAccountDto {
 
     @Schema(description = "아이디")
     @NotNull
-    private String accountId;
+    private String identifier;
 
     @Schema(description = "비밀번호")
     @NotNull
     private String password;
-
-    public Account toEntityWithInstitute(Institute institute) {
-      return Account.builder().institute(institute).accountId(accountId).password(password).build();
-    }
-
   }
 
   @Schema(name = "AddAccountDto_Response" , description = "계정 추가 반환")
@@ -44,14 +37,7 @@ public class AddAccountDto {
 
     @Schema(description = "아이디")
     @NotNull
-    private String account;
-
-    public static AddAccountDto.Response fromEntity(Account account) {
-      return Response.builder()
-          .instituteId(account.getInstitute().getId())
-          .account(account.getAccountId())
-          .build();
-    }
+    private String identifier;
   }
 
 
