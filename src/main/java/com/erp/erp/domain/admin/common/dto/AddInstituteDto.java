@@ -1,6 +1,5 @@
 package com.erp.erp.domain.admin.common.dto;
 
-import com.erp.erp.domain.institute.common.entity.Institute;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
@@ -28,15 +27,6 @@ public class AddInstituteDto {
 
     @Schema(description = "영업 종료 시간", example = "22:00:00.00")
     private LocalTime closeTime;
-
-    public Institute toEntity() {
-      return Institute.builder()
-          .name(name)
-          .totalSeat(totalSeat)
-          .openTime(openTime)
-          .closeTime(closeTime)
-          .build();
-    }
   }
 
   @Schema(name = "AddInstituteDto_Response" , description = "매장 추가 반환")
@@ -55,16 +45,5 @@ public class AddInstituteDto {
 
     @Schema(description = "영업 종료 시간")
     private LocalTime closeTime;
-
-    public static AddInstituteDto.Response fromEntity(Institute institute) {
-      return Response.builder()
-          .name(institute.getName())
-          .totalSeat(institute.getTotalSeat())
-          .openTime(institute.getOpenTime())
-          .closeTime(institute.getCloseTime())
-          .build();
-    }
   }
-
-
 }

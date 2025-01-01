@@ -1,13 +1,10 @@
 package com.erp.erp.domain.admin.controller;
 
 
-import com.erp.erp.domain.account.service.AccountService;
 import com.erp.erp.domain.admin.common.dto.AddAccountDto;
 import com.erp.erp.domain.admin.common.dto.AddInstituteDto;
 import com.erp.erp.domain.admin.common.dto.AddPlanDto;
-import com.erp.erp.domain.institute.service.InstituteService;
-import com.erp.erp.domain.plan.common.entity.Plan;
-import com.erp.erp.domain.plan.service.PlanService;
+import com.erp.erp.domain.admin.service.AdminService;
 import com.erp.erp.global.response.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,27 +21,16 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "admin", description = "관리자용")
 @RequiredArgsConstructor
 @Slf4j
-public class adminController {
+public class AdminController {
 
-  private final PlanService planService;
-  private final InstituteService instituteService;
-  private final AccountService accountService;
-
+  private final AdminService adminService;
 
   @Operation(summary = "이용권 등록")
   @PostMapping("/addPlan")
   public ApiResult<AddPlanDto.Response> addPlans(
       @RequestBody @Valid AddPlanDto.Request request
   ) {
-    Plan plan = planService.addPlans(request);
-
-    AddPlanDto.Response response = AddPlanDto.Response.builder()
-        .planType(plan.getPlanType())
-        .licenseType(plan.getLicenseType())
-        .name(plan.getName())
-        .price(plan.getPrice())
-        .build();
-
+    AddPlanDto.Response response = adminService.addPlans(request);
     return ApiResult.success(response);
   }
 
@@ -53,7 +39,7 @@ public class adminController {
   public ApiResult<AddInstituteDto.Response> addInstitute(
       @RequestBody @Valid AddInstituteDto.Request req
   ) {
-    AddInstituteDto.Response response = instituteService.addInstitute(req);
+    AddInstituteDto.Response response = adminService.addInstitute(req);
     return ApiResult.success(response);
   }
 
@@ -62,8 +48,7 @@ public class adminController {
   public ApiResult<AddAccountDto.Response> addAccount(
       @RequestBody @Valid AddAccountDto.Request req
   ) {
-    AddAccountDto.Response response = accountService.addAccount(req);
+    AddAccountDto.Response response = adminService.addAccount(req);
     return ApiResult.success(response);
   }
-
 }
