@@ -12,6 +12,7 @@ import com.erp.erp.domain.reservation.business.ReservationReader;
 import com.erp.erp.domain.reservation.business.ReservationUpdater;
 import com.erp.erp.domain.reservation.common.dto.*;
 import com.erp.erp.domain.reservation.common.entity.Reservation;
+import com.erp.erp.domain.reservation.common.mapper.ReservationMapper;
 import com.erp.erp.global.util.TimeUtil;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,9 +34,10 @@ public class ReservationService {
   private final ReservationDelete reservationDelete;
   private final ReservationValidator reservationValidator;
   private final CustomerReader customerReader;
+  private final ReservationMapper reservationMapper;
 
 
-  public Reservation addReservations(AddReservationDto.Request req) {
+  public AddReservationDto.Response addReservations(AddReservationDto.Request req) {
     Institute institute = authProvider.getCurrentInstitute();
     Customer customer = customerReader.findByIdAndInstituteId(institute.getId(),
         req.getCustomerId());
@@ -46,49 +48,48 @@ public class ReservationService {
     LocalDateTime endTime = reservationValidator.validateReservationTime(req.getEndTime());
     reservationValidator.isTimeSlotAvailable(institute, startTime, endTime);
 
-    Reservation reservation = req.toEntity(institute, customer);
-    return reservationCreator.save(reservation);
+    Reservation reservation = reservationMapper.dtoToEntity(req, institute, customer);
+    reservationCreator.save(reservation);
+    return reservationMapper.entityToAddReservaionResponse(reservation);
   }
 
-  public List<Reservation> getDailyReservations(LocalDate date) {
+  public List<GetDailyReservationDto.Response> getDailyReservations(LocalDate date) {
     Institute institute = authProvider.getCurrentInstitute();
-    return reservationReader.findByInstitutesAndStartTimeOn(institute, date);
+    List<Reservation> reservations = reservationReader.findByInstitutesAndStartTimeOn(institute, date);
+    return reservationMapper.entityToGetDailyReservationDtoResponse(reservations);
   }
 
-  public List<Reservation> getReservationByTime(LocalDateTime time) {
+  public List<GetDailyReservationDto.Response> getReservationByTime(LocalDateTime time) {
     Institute institute = authProvider.getCurrentInstitute();
 
     LocalDateTime startTime = TimeUtil.roundToNearestHalfHour(time);
     LocalDateTime endTime = startTime.plusMinutes(30);
 
-    return reservationReader.findByInstitutesAndReservationTimeBetween(
-        institute,
-        startTime,
-        endTime
-    );
+    List<Reservation> reservations = reservationReader.findByInstitutesAndReservationTimeBetween(
+        institute, startTime, endTime);
+    return reservationMapper.entityToGetDailyReservationDtoResponse(reservations);
   }
 
   // note. 전달받은 시간 값 검증, 예약 가능 좌석인지 검증 필요
-  public Reservation updateReservation(UpdatedReservationDto.Request req) {
+  public UpdatedReservationDto.Response updateReservation(UpdatedReservationDto.Request req) {
 
     Institute institute = authProvider.getCurrentInstitute();
     Reservation reservation = reservationReader.findByIdAndInstituteId(req.getReservationId(),
         institute.getId());
 
     instituteValidator.isValidSeatNumber(institute, req.getSeatNumber());
-
-    return reservationUpdater.updatedReservations(reservation, req.getStartTime(), req.getEndTime(),
-        req.getMemo(), req.getSeatNumber());
+    reservationUpdater.updatedReservations(reservation, req);
+    return reservationMapper.entityToUpdatedReservationDtoResponse(reservation);
   }
 
   // note. 변경된 좌석에 예약이 존재하는지 검증 필요
-  public Reservation updatedSeatNumber(UpdatedSeatNumberDto.Request req) {
+  public UpdatedSeatNumberDto.Response updatedSeatNumber(UpdatedSeatNumberDto.Request req) {
     Institute institute = authProvider.getCurrentInstitute();
     instituteValidator.isValidSeatNumber(institute, req.getSeatNumber());
     Reservation reservation = reservationReader.findByIdAndInstituteId(req.getReservationId(),
         institute.getId());
-
-    return reservationUpdater.updateSeatNumber(reservation, req.getSeatNumber());
+    reservationUpdater.updateSeatNumber(reservation, req.getSeatNumber());
+    return reservationMapper.entityToUpdatedSeatNumberDtoResponse(reservation);
   }
 
 
@@ -104,7 +105,7 @@ public class ReservationService {
     Institute institute = authProvider.getCurrentInstitute();
     Reservation reservation = reservationReader.findByIdAndInstituteId(reservationsId,
         institute.getId());
-    return GetReservationCustomerDetailsDto.Response.fromEntity(reservation);
+    return reservationMapper.entityToGetReservationCustomerDetailsDtoResponse(reservation);
   }
 
 

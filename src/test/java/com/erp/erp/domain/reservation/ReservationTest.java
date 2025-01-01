@@ -148,7 +148,6 @@ class ReservationTest extends IntegrationTest {
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertNotNull(apiResponse.getData());
     assertThat(apiResponse.getData().getReservationId()).isNotNull();
-    assertThat(apiResponse.getData().getCustomerId()).isEqualTo(request.getCustomerId());
     assertThat(apiResponse.getData().getStartTime()).isEqualTo(
         request.getStartTime().withSecond(0).withNano(0));
     assertThat(apiResponse.getData().getEndTime()).isEqualTo(

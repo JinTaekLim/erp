@@ -1,6 +1,5 @@
 package com.erp.erp.domain.reservation.common.dto;
 
-import com.erp.erp.domain.reservation.common.entity.Reservation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -48,16 +47,6 @@ public class UpdatedReservationDto {
     private String memo;
     @Schema(description = "좌석 번호")
     private int seatNumber;
-
-    public static Response fromEntity(Reservation reservation) {
-      return Response.builder()
-          .reservationId(reservation.getId())
-          .startTime(reservation.getStartTime())
-          .endTime(reservation.getEndTime())
-          .memo(reservation.getMemo())
-          .seatNumber(reservation.getSeatNumber())
-          .build();
-    }
   }
 
 }
