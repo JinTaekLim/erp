@@ -38,7 +38,7 @@ public class AdminService {
   public AddPlanDto.Response addPlans(AddPlanDto.Request req) {
     Plan plan = planMapper.dtoToEntity(req);
     planCreator.save(plan);
-    return planMapper.entityToDto(plan);
+    return planMapper.entityToAddPlanResponse(plan);
   }
 
   public AddInstituteDto.Response addInstitute(AddInstituteDto.Request req) {

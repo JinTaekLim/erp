@@ -3,7 +3,6 @@ package com.erp.erp.domain.plan.controller;
 
 import com.erp.erp.domain.plan.common.dto.GetPlanDto;
 import com.erp.erp.domain.plan.common.entity.LicenseType;
-import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.service.PlanService;
 import com.erp.erp.global.response.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,19 +27,8 @@ public class PlanController {
   @Operation(summary = "이용권 조회")
   @GetMapping("/getPlans/{licenseType}")
   public ApiResult<List<GetPlanDto.Response>> getPlans(@PathVariable("licenseType") LicenseType licenseType) {
-    List<Plan> planList = planService.getPlans(licenseType);
-
-    List<GetPlanDto.Response> responses = planList.stream()
-        .map(plan -> GetPlanDto.Response.builder()
-            .id(plan.getId())
-            .planType(plan.getPlanType())
-            .licenseType(plan.getLicenseType())
-            .name(plan.getName())
-            .price(plan.getPrice())
-            .build()
-        ).toList();
-
-    return ApiResult.success(responses);
+    List<GetPlanDto.Response> response = planService.getPlans(licenseType);
+    return ApiResult.success(response);
   }
 
 }
