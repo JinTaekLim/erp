@@ -1,6 +1,5 @@
 package com.erp.erp.domain.customer.common.dto;
 
-import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.Gender;
 import com.erp.erp.domain.plan.common.entity.LicenseType;
 import com.erp.erp.domain.plan.common.entity.PlanType;
@@ -42,31 +41,5 @@ public class GetCustomerDto {
     private int tardinessCount;
     @Schema(description = "결석 횟수")
     private int absenceCount;
-
-    public static Response fromEntity(Customer customer) {
-
-      LocalDateTime registrationDate = customer.getPlanPayment().getRegistrationAt();
-
-      double usedTime = 0;
-      double remainingTime = 0;
-      int remainingPeriod = 0;
-
-
-      return Response.builder()
-          .photoUrl(customer.getPhotoUrl())
-          .name(customer.getName())
-          .gender(customer.getGender())
-          .phone(customer.getPhone())
-          .licenseType(customer.getPlanPayment().getPlan().getLicenseType())
-          .planName(customer.getPlanPayment().getPlan().getName())
-          .planType(customer.getPlanPayment().getPlan().getPlanType())
-          .remainingTime(remainingTime)
-          .remainingPeriod(remainingPeriod)
-          .usedTime(usedTime)
-          .registrationDate(registrationDate)
-          .tardinessCount(0)
-          .absenceCount(0)
-          .build();
-    }
   }
 }

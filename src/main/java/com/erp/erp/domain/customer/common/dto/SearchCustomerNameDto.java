@@ -1,7 +1,6 @@
 package com.erp.erp.domain.customer.common.dto;
 
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
-import com.erp.erp.domain.customer.common.entity.Customer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,14 +18,6 @@ public class SearchCustomerNameDto {
     private String name;
     @Schema(description = "상태 값 ( ACTIVE : 이용 가능, INACTIVE : 기간 만료 )")
     private CustomerStatus status;
-
-    public static SearchCustomerNameDto.Response fromEntity(Customer customer) {
-      return Response.builder()
-          .customerId(customer.getId())
-          .name(customer.getName())
-          .status(customer.getStatus())
-          .build();
-    }
   }
 
 }

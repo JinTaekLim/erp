@@ -1,12 +1,7 @@
 package com.erp.erp.domain.customer.common.dto;
 
-import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.Gender;
-import com.erp.erp.domain.institute.common.entity.Institute;
-import com.erp.erp.domain.payment.common.entity.OtherPayment;
 import com.erp.erp.domain.payment.common.entity.PaymentsMethod;
-import com.erp.erp.domain.payment.common.entity.PlanPayment;
-import com.erp.erp.domain.plan.common.entity.Plan;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -73,7 +68,7 @@ public class AddCustomerDto {
 
       @Schema(description = "할인률")
       @Positive(message = "-1 이하의 값은 입력될 수 없습니다.")
-      private int discount;
+      private int discountRate;
 
       @Schema(description = "결제 여부")
       @NotNull(message = "결제 여부를 입력해주세요")
@@ -99,46 +94,6 @@ public class AddCustomerDto {
       @Schema(description = "결제 여부")
       @NotNull(message = "결제 여부를 입력해주세요")
       private boolean status;
-    }
-
-    public Customer toCustomers(Institute institute, Plan plan, String photoUrl) {
-      PlanPayment planPayment = getPayments(plan);
-      List<OtherPayment> otherPayments = getOtherPayments();
-
-      return Customer.builder()
-          .institute(institute)
-          .name(this.name)
-          .gender(this.gender)
-          .phone(this.phone)
-          .address(this.address)
-          .photoUrl(photoUrl)
-          .memo(this.memo)
-          .birthDate(this.birthDate)
-          .planPayment(planPayment)
-          .otherPayments(otherPayments)
-          .build();
-    }
-
-    private List<OtherPayment> getOtherPayments() {
-      return this.otherPayment.stream()
-              .map(o -> OtherPayment.builder()
-                      .status(o.status)
-                      .registrationAt(o.registrationAt)
-                      .content(o.content)
-                      .price(o.price)
-                      .build())
-              .toList();
-    }
-
-
-    private PlanPayment getPayments(Plan plan) {
-      return PlanPayment.builder()
-          .plan(plan)
-          .status(this.planPayment.status)
-          .paymentsMethod(this.paymentsMethod)
-          .discountRate(this.planPayment.discount)
-          .registrationAt(this.planPayment.registrationAt)
-          .build();
     }
   }
 
@@ -171,18 +126,5 @@ public class AddCustomerDto {
 
     @Schema(description = "생년월일")
     private LocalDate birthDate;
-
-    public static Response fromEntity(Customer customer) {
-      return Response.builder()
-          .planName(customer.getPlanPayment().getPlan().getName())
-          .name(customer.getName())
-          .gender(customer.getGender())
-          .phone(customer.getPhone())
-          .address(customer.getAddress())
-          .memo(customer.getMemo())
-          .birthDate(customer.getBirthDate())
-          .photoUrl(customer.getPhotoUrl())
-          .build();
-    }
   }
 }
