@@ -20,42 +20,43 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
 
-                .csrf(AbstractHttpConfigurer::disable) // csrf 비활성화
-                .cors(Customizer.withDefaults()) // cors 비활성화
-                .httpBasic(AbstractHttpConfigurer::disable) // 기본 인증 로그인 비활성화
-                .formLogin(AbstractHttpConfigurer::disable) // 기본 login form 비활성화
-                .logout(AbstractHttpConfigurer::disable) // 기본 logout 비활성화
-                .headers(c -> c
-                        .frameOptions(
-                                HeadersConfigurer.FrameOptionsConfig::sameOrigin)) // X-Frame-Options sameOrigin 제한
-                .sessionManagement(c -> c
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 비활성화
+        .csrf(AbstractHttpConfigurer::disable) // csrf 비활성화
+        .cors(Customizer.withDefaults()) // cors 비활성화
+        .httpBasic(AbstractHttpConfigurer::disable) // 기본 인증 로그인 비활성화
+        .formLogin(AbstractHttpConfigurer::disable) // 기본 login form 비활성화
+        .logout(AbstractHttpConfigurer::disable) // 기본 logout 비활성화
+        .headers(c -> c
+            .frameOptions(
+                HeadersConfigurer.FrameOptionsConfig::sameOrigin)) // X-Frame-Options sameOrigin 제한
+        .sessionManagement(c -> c
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 비활성화
 
-                // 로깅 필터 추가
-                .addFilterBefore(new LogFilter(), SecurityContextHolderFilter.class)
-        ;
+        // 로깅 필터 추가
+        .addFilterBefore(new LogFilter(), SecurityContextHolderFilter.class)
+    ;
 
-        return http.build();
-    }
+    return http.build();
+  }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000", "https://erp-deploy.netlify.app/"
-        ));
-        configuration.setAllowedMethods(Arrays.asList(
-                "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"
-        ));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedOrigins(Arrays.asList(
+        "http://localhost:3000", "https://erp-deploy.netlify.app/",
+        "https://erp-deploy-dev.netlify.app/"
+    ));
+    configuration.setAllowedMethods(Arrays.asList(
+        "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"
+    ));
+    configuration.setAllowedHeaders(List.of("*"));
+    configuration.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
+  }
 }
