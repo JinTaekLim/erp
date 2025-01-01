@@ -1,6 +1,5 @@
 package com.erp.erp.domain.customer.common.dto;
 
-import com.erp.erp.domain.customer.common.entity.Customer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,13 +15,6 @@ public class GetAvailableCustomerNamesDto {
     private Long id;
     @Schema(description = "이름")
     private String name;
-
-    public static Response fromEntity(Customer customer) {
-      return Response.builder()
-          .id(customer.getId())
-          .name(customer.getName())
-          .build();
-    }
   }
 
 }

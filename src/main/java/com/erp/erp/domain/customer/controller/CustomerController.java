@@ -8,7 +8,6 @@ import com.erp.erp.domain.customer.common.dto.SearchCustomerNameDto;
 import com.erp.erp.domain.customer.common.dto.UpdateStatusDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
-import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.service.CustomerService;
 import com.erp.erp.global.response.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
@@ -62,13 +61,7 @@ public class CustomerController {
   @Operation(summary = "이용 중 고객 조회")
   @GetMapping("currentCustomers/{page}")
   public ApiResult<List<GetCustomerDto.Response>> getCurrentCustomers(@PathVariable("page") int page) {
-
-    List<Customer> customerList = customerService.getCurrentCustomers(page);
-
-    List<GetCustomerDto.Response> response = customerList.stream()
-        .map(GetCustomerDto.Response::fromEntity)
-        .toList();
-
+    List<GetCustomerDto.Response> response = customerService.getCurrentCustomers(page);
     return ApiResult.success(response);
   }
 
@@ -76,25 +69,14 @@ public class CustomerController {
   @Operation(summary = "만료된 고객 조회")
   @GetMapping("expiredCustomer/{page}")
   public ApiResult<List<GetCustomerDto.Response>> getExpiredCustomers(@PathVariable("page") int page) {
-    List<Customer> customerList = customerService.getExpiredCustomers(page);
-
-    List<GetCustomerDto.Response> response = customerList.stream()
-        .map(GetCustomerDto.Response::fromEntity)
-        .toList();
-
-
+    List<GetCustomerDto.Response> response = customerService.getExpiredCustomers(page);
     return ApiResult.success(response);
   }
 
   @Operation(summary = "이용 가능 모든 고객 이름 조회")
   @GetMapping("/getAvailableCustomerNames")
   public ApiResult<List<GetAvailableCustomerNamesDto.Response>> getAvailableCustomerNames() {
-    List<Customer> customerList = customerService.getCurrentCustomers();
-
-    List<GetAvailableCustomerNamesDto.Response> response = customerList.stream()
-        .map(GetAvailableCustomerNamesDto.Response::fromEntity)
-        .toList();
-
+    List<GetAvailableCustomerNamesDto.Response> response = customerService.getCurrentCustomers();
     return ApiResult.success(response);
   }
 

@@ -9,13 +9,17 @@ import com.erp.erp.domain.customer.business.ProgressCreator;
 import com.erp.erp.domain.customer.business.ProgressDeleter;
 import com.erp.erp.domain.customer.business.ProgressReader;
 import com.erp.erp.domain.customer.common.dto.AddCustomerDto;
+import com.erp.erp.domain.customer.common.dto.GetAvailableCustomerNamesDto;
 import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto;
+import com.erp.erp.domain.customer.common.dto.GetCustomerDto;
 import com.erp.erp.domain.customer.common.dto.SearchCustomerNameDto;
 import com.erp.erp.domain.customer.common.dto.UpdateStatusDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.Progress;
+import com.erp.erp.domain.customer.common.mapper.CustomerMapper;
+import com.erp.erp.domain.customer.common.mapper.ProgressMapper;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.plan.business.PlanReader;
 import com.erp.erp.domain.plan.common.entity.Plan;
@@ -44,6 +48,8 @@ public class CustomerService {
   private final PhotoUtil photoUtil;
   private final ProgressReader progressReader;
   private final ProgressDeleter progressDeleter;
+  private final CustomerMapper customerMapper;
+  private final ProgressMapper progressMapper;
 
   @Transactional
   public AddCustomerDto.Response addCustomer(AddCustomerDto.Request req) {
@@ -52,10 +58,9 @@ public class CustomerService {
     MultipartFile photo = null;
     String photoUrl = (photo == null) ? null : photoUtil.upload(photo);
 
-    Customer customer = req.toCustomers(institute, plan, photoUrl);
+    Customer customer = customerMapper.dtoToEntity(req, institute, plan, photoUrl);
     customerCreator.save(customer);
-
-    return AddCustomerDto.Response.fromEntity(customer);
+    return customerMapper.entityToAddCustomerResponse(customer);
   }
 
   public CustomerStatus updateStatus(UpdateStatusDto.Request req) {
@@ -71,39 +76,39 @@ public class CustomerService {
     Customer customer = customerReader.findByIdAndInstituteId(institute.getId(),
         req.getCustomerId());
 
-    Customer updateCustomer = req.updatedCustomers(customer);
-    customerCreator.save(updateCustomer);
+    Customer updateCustomer = customerUpdater.updateCustomer(req, customer);
 
-    List<Progress> progresses = req.toProgressList(customer);
+    List<Progress> progresses = progressMapper.dtoToEntityList(req.getProgress(), customer);
     progressDeleter.deleteAllByCustomerId(customer.getId());
     progressCreator.saveAll(progresses);
 
-    return UpdateCustomerDto.Response.fromEntity(updateCustomer, progresses);
+    return customerMapper.entityToUpdateCustomerResponse(updateCustomer, progresses);
   }
 
-  public List<Customer> getCurrentCustomers(int page) {
+  public List<GetCustomerDto.Response> getCurrentCustomers(int page) {
     Institute institute = authProvider.getCurrentInstitute();
     Pageable pageable = PageRequest.of(page, 4);
     Page<Customer> customersPage = customerReader.findByInstitutesIdAndStatusActive(
         institute,
         pageable
     );
-    return customersPage.getContent();
+    return customerMapper.entityToGetCustomerResponse(customersPage.getContent());
   }
 
-  public List<Customer> getExpiredCustomers(int page) {
+  public List<GetCustomerDto.Response> getExpiredCustomers(int page) {
     Institute institute = authProvider.getCurrentInstitute();
     Pageable pageable = PageRequest.of(page, 4);
     Page<Customer> customersPage = customerReader.findByInstitutesIdAndStatusInactive(
         institute,
         pageable
     );
-    return customersPage.getContent();
+    return customerMapper.entityToGetCustomerResponse(customersPage.getContent());
   }
 
-  public List<Customer> getCurrentCustomers() {
+  public List<GetAvailableCustomerNamesDto.Response> getCurrentCustomers() {
     Institute institute = authProvider.getCurrentInstitute();
-    return customerReader.findByInstitutesIdAndStatusActive(institute);
+    List<Customer> customers = customerReader.findByInstitutesIdAndStatusActive(institute);
+    return customerMapper.entityToGetAvailableCustomerNamesResponse(customers);
   }
 
   public List<SearchCustomerNameDto.Response> searchCustomerName(String keyword) {
@@ -112,16 +117,13 @@ public class CustomerService {
         instituteId,
         keyword
     );
-    return customers.stream()
-        .map(SearchCustomerNameDto.Response::fromEntity)
-        .toList();
+    return customerMapper.entityToSearchCustomerNameResponse(customers);
   }
 
   public GetCustomerDetailDto.Response getCustomerDetail(Long customerId) {
     Institute institute = authProvider.getCurrentInstitute();
     Customer customer = customerReader.findByIdAndInstituteId(customerId, institute.getId());
     List<Progress> progress = progressReader.findByCustomerId(customerId);
-
-    return GetCustomerDetailDto.Response.fromEntity(customer, progress);
+    return customerMapper.entityToGetCustomerDetailResponse(customer, progress);
   }
 }

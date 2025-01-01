@@ -30,7 +30,7 @@ public class Account {
 
   @NotNull
   @Column(unique = true)
-  private String accountId;
+  private String identifier;
 
   @NotNull
   private String password;
@@ -39,9 +39,9 @@ public class Account {
 
 
   @Builder
-  public Account(Institute institute, String accountId, String password) {
+  public Account(Institute institute, String identifier, String password) {
     this.institute = institute;
-    this.accountId = accountId;
+    this.identifier = identifier;
     this.password = password;
   }
 }

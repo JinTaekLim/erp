@@ -1,9 +1,6 @@
 package com.erp.erp.domain.customer.common.dto;
 
-import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.Gender;
-import com.erp.erp.domain.customer.common.entity.Progress;
-import com.erp.erp.domain.payment.common.entity.OtherPayment;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -46,35 +43,6 @@ public class UpdateCustomerDto {
     private List<ProgressResponse> progress;
     @Schema(description = "기타 결제")
     private List<OtherPaymentResponse> otherPayment;
-
-    public Customer updatedCustomers(Customer customer) {
-      List<OtherPayment> otherPaymentList = toOtherPaymentsList();
-
-      return customer.update(name, gender, phone, address, photoUrl, memo, birthDate,
-          otherPaymentList);
-    }
-
-    private List<OtherPayment> toOtherPaymentsList() {
-      return this.otherPayment.stream()
-              .map(otherPayment -> OtherPayment.builder()
-                      .content(otherPayment.getContent())
-                      .status(otherPayment.isStatus())
-                      .registrationAt(otherPayment.getRegistrationAt())
-                      .price(otherPayment.getPrice())
-                      .build())
-              .toList();
-    }
-
-    public List<Progress> toProgressList(Customer customer) {
-      return this.progress.stream()
-          .map(progress -> Progress.builder()
-              .customer(customer)
-              .date(progress.getDate())
-              .content(progress.getContent())
-              .build())
-          .toList();
-
-    }
   }
 
     @Schema(name = "UpdatedCustomerInfoDto_Response", description = "회원 정보 수정 반환")
@@ -103,38 +71,6 @@ public class UpdateCustomerDto {
       private List<ProgressResponse> progress;
       @Schema(description = "기타 결제")
       private List<OtherPaymentResponse> otherPayment;
-
-      public static Response fromEntity(Customer customer, List<Progress> progresses) {
-
-        List<OtherPaymentResponse> otherPaymentResponses = getOtherPaymentResponse(customer.getOtherPayments());
-        List<ProgressResponse> progressResponses = progresses.stream()
-            .map(ProgressResponse::fromEntity)
-            .toList();
-
-        return Response.builder()
-                .customerId(customer.getId())
-                .photoUrl(customer.getPhotoUrl())
-                .name(customer.getName())
-                .gender(customer.getGender())
-                .birthDate(customer.getBirthDate())
-                .phone(customer.getPhone())
-                .address(customer.getAddress())
-                .memo(customer.getMemo())
-                .progress(progressResponses)
-                .otherPayment(otherPaymentResponses)
-                .build();
-      }
-
-      private static List<OtherPaymentResponse> getOtherPaymentResponse(List<OtherPayment> otherPayments) {
-        return otherPayments.stream()
-                .map(o -> OtherPaymentResponse.builder()
-                        .status(o.isStatus())
-                        .content(o.getContent())
-                        .price(o.getPrice())
-                        .registrationAt(o.getRegistrationAt())
-                        .build())
-                .toList();
-      }
     }
 
   @Builder
@@ -169,12 +105,5 @@ public class UpdateCustomerDto {
     @Schema(description = "내용")
     @NotNull
     private String content;
-
-    public static ProgressResponse fromEntity(Progress progress) {
-      return ProgressResponse.builder()
-          .date(progress.getDate())
-          .content(progress.getContent())
-          .build();
-    }
   }
 }

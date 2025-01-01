@@ -235,7 +235,7 @@ class adminTest extends IntegrationTest {
     Account account = createAccount(institute);
 
     AddAccountDto.Request req = AddAccountDto.Request.builder()
-        .accountId(account.getAccountId())
+        .identifier(account.getIdentifier())
         .password(account.getPassword())
         .instituteId(institute.getId())
         .build();

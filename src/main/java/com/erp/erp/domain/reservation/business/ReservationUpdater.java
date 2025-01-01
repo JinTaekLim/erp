@@ -1,8 +1,8 @@
 package com.erp.erp.domain.reservation.business;
 
+import com.erp.erp.domain.reservation.common.dto.UpdatedReservationDto;
 import com.erp.erp.domain.reservation.common.entity.Reservation;
 import com.erp.erp.domain.reservation.repository.ReservationRepository;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -15,12 +15,10 @@ public class ReservationUpdater {
 
   public Reservation updatedReservations(
       Reservation reservation,
-      LocalDateTime startTime,
-      LocalDateTime endTime,
-      String memo,
-      int seatNumber
+      UpdatedReservationDto.Request req
   ) {
-    reservation.updatedReservations(startTime,endTime,memo, seatNumber);
+    reservation.updatedReservations(
+        req.getStartTime(), req.getEndTime(), req.getMemo(), req.getSeatNumber());
     return reservationRepository.save(reservation);
   }
 

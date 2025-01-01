@@ -1,10 +1,6 @@
 package com.erp.erp.domain.reservation.common.dto;
 
-import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.Gender;
-import com.erp.erp.domain.payment.common.entity.PlanPayment;
-import com.erp.erp.domain.plan.common.entity.Plan;
-import com.erp.erp.domain.reservation.common.entity.Reservation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -43,33 +39,6 @@ public class GetReservationCustomerDetailsDto {
     private String memo;
     @Schema(description = "진도표")
     private List<ProgressResponse> progress;
-
-    public static Response fromEntity(
-        Reservation reservation
-    ) {
-      Customer customer = reservation.getCustomer();
-      Plan plan = customer.getPlanPayment().getPlan();
-
-
-      LocalDateTime registrationAt = customer.getPlanPayment().getRegistrationAt().withNano(0);
-      int availablePeriod = plan.getAvailablePeriod();
-      LocalDateTime endDate = registrationAt.plusDays(availablePeriod);
-
-      return Response.builder()
-          .startTime(reservation.getStartTime())
-          .endTime(reservation.getEndTime())
-          .photoUrl(customer.getPhotoUrl())
-          .name(customer.getName())
-          .gender(customer.getGender())
-          .phone(customer.getPhone())
-          .planName(plan.getName())
-          .endDate(endDate)
-          .remainingTime(0)
-          .usedTime(0)
-          .memo(customer.getMemo())
-          .progress(null)
-          .build();
-    }
   }
 
   private static class ProgressResponse{

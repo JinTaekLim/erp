@@ -1,6 +1,5 @@
 package com.erp.erp.domain.institute.common.dto;
 
-import com.erp.erp.domain.institute.common.entity.Institute;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalTime;
 import lombok.Builder;
@@ -19,14 +18,6 @@ public class GetInstituteInfoDto {
     private LocalTime openTime;
     @Schema(description = "영업 종료 시간")
     private LocalTime closeTime;
-
-    public static GetInstituteInfoDto.Response fromEntity(Institute institute) {
-      return Response.builder()
-          .totalSeat(institute.getTotalSeat())
-          .openTime(institute.getOpenTime())
-          .closeTime(institute.getCloseTime())
-          .build();
-    }
   }
 
 }

@@ -1,11 +1,7 @@
 package com.erp.erp.domain.customer.common.dto;
 
-import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.Gender;
-import com.erp.erp.domain.customer.common.entity.Progress;
-import com.erp.erp.domain.payment.common.entity.OtherPayment;
 import com.erp.erp.domain.payment.common.entity.PaymentsMethod;
-import com.erp.erp.domain.payment.common.entity.PlanPayment;
 import com.erp.erp.domain.plan.common.entity.LicenseType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
@@ -40,35 +36,6 @@ public class GetCustomerDetailDto {
     private PlanPaymentResponse planPayment;
     @Schema(description = "기타 결제")
     private List<OtherPaymentResponse> otherPayment;
-
-    public static Response fromEntity(Customer customer, List<Progress> progresses) {
-
-      List<ProgressResponse> progressResponseList = (progresses != null && !progresses.isEmpty())
-          ? progresses.stream()
-          .map(ProgressResponse::fromEntity)
-          .toList()
-          : null;
-
-      List<OtherPaymentResponse> otherPaymentResponseList = (customer.getOtherPayments() != null) ?
-          customer.getOtherPayments().stream()
-          .map(OtherPaymentResponse::fromEntity)
-          .toList()
-          : null;
-
-
-      return Response.builder()
-          .photoUrl(customer.getPhotoUrl())
-          .name(customer.getName())
-          .gender(customer.getGender())
-          .phone(customer.getPhone())
-          .address(customer.getAddress())
-          .visitPath(null)
-          .memo(customer.getMemo())
-          .progressList(progressResponseList)
-          .planPayment(PlanPaymentResponse.fromEntity(customer.getPlanPayment()))
-          .otherPayment(otherPaymentResponseList)
-          .build();
-    }
   }
 
   @Getter
@@ -92,25 +59,6 @@ public class GetCustomerDetailDto {
     private int paymentTotal;
     @Schema(description = "미납 여부")
     private boolean status;
-
-    public static PlanPaymentResponse fromEntity(PlanPayment planPayment) {
-
-      int planPrice = planPayment.getPlan().getPrice();
-      int discountPrice = (int) (planPrice * planPayment.getDiscountRate());
-      int paymentTotal = planPrice - discountPrice;
-
-      return PlanPaymentResponse.builder()
-          .licenseType(planPayment.getPlan().getLicenseType())
-          .planName(planPayment.getPlan().getName())
-          .planPrice(planPayment.getPlan().getPrice())
-          .discountRate(planPayment.getDiscountRate())
-          .discountPrice(discountPrice)
-          .paymentsMethod(planPayment.getPaymentsMethod())
-          .registrationAt(planPayment.getRegistrationAt())
-          .paymentTotal(paymentTotal)
-          .status(planPayment.isStatus())
-          .build();
-    }
   }
 
   @Getter
@@ -124,15 +72,6 @@ public class GetCustomerDetailDto {
     private int price;
     @Schema(description = "미납 여부")
     private boolean status;
-
-    public static OtherPaymentResponse fromEntity(OtherPayment otherPayment) {
-      return OtherPaymentResponse.builder()
-          .registrationAt(otherPayment.getRegistrationAt())
-          .content(otherPayment.getContent())
-          .price(otherPayment.getPrice())
-          .status(otherPayment.isStatus())
-          .build();
-    }
   }
 
   @Getter
@@ -142,12 +81,5 @@ public class GetCustomerDetailDto {
     private LocalDate date;
     @Schema(description = "내용")
     private String content;
-
-    public static ProgressResponse fromEntity(Progress progress) {
-      return ProgressResponse.builder()
-          .content(progress.getContent())
-          .date(progress.getDate())
-          .build();
-    }
   }
 }

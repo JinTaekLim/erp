@@ -19,7 +19,6 @@ public class CustomerGenerator extends EntityGenerator {
         .set("institute", institute)
         .set("planPayment", planPayment)
         .set("otherPayments", otherPaymentList)
-        .set("progress", null)
         .sample();
   }
 

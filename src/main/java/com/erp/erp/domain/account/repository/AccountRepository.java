@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AccountRepository extends JpaRepository<Account, Long>, AccountRepositoryCustom{
 
-  Optional<Account> findByAccountIdAndPassword(String accountId, String password);
+  Optional<Account> findByIdentifierAndPassword(String identifier, String password);
 
 }

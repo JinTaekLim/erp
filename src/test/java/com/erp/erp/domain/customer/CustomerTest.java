@@ -153,6 +153,7 @@ class CustomerTest extends IntegrationTest {
     //then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertNotNull(apiResponse);
+    assertThat(apiResponse.getData().getPlanName()).isEqualTo(plan.getName());
     assertThat(apiResponse.getData().getName()).isEqualTo(request.getName());
     assertThat(apiResponse.getData().getGender()).isEqualTo(request.getGender());
     assertThat(apiResponse.getData().getPhone()).isEqualTo(request.getPhone());

@@ -1,7 +1,6 @@
 package com.erp.erp.domain.reservation.controller;
 
 import com.erp.erp.domain.reservation.common.dto.*;
-import com.erp.erp.domain.reservation.common.entity.Reservation;
 import com.erp.erp.domain.reservation.service.ReservationService;
 import com.erp.erp.global.response.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,9 +26,7 @@ public class ReservationController {
   @PostMapping("/addReservation")
   public ApiResult<AddReservationDto.Response> addReservation(
       @Valid @RequestBody AddReservationDto.Request req) {
-    Reservation reservation = reservationService.addReservations(req);
-    AddReservationDto.Response response = AddReservationDto.Response.fromEntity(reservation);
-
+    AddReservationDto.Response response = reservationService.addReservations(req);
     return ApiResult.success(response);
   }
 
@@ -38,19 +35,7 @@ public class ReservationController {
   public ApiResult<List<GetDailyReservationDto.Response>> getDailyReservations(
       @RequestParam("day") LocalDate day
   ) {
-    List<Reservation> reservationList = reservationService.getDailyReservations(day);
-
-    List<GetDailyReservationDto.Response> response = reservationList.stream()
-        .map(reservations -> GetDailyReservationDto.Response.builder()
-            .reservationId(reservations.getId())
-            .startTime(reservations.getStartTime())
-            .endTime(reservations.getEndTime())
-            .seatNumber(reservations.getSeatNumber())
-            .name(reservations.getCustomer().getName())
-            .build()
-        )
-        .toList();
-
+    List<GetDailyReservationDto.Response> response = reservationService.getDailyReservations(day);
     return ApiResult.success(response);
   }
 
@@ -58,19 +43,7 @@ public class ReservationController {
   @GetMapping("/getReservationByTime")
   public ApiResult<List<GetDailyReservationDto.Response>> getReservationByTime(
       @RequestParam("time") LocalDateTime time) {
-    List<Reservation> reservationList = reservationService.getReservationByTime(time);
-
-    List<GetDailyReservationDto.Response> response = reservationList.stream()
-        .map(reservations -> GetDailyReservationDto.Response.builder()
-            .reservationId(reservations.getId())
-            .startTime(reservations.getStartTime())
-            .endTime(reservations.getEndTime())
-            .name(reservations.getCustomer().getName())
-            .seatNumber(reservations.getSeatNumber())
-            .build()
-        )
-        .toList();
-
+    List<GetDailyReservationDto.Response> response = reservationService.getReservationByTime(time);
     return ApiResult.success(response);
   }
 
@@ -79,11 +52,7 @@ public class ReservationController {
   @PutMapping("/updatedReservation")
   public ApiResult<UpdatedReservationDto.Response> updatedReservation(
       @Valid @RequestBody UpdatedReservationDto.Request req) {
-    Reservation reservation = reservationService.updateReservation(req);
-
-    UpdatedReservationDto.Response response = UpdatedReservationDto.Response.fromEntity(
-        reservation);
-
+    UpdatedReservationDto.Response response = reservationService.updateReservation(req);
     return ApiResult.success(response);
   }
 
@@ -92,13 +61,7 @@ public class ReservationController {
   public ApiResult<UpdatedSeatNumberDto.Response> updatedSeatNumber(
       @Valid @RequestBody UpdatedSeatNumberDto.Request req
   ) {
-    Reservation reservation = reservationService.updatedSeatNumber(req);
-
-    UpdatedSeatNumberDto.Response response = UpdatedSeatNumberDto.Response.builder()
-        .reservationId(reservation.getId())
-        .seatNumber(reservation.getSeatNumber())
-        .build();
-
+    UpdatedSeatNumberDto.Response response = reservationService.updatedSeatNumber(req);
     return ApiResult.success(response);
   }
 
@@ -118,7 +81,6 @@ public class ReservationController {
     GetReservationCustomerDetailsDto.Response response = reservationService.getReservationCustomerDetails(
         reservationId
     );
-
     return ApiResult.success(response);
   }
 }

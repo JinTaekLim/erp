@@ -56,7 +56,7 @@ public class AccountTest extends IntegrationTest {
     Institute institute = createInstitutes();
     Account account = createAccount(institute);
     AccountLoginDto.Request request = AccountLoginDto.Request.builder()
-        .account(account.getAccountId())
+        .account(account.getIdentifier())
         .password(account.getPassword())
         .build();
 
