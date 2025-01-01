@@ -1,6 +1,5 @@
 package com.erp.erp.domain.institute.common.dto;
 
-import com.erp.erp.domain.institute.common.entity.Institute;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -32,13 +31,6 @@ public class UpdateTotalSeatDto {
     private String name;
     @Schema(description = "좌석 갯수")
     private int totalSeat;
-
-    public static UpdateTotalSeatDto.Response fromEntity(Institute institute) {
-      return Response.builder()
-          .name(institute.getName())
-          .totalSeat(institute.getTotalSeat())
-          .build();
-    }
   }
 
 }

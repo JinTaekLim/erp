@@ -44,7 +44,7 @@ public class AdminService {
   public AddInstituteDto.Response addInstitute(AddInstituteDto.Request req) {
     Institute institute = instituteMapper.dtoToEntity(req);
     instituteCreator.save(institute);
-    return instituteMapper.entityToDto(institute);
+    return instituteMapper.entityToAddInstituteResponse(institute);
   }
 
 }
