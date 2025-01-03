@@ -1,6 +1,7 @@
 package com.erp.erp.domain.customer.common.dto;
 
 import com.erp.erp.domain.customer.common.entity.Gender;
+import com.erp.erp.domain.payment.common.entity.PaymentsMethod;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -76,6 +77,10 @@ public class UpdateCustomerDto {
   @Builder
   @Getter
   public static class OtherPaymentResponse {
+
+    @Schema(description = "결제 방법")
+    @NotNull(message = "결제 방법을 입력해주세요")
+    private PaymentsMethod paymentsMethod;
 
     @Schema(description = "결제 일자")
     @NotNull(message = "결제 일자를 입력해주세요.")

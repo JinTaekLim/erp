@@ -41,6 +41,7 @@ public class CustomerUpdater {
   private List<OtherPayment> toOtherPaymentsList(List<OtherPaymentResponse> otherPayments) {
     return otherPayments.stream()
         .map(otherPayment -> OtherPayment.builder()
+            .paymentsMethod(otherPayment.getPaymentsMethod())
             .content(otherPayment.getContent())
             .status(otherPayment.isStatus())
             .registrationAt(otherPayment.getRegistrationAt())
