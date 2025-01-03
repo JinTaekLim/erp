@@ -22,6 +22,9 @@ public class OtherPayment {
   private boolean status;
 
   @NotNull
+  private PaymentsMethod paymentsMethod;
+
+  @NotNull
   private LocalDateTime registrationAt;
 
   @NotNull
@@ -31,9 +34,11 @@ public class OtherPayment {
   private int price;
 
   @Builder
-  public OtherPayment(boolean status, LocalDateTime registrationAt, String content, int price) {
+  public OtherPayment(boolean status, LocalDateTime registrationAt, PaymentsMethod paymentsMethod,
+      String content, int price) {
     this.status = status;
     this.registrationAt = registrationAt;
+    this.paymentsMethod = paymentsMethod;
     this.content = content;
     this.price = price;
   }
