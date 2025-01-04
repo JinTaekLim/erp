@@ -57,7 +57,7 @@ import java.util.stream.IntStream;
 
 class CustomerTest extends IntegrationTest {
 
-  int PAGE_LIMIT = 4;
+  int PAGE_LIMIT = 20;
 
   private String BASE_URL;
 
@@ -575,7 +575,7 @@ class CustomerTest extends IntegrationTest {
     int dataSize = randomInt - (page * PAGE_LIMIT);
     assertThat(apiResponse.getData().size()).isEqualTo(dataSize);
 
-    IntStream.range(0 , dataSize).forEach(i -> {
+    IntStream.range(dataSize , 0).forEach(i -> {
       GetCustomerDto.Response response = apiResponse.getData().get(i);
       int index = randomInt - dataSize + i;
       Customer customer = customers.get(index);
@@ -629,7 +629,7 @@ class CustomerTest extends IntegrationTest {
     int dataSize = randomInt - (page * PAGE_LIMIT);
     assertThat(apiResponse.getData().size()).isEqualTo(dataSize);
 
-    IntStream.range(0 , dataSize).forEach(i -> {
+    IntStream.range(dataSize , 0).forEach(i -> {
       GetCustomerDto.Response response = apiResponse.getData().get(i);
       int index = randomInt - dataSize + i;
       Customer customer = customers.get(index);
