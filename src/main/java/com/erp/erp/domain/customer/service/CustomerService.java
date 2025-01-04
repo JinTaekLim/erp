@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -87,7 +88,7 @@ public class CustomerService {
 
   public List<GetCustomerDto.Response> getCurrentCustomers(int page) {
     Institute institute = authProvider.getCurrentInstitute();
-    Pageable pageable = PageRequest.of(page, 4);
+    Pageable pageable = PageRequest.of(page, 20, Sort.by(Sort.Order.desc("id")));
     Page<Customer> customersPage = customerReader.findByInstitutesIdAndStatusActive(
         institute,
         pageable
@@ -97,7 +98,7 @@ public class CustomerService {
 
   public List<GetCustomerDto.Response> getExpiredCustomers(int page) {
     Institute institute = authProvider.getCurrentInstitute();
-    Pageable pageable = PageRequest.of(page, 4);
+    Pageable pageable = PageRequest.of(page, 20, Sort.by(Sort.Order.desc("id")));
     Page<Customer> customersPage = customerReader.findByInstitutesIdAndStatusInactive(
         institute,
         pageable
