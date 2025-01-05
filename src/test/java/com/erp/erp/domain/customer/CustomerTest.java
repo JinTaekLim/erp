@@ -580,6 +580,7 @@ class CustomerTest extends IntegrationTest {
       int index = randomInt - dataSize + i;
       Customer customer = customers.get(index);
 
+      assertThat(response.getCustomerId()).isNotNull();
       assertThat(response.getPhotoUrl()).isEqualTo(customer.getPhotoUrl());
       assertThat(response.getName()).isEqualTo(customer.getName());
       assertThat(response.getGender()).isEqualTo(customer.getGender());
@@ -634,6 +635,7 @@ class CustomerTest extends IntegrationTest {
       int index = randomInt - dataSize + i;
       Customer customer = customers.get(index);
 
+      assertThat(response.getCustomerId()).isNotNull();
       assertThat(response.getPhotoUrl()).isEqualTo(customer.getPhotoUrl());
       assertThat(response.getName()).isEqualTo(customer.getName());
       assertThat(response.getGender()).isEqualTo(customer.getGender());

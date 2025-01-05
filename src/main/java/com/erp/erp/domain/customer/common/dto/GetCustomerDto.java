@@ -15,6 +15,8 @@ public class GetCustomerDto {
   @Builder
   public static class Response{
 
+    @Schema
+    private Long customerId;
     @Schema(description = "프로필 URL")
     private String photoUrl;
     @Schema(description = "이름")
