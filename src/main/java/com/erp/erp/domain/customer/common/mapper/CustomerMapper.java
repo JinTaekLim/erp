@@ -46,6 +46,7 @@ public interface CustomerMapper {
 
   List<GetCustomerDto.Response> entityToGetCustomerResponse(List<Customer> customers);
 
+  @Mapping(target = "customerId", source = "customer.id")
   @Mapping(target = "licenseType", source = "customer.planPayment.plan.licenseType")
   @Mapping(target = "planName", source = "customer.planPayment.plan.name")
   @Mapping(target = "planType", source = "customer.planPayment.plan.planType")
