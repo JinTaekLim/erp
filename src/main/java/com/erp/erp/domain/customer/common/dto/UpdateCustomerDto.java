@@ -42,6 +42,8 @@ public class UpdateCustomerDto {
     private String memo;
     @Schema(description = "진도표")
     private List<ProgressResponse> progress;
+    @Schema(description = "이용권 결제 여부")
+    private boolean planPaymentStatus;
     @Schema(description = "기타 결제")
     private List<OtherPaymentResponse> otherPayment;
   }
@@ -70,6 +72,8 @@ public class UpdateCustomerDto {
       private String memo;
       @Schema(description = "진도표")
       private List<ProgressResponse> progress;
+      @Schema(description = "이용권 결제 여부")
+      private boolean planPaymentStatus;
       @Schema(description = "기타 결제")
       private List<OtherPaymentResponse> otherPayment;
     }

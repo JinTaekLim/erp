@@ -41,6 +41,7 @@ public interface CustomerMapper {
   @Mapping(target = "customerId", source = "customer.id")
   @Mapping(target = "progress", source = "progresses")
   @Mapping(target = "otherPayment", source = "customer.otherPayments")
+  @Mapping(target = "planPaymentStatus", source = "customer.planPayment.status")
   UpdateCustomerDto.Response entityToUpdateCustomerResponse(Customer customer, List<Progress> progresses);
 
 
