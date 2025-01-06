@@ -47,4 +47,8 @@ public class PlanPayment {
     this.paymentsMethod = paymentsMethod;
     this.discountRate = discountRate;
   }
+
+  public void updateStatus(boolean status) {
+    this.status = status;
+  }
 }

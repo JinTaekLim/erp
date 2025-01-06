@@ -76,7 +76,7 @@ public class Customer {
 
 
   public Customer update(String name, Gender gender, String phone, String address, String photoUrl, String memo,
-                          LocalDate birthDate, List<OtherPayment> otherPayments) {
+                          LocalDate birthDate, boolean planPaymentStatus, List<OtherPayment> otherPayments) {
     this.name = name;
     this.gender = gender;
     this.phone = phone;
@@ -84,6 +84,7 @@ public class Customer {
     this.photoUrl = photoUrl;
     this.memo = memo;
     this.birthDate = birthDate;
+    this.planPayment.updateStatus(planPaymentStatus);
 
     this.otherPayments.clear();
     if (otherPayments != null) { this.otherPayments.addAll(new ArrayList<>(otherPayments)); }

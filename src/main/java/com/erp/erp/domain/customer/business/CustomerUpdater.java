@@ -32,6 +32,7 @@ public class CustomerUpdater {
         req.getPhotoUrl(),
         req.getMemo(),
         req.getBirthDate(),
+        req.isPlanPaymentStatus(),
         toOtherPaymentsList(req.getOtherPayment())
     );
 
