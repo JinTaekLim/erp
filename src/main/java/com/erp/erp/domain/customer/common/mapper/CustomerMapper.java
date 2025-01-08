@@ -67,7 +67,6 @@ public interface CustomerMapper {
   SearchCustomerNameDto.Response entityToSearchCustomerNameResponse(Customer customers);
 
 
-  @Mapping(target = "visitPath", expression = "java(null)")
   @Mapping(target = "progressList", expression = "java(planPaymentResponseToProgressResponse(progress))")
   @Mapping(target = "otherPayment", expression = "java(otherPaymentResponseToOtherPaymentResponse(customer.getOtherPayments()))")
   GetCustomerDetailDto.Response entityToGetCustomerDetailResponse(Customer customer, List<Progress> progress);

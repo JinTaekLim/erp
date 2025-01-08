@@ -15,6 +15,7 @@ import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.global.response.ApiResult;
 import com.erp.erp.global.util.generator.AccountGenerator;
 import com.erp.erp.global.util.generator.InstituteGenerator;
+import com.erp.erp.global.util.randomValue.Language;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
@@ -169,7 +170,7 @@ public class AccountTest extends IntegrationTest {
   @DisplayName("reissueToken 잘못된 accessToken")
   void reissueToken_fail_1() {
     //given
-    String accessToken = RandomValue.string(1,5).setNullable(false).get();
+    String accessToken = RandomValue.string(1,20).setLanguages(Language.ENGLISH).setNullable(false).get();
 
     String url = BASE_URL + "/reissueToken?refreshToken=" + accessToken;
 
