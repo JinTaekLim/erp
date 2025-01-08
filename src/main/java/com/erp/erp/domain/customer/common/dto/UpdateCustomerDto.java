@@ -38,6 +38,8 @@ public class UpdateCustomerDto {
     @Schema(description = "주소")
     @NotNull
     private String address;
+    @Schema(description = "방문경로")
+    private String visitPath;
     @Schema(description = "메모")
     private String memo;
     @Schema(description = "진도표")
@@ -68,6 +70,8 @@ public class UpdateCustomerDto {
       private String phone;
       @Schema(description = "주소")
       private String address;
+      @Schema(description = "방문경로")
+      private String visitPath;
       @Schema(description = "메모")
       private String memo;
       @Schema(description = "진도표")

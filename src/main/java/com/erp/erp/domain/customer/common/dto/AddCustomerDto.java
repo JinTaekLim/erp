@@ -40,6 +40,9 @@ public class AddCustomerDto {
     @NotBlank(message = "주소를 입력해주세요")
     private String address;
 
+    @Schema(description = "방문경로")
+    private String visitPath;
+
     @Schema(description = "생년월일")
     @NotNull(message = "생년월일을 입력해주세요")
     private LocalDate birthDate;
@@ -121,6 +124,9 @@ public class AddCustomerDto {
 
     @Schema(description = "주소")
     private String address;
+
+    @Schema(description = "방문경로")
+    private String visitPath;
 
     @Schema(description = "메모")
     private String memo;

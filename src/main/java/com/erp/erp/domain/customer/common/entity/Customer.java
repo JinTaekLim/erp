@@ -39,6 +39,8 @@ public class Customer {
   @NotNull
   private String address;
 
+  private String visitPath;
+
   private String photoUrl;
 
   private String memo;
@@ -59,13 +61,14 @@ public class Customer {
 
 
   @Builder
-  public Customer(Institute institute, String name, Gender gender, String phone, String address, String photoUrl,
-                   String memo, LocalDate birthDate, PlanPayment planPayment, List<OtherPayment> otherPayments) {
+  public Customer(Institute institute, String name, Gender gender, String phone, String address, String visitPath,
+      String photoUrl, String memo, LocalDate birthDate, PlanPayment planPayment, List<OtherPayment> otherPayments) {
     this.institute = institute;
     this.name = name;
     this.gender = gender;
     this.phone = phone;
     this.address = address;
+    this.visitPath = visitPath;
     this.photoUrl = photoUrl;
     this.memo = memo;
     this.birthDate = birthDate;
@@ -75,12 +78,13 @@ public class Customer {
   }
 
 
-  public Customer update(String name, Gender gender, String phone, String address, String photoUrl, String memo,
+  public Customer update(String name, Gender gender, String phone, String address, String visitPath, String photoUrl, String memo,
                           LocalDate birthDate, boolean planPaymentStatus, List<OtherPayment> otherPayments) {
     this.name = name;
     this.gender = gender;
     this.phone = phone;
     this.address = address;
+    this.visitPath = visitPath;
     this.photoUrl = photoUrl;
     this.memo = memo;
     this.birthDate = birthDate;

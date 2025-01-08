@@ -29,6 +29,7 @@ public class CustomerUpdater {
         req.getGender(),
         req.getPhone(),
         req.getAddress(),
+        req.getVisitPath(),
         req.getPhotoUrl(),
         req.getMemo(),
         req.getBirthDate(),
