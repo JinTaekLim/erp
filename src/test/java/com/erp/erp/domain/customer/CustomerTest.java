@@ -230,11 +230,13 @@ class CustomerTest extends IntegrationTest {
             .sample();
 
     String url = BASE_URL + "/updateCustomer";
+    HttpEntity<UpdateCustomerDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
 
     // then
-    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
             url,
-            request,
+            HttpMethod.PUT,
+            httpRequest,
             String.class
     );
 
@@ -280,11 +282,13 @@ class CustomerTest extends IntegrationTest {
     UpdateCustomerDto.Request request = UpdateCustomerDto.Request.builder().build();
 
     String url = BASE_URL + "/updateCustomer";
+    HttpEntity<UpdateCustomerDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
 
     // then
-    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
-        request,
+        HttpMethod.PUT,
+        httpRequest,
         String.class
     );
 
@@ -307,11 +311,13 @@ class CustomerTest extends IntegrationTest {
     String url = BASE_URL + "/updateCustomer";
 
     NotFoundCustomerException exception = new NotFoundCustomerException();
+    HttpEntity<UpdateCustomerDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
 
     // then
-    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
-        request,
+        HttpMethod.PUT,
+        httpRequest,
         String.class
     );
 
@@ -348,11 +354,13 @@ class CustomerTest extends IntegrationTest {
     String url = BASE_URL + "/updateCustomer";
 
     NotFoundCustomerException exception = new NotFoundCustomerException();
+    HttpEntity<UpdateCustomerDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
 
     // then
-    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
-        requestEntity,
+        HttpMethod.PUT,
+        httpRequest,
         String.class
     );
 
@@ -384,12 +392,13 @@ class CustomerTest extends IntegrationTest {
         .build();
 
     String url = BASE_URL + "/updateStatus";
-
+    HttpEntity<UpdateStatusDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
 
     //when
-    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
-        request,
+        HttpMethod.PUT,
+        httpRequest,
         String.class
     );
 
@@ -417,11 +426,13 @@ class CustomerTest extends IntegrationTest {
         .build();
 
     String url = BASE_URL + "/updateStatus";
+    HttpEntity<UpdateStatusDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
 
     //when
-    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
-        request,
+        HttpMethod.PUT,
+        httpRequest,
         String.class
     );
 
@@ -446,12 +457,13 @@ class CustomerTest extends IntegrationTest {
         .build();
 
     String url = BASE_URL + "/updateStatus";
-
+    HttpEntity<UpdateStatusDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
 
     //when
-    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
-        request,
+        HttpMethod.PUT,
+        httpRequest,
         String.class
     );
 
@@ -477,13 +489,14 @@ class CustomerTest extends IntegrationTest {
         .build();
 
     String url = BASE_URL + "/updateStatus";
-
+    HttpEntity<UpdateStatusDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
     NotFoundCustomerException exception = new NotFoundCustomerException();
 
     //when
-    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
-        request,
+        HttpMethod.PUT,
+        httpRequest,
         String.class
     );
 
@@ -524,8 +537,9 @@ class CustomerTest extends IntegrationTest {
     HttpEntity<UpdateStatusDto.Request> requestEntity = new HttpEntity<>(request, headers);
 
     //when
-    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
+        HttpMethod.PUT,
         requestEntity,
         String.class
     );
