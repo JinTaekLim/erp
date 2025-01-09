@@ -115,8 +115,9 @@ public class InstituteTest extends IntegrationTest {
     HttpEntity<Request> requestEntity = new HttpEntity<>(request, headers);
 
     //when
-    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
+        HttpMethod.PUT,
         requestEntity,
         String.class
     );
@@ -153,8 +154,9 @@ public class InstituteTest extends IntegrationTest {
     HttpEntity<Request> requestEntity = new HttpEntity<>(request, headers);
 
     // when
-    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
+        HttpMethod.PUT,
         requestEntity,
         String.class
     );
@@ -189,8 +191,9 @@ public class InstituteTest extends IntegrationTest {
     HttpEntity<Request> requestEntity = new HttpEntity<>(headers);
 
     //when
-    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
+        HttpMethod.PUT,
         requestEntity,
         String.class
     );
