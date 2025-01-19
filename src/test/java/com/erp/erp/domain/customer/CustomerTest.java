@@ -258,7 +258,7 @@ class CustomerTest extends IntegrationTest {
     assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
     assertThat(apiResponse.getData().isPlanPaymentStatus()).isEqualTo(request.isPlanPaymentStatus());
 
-    List<ProgressResponse> actualProgress = apiResponse.getData().getProgress();
+    List<ProgressResponse> actualProgress = apiResponse.getData().getProgressList();
     List<ProgressResponse> expectedProgress = request.getProgress();
     assertThat(actualProgress).hasSameSizeAs(expectedProgress);
     IntStream.range(0, actualProgress.size())
