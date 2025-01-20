@@ -37,4 +37,10 @@ public class Progress {
     this.date = date;
     this.content = content;
   }
+
+  public Progress update(LocalDate date, String content) {
+    this.date = date;
+    this.content = content;
+    return this;
+  }
 }

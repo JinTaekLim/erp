@@ -12,8 +12,8 @@ public class ProgressCreator {
 
   private final ProgressRepository progressRepository;
 
-  public void saveAll(List<Progress> progress) {
-    progressRepository.saveAll(progress);
+  public List<Progress> saveAll(List<Progress> progress) {
+    return progressRepository.saveAll(progress);
   }
 
 }

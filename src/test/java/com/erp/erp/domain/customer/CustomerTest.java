@@ -15,15 +15,21 @@ import com.erp.erp.domain.customer.common.dto.GetAvailableCustomerNamesDto;
 import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto;
 import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto.PlanPaymentResponse;
 import com.erp.erp.domain.customer.common.dto.GetCustomerDto;
+import com.erp.erp.domain.customer.common.dto.ProgressDto;
+import com.erp.erp.domain.customer.common.dto.ProgressDto.AddProgress;
+import com.erp.erp.domain.customer.common.dto.ProgressDto.DeleteProgress;
+import com.erp.erp.domain.customer.common.dto.ProgressDto.ProgressResponse;
+import com.erp.erp.domain.customer.common.dto.ProgressDto.UpdateProgress;
 import com.erp.erp.domain.customer.common.dto.SearchCustomerNameDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto.OtherPaymentResponse;
-import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto.ProgressResponse;
 import com.erp.erp.domain.customer.common.dto.UpdateStatusDto;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import com.erp.erp.domain.customer.common.entity.Customer;
+import com.erp.erp.domain.customer.common.entity.Progress;
 import com.erp.erp.domain.customer.common.exception.NotFoundCustomerException;
 import com.erp.erp.domain.customer.repository.CustomerRepository;
+import com.erp.erp.domain.customer.repository.ProgressRepository;
 import com.erp.erp.domain.institute.common.dto.UpdateTotalSeatDto.Request;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
@@ -37,10 +43,14 @@ import com.erp.erp.global.util.generator.AccountGenerator;
 import com.erp.erp.global.util.generator.CustomerGenerator;
 import com.erp.erp.global.util.generator.InstituteGenerator;
 import com.erp.erp.global.util.generator.PlanGenerator;
+import com.erp.erp.global.util.generator.ProgressGenerator;
 import com.erp.erp.global.util.randomValue.Language;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -77,6 +87,9 @@ class CustomerTest extends IntegrationTest {
 
   @Autowired
   private PlanRepository planRepository;
+
+  @Autowired
+  private ProgressRepository progressRepository;
 
   @Autowired
   private TokenManager tokenManager;
@@ -122,6 +135,12 @@ class CustomerTest extends IntegrationTest {
     Customer customer = CustomerGenerator.get(plan, institute, status, name);
     customerRepository.save(customer);
     return customer;
+  }
+
+  private List<Progress> createProgressList(Customer customer, int size) {
+    List<Progress> progressList = ProgressGenerator.get(customer, size);
+    progressRepository.saveAll(progressList);
+    return progressList;
   }
 
 
@@ -224,9 +243,39 @@ class CustomerTest extends IntegrationTest {
   void updateCustomer() {
     // given
     Customer customer = createCustomer();
+//    int progressSize = RandomValue.getInt(1,5);
+//    createProgressList(customer, progressSize);
+
+//    int addProgressSize = RandomValue.getInt(1,5);
+//    List<AddProgress> addProgress = fixtureMonkey.giveMeBuilder(ProgressDto.AddProgress.class).sampleList(addProgressSize);
+
+//    int updateProgressSize = Math.min(RandomValue.getInt(1, 5), progressSize);
+//    List<UpdateProgress> updateProgress = IntStream.range(0, updateProgressSize)
+//        .mapToObj(i -> {
+//          return UpdateProgress.builder()
+//              .progressId(progressList.get(i).getId())
+//              .date(RandomValue.getRandomLocalDate())
+//              .content(RandomValue.string(5).setNullable(false).get())
+//              .build();
+//        }).toList();
+//
+//    int deleteProgressSize = Math.min(RandomValue.getInt(1, 5), progressSize);
+//    List<DeleteProgress> deleteProgress = IntStream.range(deleteProgressSize, 0)
+//        .mapToObj(i -> {
+//          return DeleteProgress.builder()
+//              .progressId(progressList.get(i).getId())
+//              .build();
+//        }).toList();
+
+    ProgressDto.Request progressRequest = ProgressDto.Request.builder()
+        .addProgresses(new ArrayList<>())
+        .updateProgresses(new ArrayList<>())
+        .deleteProgresses(new ArrayList<>())
+        .build();
 
     UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
             .set("customerId", customer.getId())
+        .set("progress", progressRequest)
             .sample();
 
     String url = BASE_URL + "/updateCustomer";
@@ -256,13 +305,13 @@ class CustomerTest extends IntegrationTest {
     assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
     assertThat(apiResponse.getData().isPlanPaymentStatus()).isEqualTo(request.isPlanPaymentStatus());
 
-    List<ProgressResponse> actualProgress = apiResponse.getData().getProgress();
-    List<ProgressResponse> expectedProgress = request.getProgress();
-    assertThat(actualProgress).hasSameSizeAs(expectedProgress);
-    IntStream.range(0, actualProgress.size())
-            .forEach(i -> assertThat(actualProgress.get(i))
-                    .usingRecursiveComparison()
-                    .isEqualTo(expectedProgress.get(i)));
+//    List<ProgressResponse> actualProgress = apiResponse.getData().getProgress();
+//    List<ProgressResponse> expectedProgress = request.getProgress();
+//    assertThat(actualProgress).hasSameSizeAs(expectedProgress);
+//    IntStream.range(0, actualProgress.size())
+//            .forEach(i -> assertThat(actualProgress.get(i))
+//                    .usingRecursiveComparison()
+//                    .isEqualTo(expectedProgress.get(i)));
 
     List<OtherPaymentResponse> actualPayments = apiResponse.getData().getOtherPayment();
     List<OtherPaymentResponse> expectedPayments = request.getOtherPayment();
@@ -272,6 +321,234 @@ class CustomerTest extends IntegrationTest {
                     .usingRecursiveComparison()
                     .isEqualTo(expectedPayments.get(i)));
   }
+
+  @Test()
+  @DisplayName("updateCustomer 진도표 추가 성공")
+  void updateCustomer_success_1() {
+    // given
+    Customer customer = createCustomer();
+    int progressSize = RandomValue.getInt(1,5);
+    List<Progress> progresses = createProgressList(customer, progressSize);
+
+    int addProgressSize = RandomValue.getInt(1,5);
+    List<AddProgress> addProgress = fixtureMonkey.giveMeBuilder(ProgressDto.AddProgress.class).sampleList(addProgressSize);
+
+    ProgressDto.Request progressRequest = ProgressDto.Request.builder()
+        .addProgresses(addProgress)
+        .updateProgresses(new ArrayList<>())
+        .deleteProgresses(new ArrayList<>())
+        .build();
+
+    UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
+        .set("customerId", customer.getId())
+        .set("progress", progressRequest)
+        .sample();
+
+    String url = BASE_URL + "/updateCustomer";
+
+    // then
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+        url,
+        request,
+        String.class
+    );
+
+    ApiResult<UpdateCustomerDto.Response> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<UpdateCustomerDto.Response>>(){}
+    );
+
+    // when
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertNotNull(apiResponse.getData());
+    assertThat(apiResponse.getData().getCustomerId()).isEqualTo(request.getCustomerId());
+    assertThat(apiResponse.getData().getPhotoUrl()).isEqualTo(request.getPhotoUrl());
+    assertThat(apiResponse.getData().getName()).isEqualTo(request.getName());
+    assertThat(apiResponse.getData().getGender()).isEqualTo(request.getGender());
+    assertThat(apiResponse.getData().getBirthDate()).isEqualTo(request.getBirthDate());
+    assertThat(apiResponse.getData().getPhone()).isEqualTo(request.getPhone());
+    assertThat(apiResponse.getData().getAddress()).isEqualTo(request.getAddress());
+    assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
+    assertThat(apiResponse.getData().isPlanPaymentStatus()).isEqualTo(request.isPlanPaymentStatus());
+
+    List<ProgressResponse> actualProgress = apiResponse.getData().getProgressList();
+    assertThat(actualProgress.size()).isEqualTo(addProgressSize+progressSize);
+
+    IntStream.range(0, progressSize)
+            .forEach(i -> {
+              assertThat(actualProgress.get(i).getContent()).isEqualTo(progresses.get(i).getContent());
+              assertThat(actualProgress.get(i).getDate()).isEqualTo(progresses.get(i).getDate());
+            });
+    IntStream.range(addProgressSize+progressSize, progressSize)
+        .forEach(i -> {
+          assertThat(actualProgress.get(i).getContent()).isEqualTo(addProgress.get(i).getContent());
+          assertThat(actualProgress.get(i).getDate()).isEqualTo(addProgress .get(i).getDate());
+        });
+
+    List<OtherPaymentResponse> actualPayments = apiResponse.getData().getOtherPayment();
+    List<OtherPaymentResponse> expectedPayments = request.getOtherPayment();
+    assertThat(actualPayments).hasSameSizeAs(expectedPayments);
+    IntStream.range(0, actualPayments.size())
+        .forEach(i -> assertThat(actualPayments.get(i))
+            .usingRecursiveComparison()
+            .isEqualTo(expectedPayments.get(i)));
+  }
+
+  @Test()
+  @DisplayName("updateCustomer 진도표 수정 성공")
+  void updateCustomer_success_2() {
+    // given
+    Customer customer = createCustomer();
+    int progressSize = RandomValue.getInt(1,5);
+    List<Progress> progressList = createProgressList(customer, progressSize);
+    List<Long> progressIds = new ArrayList<>(progressList.stream().map(Progress::getId).toList());
+    Collections.shuffle(progressIds);
+
+    List<UpdateProgress> updateProgress = IntStream.range(0, progressSize)
+        .mapToObj(i -> {
+          return UpdateProgress.builder()
+              .progressId(progressIds.get(i))
+              .date(RandomValue.getRandomLocalDate())
+              .content(RandomValue.string(5).setNullable(false).get())
+              .build();
+        }).toList();
+
+    ProgressDto.Request progressRequest = ProgressDto.Request.builder()
+        .addProgresses(new ArrayList<>())
+        .updateProgresses(updateProgress)
+        .deleteProgresses(new ArrayList<>())
+        .build();
+
+    UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
+        .set("customerId", customer.getId())
+        .set("progress", progressRequest)
+        .sample();
+
+    String url = BASE_URL + "/updateCustomer";
+
+    // then
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+        url,
+        request,
+        String.class
+    );
+
+    ApiResult<UpdateCustomerDto.Response> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<UpdateCustomerDto.Response>>(){}
+    );
+
+    // when
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertNotNull(apiResponse.getData());
+    assertThat(apiResponse.getData().getCustomerId()).isEqualTo(request.getCustomerId());
+    assertThat(apiResponse.getData().getPhotoUrl()).isEqualTo(request.getPhotoUrl());
+    assertThat(apiResponse.getData().getName()).isEqualTo(request.getName());
+    assertThat(apiResponse.getData().getGender()).isEqualTo(request.getGender());
+    assertThat(apiResponse.getData().getBirthDate()).isEqualTo(request.getBirthDate());
+    assertThat(apiResponse.getData().getPhone()).isEqualTo(request.getPhone());
+    assertThat(apiResponse.getData().getAddress()).isEqualTo(request.getAddress());
+    assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
+    assertThat(apiResponse.getData().isPlanPaymentStatus()).isEqualTo(request.isPlanPaymentStatus());
+
+    List<ProgressResponse> actualProgress = apiResponse.getData().getProgressList();
+    actualProgress.sort(Comparator.comparing(ProgressResponse::getProgressId).reversed());
+
+    List<UpdateProgress> updateProgressList = new ArrayList<>(updateProgress);
+    updateProgressList.sort(Comparator.comparing(UpdateProgress::getProgressId).reversed());
+
+    assertThat(actualProgress).hasSameSizeAs(updateProgress);
+    IntStream.range(0, actualProgress.size())
+        .forEach(i -> {
+          assertThat(actualProgress.get(i).getProgressId()).isEqualTo(updateProgressList.get(i).getProgressId());
+          assertThat(actualProgress.get(i).getContent()).isEqualTo(updateProgressList.get(i).getContent());
+          assertThat(actualProgress.get(i).getDate()).isEqualTo(updateProgressList.get(i).getDate());
+        });
+
+    List<OtherPaymentResponse> actualPayments = apiResponse.getData().getOtherPayment();
+    List<OtherPaymentResponse> expectedPayments = request.getOtherPayment();
+    assertThat(actualPayments).hasSameSizeAs(expectedPayments);
+    IntStream.range(0, actualPayments.size())
+        .forEach(i -> assertThat(actualPayments.get(i))
+            .usingRecursiveComparison()
+            .isEqualTo(expectedPayments.get(i)));
+  }
+
+  @Test()
+  @DisplayName("updateCustomer 진도표 삭제 성공")
+  void updateCustomer_success_3() {
+    // given
+    Customer customer = createCustomer();
+    int progressSize = RandomValue.getInt(1,5);
+    List<Progress> progressList = createProgressList(customer, progressSize);
+    List<Long> progressIds = new ArrayList<>(progressList.stream().map(Progress::getId).toList());
+    Collections.shuffle(progressIds);
+
+    int deleteProgressSize = RandomValue.getInt(1, progressSize);
+    List<DeleteProgress> deleteProgress = IntStream.range(0, deleteProgressSize)
+        .mapToObj(i -> {
+          return DeleteProgress.builder()
+              .progressId(progressIds.get(i))
+              .build();
+        }).toList();
+
+    ProgressDto.Request progressRequest = ProgressDto.Request.builder()
+        .addProgresses(new ArrayList<>())
+        .updateProgresses(new ArrayList<>())
+        .deleteProgresses(deleteProgress)
+        .build();
+
+    UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
+        .set("customerId", customer.getId())
+        .set("progress", progressRequest)
+        .sample();
+
+    String url = BASE_URL + "/updateCustomer";
+
+    // then
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+        url,
+        request,
+        String.class
+    );
+
+    ApiResult<UpdateCustomerDto.Response> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<UpdateCustomerDto.Response>>(){}
+    );
+
+    // when
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertNotNull(apiResponse.getData());
+    assertThat(apiResponse.getData().getCustomerId()).isEqualTo(request.getCustomerId());
+    assertThat(apiResponse.getData().getPhotoUrl()).isEqualTo(request.getPhotoUrl());
+    assertThat(apiResponse.getData().getName()).isEqualTo(request.getName());
+    assertThat(apiResponse.getData().getGender()).isEqualTo(request.getGender());
+    assertThat(apiResponse.getData().getBirthDate()).isEqualTo(request.getBirthDate());
+    assertThat(apiResponse.getData().getPhone()).isEqualTo(request.getPhone());
+    assertThat(apiResponse.getData().getAddress()).isEqualTo(request.getAddress());
+    assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
+    assertThat(apiResponse.getData().isPlanPaymentStatus()).isEqualTo(request.isPlanPaymentStatus());
+
+    List<ProgressResponse> actualProgress = apiResponse.getData().getProgressList();
+
+    assertThat(actualProgress.size()).isEqualTo(progressSize-deleteProgressSize);
+    for (ProgressResponse progressResponse : actualProgress) {
+      for (DeleteProgress delete : deleteProgress) {
+        assertThat(progressResponse.getProgressId()).isNotEqualTo(delete.getProgressId());
+        }
+      }
+
+
+    List<OtherPaymentResponse> actualPayments = apiResponse.getData().getOtherPayment();
+    List<OtherPaymentResponse> expectedPayments = request.getOtherPayment();
+    assertThat(actualPayments).hasSameSizeAs(expectedPayments);
+    IntStream.range(0, actualPayments.size())
+        .forEach(i -> assertThat(actualPayments.get(i))
+            .usingRecursiveComparison()
+            .isEqualTo(expectedPayments.get(i)));
+  }
+
 
   @Test
   @DisplayName("updateCustomer 필수 값 미입력")
@@ -367,6 +644,53 @@ class CustomerTest extends IntegrationTest {
     assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
     assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
   }
+
+//  @Test()
+//  @DisplayName("updateCustomer 진도표 수정 잘못된 ID값 입력")
+//  void updateCustomer_fail_4() {
+//    // given
+//    Customer customer = createCustomer();
+//
+//    int updateProgressSize = RandomValue.getInt(1,5);
+//    List<UpdateProgress> updateProgress = IntStream.range(0, updateProgressSize)
+//        .mapToObj(i -> {
+//          return UpdateProgress.builder()
+//              .progressId(RandomValue.getRandomLong(9999))
+//              .date(RandomValue.getRandomLocalDate())
+//              .content(RandomValue.string(5).setNullable(false).get())
+//              .build();
+//        }).toList();
+//
+//    ProgressDto.Request progressRequest = ProgressDto.Request.builder()
+//        .addProgresses(new ArrayList<>())
+//        .updateProgresses(updateProgress)
+//        .deleteProgresses(new ArrayList<>())
+//        .build();
+//
+//    UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
+//        .set("customerId", customer.getId())
+//        .set("progress", progressRequest)
+//        .sample();
+//
+//    String url = BASE_URL + "/updateCustomer";
+//
+//    NotFoundProgressException exception = new NotFoundProgressException();
+//    // then
+//    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+//        url,
+//        request,
+//        String.class
+//    );
+//
+//    ApiResult<UpdateCustomerDto.Response> apiResponse = gson.fromJson(
+//        responseEntity.getBody(),
+//        new TypeToken<ApiResult<UpdateCustomerDto.Response>>(){}
+//    );
+//
+//    // when
+//    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+//    assertNotNull(apiResponse.getData());
+//  }
 
   @Test
   @DisplayName("updateStatus 성공")
