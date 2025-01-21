@@ -1,6 +1,8 @@
 package com.erp.erp.domain.reservation.common.mapper;
 
+import com.erp.erp.domain.customer.common.dto.ProgressDto;
 import com.erp.erp.domain.customer.common.entity.Customer;
+import com.erp.erp.domain.customer.common.entity.Progress;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.reservation.common.dto.AddReservationDto;
@@ -37,15 +39,21 @@ public interface ReservationMapper {
 
   @Mapping(target = "photoUrl", source = "reservation.customer.photoUrl")
   @Mapping(target = "name", source = "reservation.customer.name")
-  @Mapping(target = "gender", source = "reservation.customer.gender")
   @Mapping(target = "phone", source = "reservation.customer.phone")
   @Mapping(target = "planName", source = "reservation.customer.planPayment.plan.name")
   @Mapping(target = "endDate", expression = "java(calculateEndDate(reservation))")
   @Mapping(target = "remainingTime", expression = "java(0)")
   @Mapping(target = "usedTime", expression = "java(0)")
   @Mapping(target = "memo", source = "reservation.customer.memo")
-  @Mapping(target = "progress", expression = "java(null)")
-  GetReservationCustomerDetailsDto.Response entityToGetReservationCustomerDetailsDtoResponse(Reservation reservation);
+  @Mapping(target = "progressList", expression = "java(entityToProgressResponse(progressList))")
+  GetReservationCustomerDetailsDto.Response entityToGetReservationCustomerDetailsDtoResponse(Reservation reservation, List<Progress> progressList);
+
+  List<ProgressDto.ProgressResponse> entityToProgressResponse(List<Progress> progress);
+
+  @Mapping(target = "progressId", source = "id")
+  @Mapping(target = "date", source = "date")
+  @Mapping(target = "content", source = "content")
+  ProgressDto.ProgressResponse progressToProgressResponse(Progress progress);
 
   default LocalDateTime calculateEndDate(Reservation reservation) {
     Customer customer = reservation.getCustomer();

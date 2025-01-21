@@ -2,7 +2,9 @@ package com.erp.erp.domain.reservation.service;
 
 import com.erp.erp.domain.auth.business.AuthProvider;
 import com.erp.erp.domain.customer.business.CustomerReader;
+import com.erp.erp.domain.customer.business.ProgressReader;
 import com.erp.erp.domain.customer.common.entity.Customer;
+import com.erp.erp.domain.customer.common.entity.Progress;
 import com.erp.erp.domain.institute.business.InstituteValidator;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.reservation.business.ReservationDelete;
@@ -35,6 +37,7 @@ public class ReservationService {
   private final ReservationValidator reservationValidator;
   private final CustomerReader customerReader;
   private final ReservationMapper reservationMapper;
+  private final ProgressReader progressReader;
 
 
   public AddReservationDto.Response addReservations(AddReservationDto.Request req) {
@@ -105,7 +108,8 @@ public class ReservationService {
     Institute institute = authProvider.getCurrentInstitute();
     Reservation reservation = reservationReader.findByIdAndInstituteId(reservationsId,
         institute.getId());
-    return reservationMapper.entityToGetReservationCustomerDetailsDtoResponse(reservation);
+    List<Progress> progressList = progressReader.findByCustomerId(reservation.getCustomer().getId());
+    return reservationMapper.entityToGetReservationCustomerDetailsDtoResponse(reservation, progressList);
   }
 
 

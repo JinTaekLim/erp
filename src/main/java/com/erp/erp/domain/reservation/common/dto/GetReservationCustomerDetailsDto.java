@@ -1,8 +1,7 @@
 package com.erp.erp.domain.reservation.common.dto;
 
-import com.erp.erp.domain.customer.common.entity.Gender;
+import com.erp.erp.domain.customer.common.dto.ProgressDto.ProgressResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
@@ -23,8 +22,6 @@ public class GetReservationCustomerDetailsDto {
     private String photoUrl;
     @Schema(description = "이름")
     private String name;
-    @Schema(description = "성별")
-    private Gender gender;
     @Schema(description = "전화번호")
     private String phone;
     @Schema(description = "이용권")
@@ -38,15 +35,6 @@ public class GetReservationCustomerDetailsDto {
     @Schema(description = "메모")
     private String memo;
     @Schema(description = "진도표")
-    private List<ProgressResponse> progress;
+    private List<ProgressResponse> progressList;
   }
-
-  private static class ProgressResponse{
-    @Schema(description = "날짜")
-    private LocalDate date;
-    @Schema(description = "내용")
-    private String content;
-
-  }
-
 }
