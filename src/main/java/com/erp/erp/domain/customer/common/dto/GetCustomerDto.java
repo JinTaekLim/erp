@@ -1,6 +1,7 @@
 package com.erp.erp.domain.customer.common.dto;
 
 import com.erp.erp.domain.customer.common.entity.Gender;
+import com.erp.erp.domain.plan.common.entity.CourseType;
 import com.erp.erp.domain.plan.common.entity.LicenseType;
 import com.erp.erp.domain.plan.common.entity.PlanType;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -31,6 +32,8 @@ public class GetCustomerDto {
     private String planName;
     @Schema(description = "이용권 구분 (시간/기간제)")
     private PlanType planType;
+    @Schema(description = "이용 과정 (취득/장롱/일반)")
+    private CourseType courseType;
     @Schema(description = "남은 시간")
     private double remainingTime;
     @Schema(description = "남은 기간")

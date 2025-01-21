@@ -2,6 +2,7 @@ package com.erp.erp.domain.customer.common.dto;
 
 import com.erp.erp.domain.customer.common.entity.Gender;
 import com.erp.erp.domain.payment.common.entity.PaymentsMethod;
+import com.erp.erp.domain.plan.common.entity.CourseType;
 import com.erp.erp.domain.plan.common.entity.LicenseType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
@@ -45,6 +46,8 @@ public class GetCustomerDetailDto {
     private LicenseType licenseType;
     @Schema(description = "이용권 이름")
     private String planName;
+    @Schema(description = "이용 과정 (취득/장롱/일반)")
+    private CourseType courseType;
     @Schema(description = "이용권 금액")
     private int planPrice;
     @Schema(description = "이용권 할인률")

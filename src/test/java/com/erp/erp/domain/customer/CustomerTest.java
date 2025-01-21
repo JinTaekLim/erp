@@ -425,6 +425,7 @@ class CustomerTest extends IntegrationTest {
     assertThat(apiResponse.getData().getBirthDate()).isEqualTo(request.getBirthDate());
     assertThat(apiResponse.getData().getPhone()).isEqualTo(request.getPhone());
     assertThat(apiResponse.getData().getAddress()).isEqualTo(request.getAddress());
+    assertThat(apiResponse.getData().getVisitPath()).isEqualTo(request.getVisitPath());
     assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
     assertThat(apiResponse.getData().isPlanPaymentStatus()).isEqualTo(request.isPlanPaymentStatus());
 
@@ -978,6 +979,7 @@ class CustomerTest extends IntegrationTest {
       assertThat(response.getPhone()).isEqualTo(customer.getPhone());
       assertThat(response.getLicenseType()).isEqualTo(customer.getPlanPayment().getPlan().getLicenseType());
       assertThat(response.getPlanName()).isEqualTo(customer.getPlanPayment().getPlan().getName());
+      assertThat(response.getCourseType()).isEqualTo(customer.getPlanPayment().getPlan().getCourseType());
 //      assertThat(response.getRemainingTime())
 //      assertThat(response.getRemainingPeriod())
 //      assertThat(response.getUsedTime())
@@ -1033,6 +1035,7 @@ class CustomerTest extends IntegrationTest {
       assertThat(response.getPhone()).isEqualTo(customer.getPhone());
       assertThat(response.getLicenseType()).isEqualTo(customer.getPlanPayment().getPlan().getLicenseType());
       assertThat(response.getPlanName()).isEqualTo(customer.getPlanPayment().getPlan().getName());
+      assertThat(response.getCourseType()).isEqualTo(customer.getPlanPayment().getPlan().getCourseType());
 //      assertThat(response.getRemainingTime())
 //      assertThat(response.getRemainingPeriod())
 //      assertThat(response.getUsedTime())
@@ -1190,7 +1193,7 @@ class CustomerTest extends IntegrationTest {
     assertThat(apiResponse.getData().getGender()).isEqualTo(customer.getGender());
     assertThat(apiResponse.getData().getPhone()).isEqualTo(customer.getPhone());
     assertThat(apiResponse.getData().getAddress()).isEqualTo(customer.getAddress());
-//    assertThat(apiResponse.getData().getVisitPath()).isEqualTo(null);
+    assertThat(apiResponse.getData().getVisitPath()).isEqualTo(customer.getVisitPath());
     assertThat(apiResponse.getData().getMemo()).isEqualTo(customer.getMemo());
 //    assertThat(apiResponse.getData().getProgressList()).isEqualTo(null);
 
@@ -1201,6 +1204,7 @@ class CustomerTest extends IntegrationTest {
     int paymentTotal = planPrice - discountPrice;
     assertThat(planPaymentResponse.getLicenseType()).isEqualTo(planPayment.getPlan().getLicenseType());
     assertThat(planPaymentResponse.getPlanName()).isEqualTo(planPayment.getPlan().getName());
+    assertThat(planPaymentResponse.getCourseType()).isEqualTo(planPayment.getPlan().getCourseType());
     assertThat(planPaymentResponse.getPlanPrice()).isEqualTo(planPayment.getPlan().getPrice());
     assertThat(planPaymentResponse.getDiscountRate()).isEqualTo(planPayment.getDiscountRate());
     assertThat(planPaymentResponse.getDiscountPrice()).isEqualTo(discountPrice);
