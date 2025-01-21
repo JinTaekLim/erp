@@ -21,9 +21,7 @@ import com.erp.erp.domain.customer.common.mapper.CustomerMapper;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.plan.business.PlanReader;
 import com.erp.erp.domain.plan.common.entity.Plan;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -76,11 +74,7 @@ public class CustomerService {
         req.getCustomerId());
 
     Customer updateCustomer = customerUpdater.updateCustomer(req, customer);
-
-    List<Progress> progresses = Optional.ofNullable(req.getProgress())
-        .map(progress -> progressManger.add(customer, progress))
-        .orElseGet(ArrayList::new);
-
+    List<Progress> progresses = progressManger.add(customer, req.getProgress());
 
     return customerMapper.entityToUpdateCustomerResponse(updateCustomer, progresses);
   }
