@@ -58,6 +58,7 @@ public interface CustomerMapper {
   @Mapping(target = "licenseType", source = "customer.planPayment.plan.licenseType")
   @Mapping(target = "planName", source = "customer.planPayment.plan.name")
   @Mapping(target = "planType", source = "customer.planPayment.plan.planType")
+  @Mapping(target = "courseType", source = "customer.planPayment.plan.courseType")
   @Mapping(target = "remainingTime", expression = "java(0)")
   @Mapping(target = "remainingPeriod", expression = "java(0)")
   @Mapping(target = "usedTime", expression = "java(0)")
@@ -79,6 +80,7 @@ public interface CustomerMapper {
   GetCustomerDetailDto.Response entityToGetCustomerDetailResponse(Customer customer, List<Progress> progress);
   @Mapping(target = "licenseType", source = "planPayment.plan.licenseType")
   @Mapping(target = "planName", source = "planPayment.plan.name")
+  @Mapping(target = "courseType", source = "planPayment.plan.courseType")
   @Mapping(target = "planPrice", source = "planPayment.plan.price")
   @Mapping(target = "discountPrice", expression = "java(calculateDiscountPrice(planPayment))")
   @Mapping(target = "paymentTotal", expression = "java(calculatePaymentTotal(planPayment))")

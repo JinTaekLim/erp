@@ -1,5 +1,6 @@
 package com.erp.erp.domain.admin.common.dto;
 
+import com.erp.erp.domain.plan.common.entity.CourseType;
 import com.erp.erp.domain.plan.common.entity.LicenseType;
 import com.erp.erp.domain.plan.common.entity.PlanType;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,6 +25,10 @@ public class AddPlanDto {
     @Schema(description = "1/2종 구분", example = "TYPE_1, TYPE_2")
     @NotNull
     private LicenseType licenseType;
+
+    @Schema(description = "이용 과정 (취득/장롱/일반)")
+    @NotNull
+    private CourseType courseType;
 
     @Schema(description = "이용권 이름", example = "5시간 이용권")
     @NotNull
@@ -53,6 +58,8 @@ public class AddPlanDto {
     private PlanType planType;
     @Schema(description = "1/2종 구분")
     private LicenseType licenseType;
+    @Schema(description = "이용 과정 (취득/장롱/일반)")
+    private CourseType courseType;
     @Schema(description = "이용권 이름")
     private String name;
     @Schema(description = "이용권 가격")

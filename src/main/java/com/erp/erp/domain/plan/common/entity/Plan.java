@@ -24,6 +24,9 @@ public class Plan {
   private LicenseType licenseType;
 
   @NotNull
+  private CourseType courseType;
+
+  @NotNull
   private String name;
 
   @NotNull
@@ -37,10 +40,11 @@ public class Plan {
   private int availablePeriod;
 
   @Builder
-  public Plan(PlanType planType, LicenseType licenseType, String name, int price, int availableTime,
-      int availablePeriod) {
+  public Plan(PlanType planType, LicenseType licenseType, CourseType courseType, String name,
+      int price, int availableTime, int availablePeriod) {
     this.planType = planType;
     this.licenseType = licenseType;
+    this.courseType = courseType;
     this.name = name;
     this.price = price;
     this.availableTime = availableTime;
