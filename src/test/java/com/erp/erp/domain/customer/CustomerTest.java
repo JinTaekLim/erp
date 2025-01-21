@@ -28,6 +28,7 @@ import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.Progress;
 import com.erp.erp.domain.customer.common.exception.NotFoundCustomerException;
+import com.erp.erp.domain.customer.common.exception.NotFoundProgressException;
 import com.erp.erp.domain.customer.repository.CustomerRepository;
 import com.erp.erp.domain.customer.repository.ProgressRepository;
 import com.erp.erp.domain.institute.common.dto.UpdateTotalSeatDto.Request;
@@ -51,6 +52,7 @@ import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -645,52 +647,122 @@ class CustomerTest extends IntegrationTest {
     assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
   }
 
-//  @Test()
-//  @DisplayName("updateCustomer 진도표 수정 잘못된 ID값 입력")
-//  void updateCustomer_fail_4() {
-//    // given
-//    Customer customer = createCustomer();
-//
-//    int updateProgressSize = RandomValue.getInt(1,5);
-//    List<UpdateProgress> updateProgress = IntStream.range(0, updateProgressSize)
-//        .mapToObj(i -> {
-//          return UpdateProgress.builder()
-//              .progressId(RandomValue.getRandomLong(9999))
-//              .date(RandomValue.getRandomLocalDate())
-//              .content(RandomValue.string(5).setNullable(false).get())
-//              .build();
-//        }).toList();
-//
-//    ProgressDto.Request progressRequest = ProgressDto.Request.builder()
-//        .addProgresses(new ArrayList<>())
-//        .updateProgresses(updateProgress)
-//        .deleteProgresses(new ArrayList<>())
-//        .build();
-//
-//    UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
-//        .set("customerId", customer.getId())
-//        .set("progress", progressRequest)
-//        .sample();
-//
-//    String url = BASE_URL + "/updateCustomer";
-//
-//    NotFoundProgressException exception = new NotFoundProgressException();
-//    // then
-//    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
-//        url,
-//        request,
-//        String.class
-//    );
-//
-//    ApiResult<UpdateCustomerDto.Response> apiResponse = gson.fromJson(
-//        responseEntity.getBody(),
-//        new TypeToken<ApiResult<UpdateCustomerDto.Response>>(){}
-//    );
-//
-//    // when
-//    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-//    assertNotNull(apiResponse.getData());
-//  }
+  @Test()
+  @DisplayName("updateCustomer 진도표 수정 잘못된 ID값 입력")
+  void updateCustomer_fail_4() {
+    // given
+    Customer customer = createCustomer();
+    int progressSize = RandomValue.getInt(0,2);
+    List<Long> progressIds = createProgressList(customer, progressSize).stream()
+        .map(Progress::getId)
+        .toList();
+
+    int updateProgressSize = RandomValue.getInt(1,5);
+    List<UpdateProgress> updateProgress = IntStream.range(0, updateProgressSize)
+        .mapToObj(i -> {
+          long newId = Stream.generate(() -> RandomValue.getRandomLong(0, 99999))
+              .filter(id -> !progressIds.contains(id))
+              .findFirst()
+              .orElseThrow(() -> new IllegalStateException("새로운 ID를 생성할 수 없습니다."));
+
+          return UpdateProgress.builder()
+              .progressId(newId)
+              .date(RandomValue.getRandomLocalDate())
+              .content(RandomValue.string(5).setNullable(false).get())
+              .build();
+        }).toList();
+
+
+    ProgressDto.Request progressRequest = ProgressDto.Request.builder()
+        .addProgresses(new ArrayList<>())
+        .updateProgresses(updateProgress)
+        .deleteProgresses(new ArrayList<>())
+        .build();
+
+    UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
+        .set("customerId", customer.getId())
+        .set("progress", progressRequest)
+        .sample();
+
+    String url = BASE_URL + "/updateCustomer";
+
+    NotFoundProgressException exception = new NotFoundProgressException();
+
+    // then
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+        url,
+        request,
+        String.class
+    );
+
+    ApiResult<UpdateCustomerDto.Response> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<UpdateCustomerDto.Response>>(){}
+    );
+
+    // when
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
+    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
+  }
+
+
+  @Test()
+  @DisplayName("updateCustomer 진도표 삭제 잘못된 ID값 입력")
+  void updateCustomer_fail_5() {
+    // given
+    Customer customer = createCustomer();
+    int progressSize = RandomValue.getInt(0,2);
+    List<Long> progressIds = createProgressList(customer, progressSize).stream()
+        .map(Progress::getId)
+        .toList();
+
+    int deleteProgressSize = RandomValue.getInt(1,5);
+    List<DeleteProgress> deleteProgresses = IntStream.range(0, deleteProgressSize)
+        .mapToObj(i -> {
+          long newId = Stream.generate(() -> RandomValue.getRandomLong(0, 99999))
+              .filter(id -> !progressIds.contains(id))
+              .findFirst()
+              .orElseThrow(() -> new IllegalStateException("새로운 ID를 생성할 수 없습니다."));
+
+          return DeleteProgress.builder()
+              .progressId(newId)
+              .build();
+        }).toList();
+
+
+    ProgressDto.Request progressRequest = ProgressDto.Request.builder()
+        .addProgresses(new ArrayList<>())
+        .updateProgresses(new ArrayList<>())
+        .deleteProgresses(deleteProgresses)
+        .build();
+
+    UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
+        .set("customerId", customer.getId())
+        .set("progress", progressRequest)
+        .sample();
+
+    String url = BASE_URL + "/updateCustomer";
+
+    NotFoundProgressException exception = new NotFoundProgressException();
+
+    // then
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+        url,
+        request,
+        String.class
+    );
+
+    ApiResult<UpdateCustomerDto.Response> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<UpdateCustomerDto.Response>>(){}
+    );
+
+    // when
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
+    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
+  }
 
   @Test
   @DisplayName("updateStatus 성공")

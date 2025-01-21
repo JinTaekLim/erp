@@ -70,6 +70,9 @@ public class ProgressManger {
     if (updateProgresses.isEmpty()) {
       return new ArrayList<>();
     }
+    if (customerProgress.isEmpty()) {
+      throw new NotFoundProgressException();
+    }
     return customerProgress.stream()
         .map(customer -> {
           ProgressDto.UpdateProgress matchingUpdate = updateProgresses.stream()
