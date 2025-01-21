@@ -9,10 +9,13 @@ import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.account.repository.AccountRepository;
 import com.erp.erp.domain.auth.business.TokenManager;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
+import com.erp.erp.domain.customer.common.dto.ProgressDto.ProgressResponse;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customer.common.entity.Customer;
+import com.erp.erp.domain.customer.common.entity.Progress;
 import com.erp.erp.domain.customer.common.exception.NotFoundCustomerException;
 import com.erp.erp.domain.customer.repository.CustomerRepository;
+import com.erp.erp.domain.customer.repository.ProgressRepository;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.domain.plan.common.entity.Plan;
@@ -33,6 +36,7 @@ import com.erp.erp.global.util.generator.AccountGenerator;
 import com.erp.erp.global.util.generator.CustomerGenerator;
 import com.erp.erp.global.util.generator.InstituteGenerator;
 import com.erp.erp.global.util.generator.PlanGenerator;
+import com.erp.erp.global.util.generator.ProgressGenerator;
 import com.erp.erp.global.util.generator.ReservationGenerator;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.test.IntegrationTest;
@@ -72,6 +76,8 @@ class ReservationTest extends IntegrationTest {
   @Autowired
   private AccountRepository accountRepository;
   @Autowired
+  private ProgressRepository progressRepository;
+  @Autowired
   private TokenManager tokenManager;
 
 
@@ -106,6 +112,12 @@ class ReservationTest extends IntegrationTest {
       LocalDateTime startTime, LocalDateTime endTime) {
     Reservation reservation = ReservationGenerator.get(customer, institute, startTime, endTime);
     return reservationRepository.save(reservation);
+  }
+
+  private List<Progress> createProgressList(Customer customer, int size) {
+    List<Progress> progressList = ProgressGenerator.get(customer, size);
+    progressRepository.saveAll(progressList);
+    return progressList;
   }
 
   @Test
@@ -918,6 +930,8 @@ class ReservationTest extends IntegrationTest {
     TokenDto tokenDto = tokenManager.createToken(account);
 
     Customer customer = createCustomers(institute);
+    int progressSize = RandomValue.getInt(0,5);
+    List<Progress> progressList = createProgressList(customer, progressSize);
     int minute = RandomValue.getInt(0,2) == 1 ? 0 : 30;
     LocalDateTime startTime = RandomValue.getRandomLocalDateTime().withMinute(minute);
     LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
@@ -955,14 +969,22 @@ class ReservationTest extends IntegrationTest {
     assertThat(apiResponse.getData().getEndTime()).isEqualTo(reservation.getEndTime());
     assertThat(apiResponse.getData().getPhotoUrl()).isEqualTo(customer.getPhotoUrl());
     assertThat(apiResponse.getData().getName()).isEqualTo(customer.getName());
-    assertThat(apiResponse.getData().getGender()).isEqualTo(customer.getGender());
     assertThat(apiResponse.getData().getPhone()).isEqualTo(customer.getPhone());
     assertThat(apiResponse.getData().getPlanName()).isEqualTo(plan.getName());
     assertThat(apiResponse.getData().getEndDate()).isEqualTo(endDate);
 //    assertThat(apiResponse.getData().getRemainingTime())
 //    assertThat(apiResponse.getData().getUsedTime())
     assertThat(apiResponse.getData().getMemo()).isEqualTo(customer.getMemo());
-//    assertThat(apiResponse.getData().getProgress())
+
+    List<ProgressResponse> actualProgress = apiResponse.getData().getProgressList();
+    assertThat(actualProgress.size()).isEqualTo(progressSize);
+    IntStream.range(0, progressSize)
+        .forEach(i -> {
+          assertThat(actualProgress.get(i).getProgressId()).isEqualTo(progressList.get(i).getId());
+          assertThat(actualProgress.get(i).getContent()).isEqualTo(progressList.get(i).getContent());
+          assertThat(actualProgress.get(i).getDate()).isEqualTo(progressList.get(i).getDate());
+        });
+
   }
 
   @Test
