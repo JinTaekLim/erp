@@ -1,9 +1,12 @@
 package com.erp.erp.domain.reservation.common.dto;
 
+import com.erp.erp.domain.customer.common.dto.ProgressDto;
+import com.erp.erp.domain.customer.common.dto.ProgressDto.ProgressResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -29,6 +32,8 @@ public class UpdatedReservationDto {
     @Schema(description = "좌석 번호")
     @NotNull
     private int seatNumber;
+    @Schema(description = "진도표")
+    private ProgressDto.Request progress;
 
   }
 
@@ -47,6 +52,8 @@ public class UpdatedReservationDto {
     private String memo;
     @Schema(description = "좌석 번호")
     private int seatNumber;
+    @Schema(description = "진도표")
+    private List<ProgressResponse> progressList;
   }
 
 }

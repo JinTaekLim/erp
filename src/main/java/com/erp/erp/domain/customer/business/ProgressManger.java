@@ -23,6 +23,7 @@ public class ProgressManger {
 
   public List<Progress> add(Customer customer, ProgressDto.Request req) {
     List<Progress> customerProgress = progressReader.findByCustomerId(customer.getId());
+    if (req == null) { return customerProgress; }
     deleteProgress(customerProgress, req.getDeleteProgresses());
     List<Progress> addProgresses = progressMapper.addProgressToEntityList(req.getAddProgresses(),
         customer);

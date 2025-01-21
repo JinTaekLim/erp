@@ -2,6 +2,7 @@ package com.erp.erp.domain.reservation.service;
 
 import com.erp.erp.domain.auth.business.AuthProvider;
 import com.erp.erp.domain.customer.business.CustomerReader;
+import com.erp.erp.domain.customer.business.ProgressManger;
 import com.erp.erp.domain.customer.business.ProgressReader;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.Progress;
@@ -22,6 +23,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +40,7 @@ public class ReservationService {
   private final CustomerReader customerReader;
   private final ReservationMapper reservationMapper;
   private final ProgressReader progressReader;
+  private final ProgressManger progressManger;
 
 
   public AddReservationDto.Response addReservations(AddReservationDto.Request req) {
@@ -74,6 +77,7 @@ public class ReservationService {
   }
 
   // note. 전달받은 시간 값 검증, 예약 가능 좌석인지 검증 필요
+  @Transactional
   public UpdatedReservationDto.Response updateReservation(UpdatedReservationDto.Request req) {
 
     Institute institute = authProvider.getCurrentInstitute();
@@ -82,7 +86,9 @@ public class ReservationService {
 
     instituteValidator.isValidSeatNumber(institute, req.getSeatNumber());
     reservationUpdater.updatedReservations(reservation, req);
-    return reservationMapper.entityToUpdatedReservationDtoResponse(reservation);
+    List<Progress> progressList = progressManger.add(reservation.getCustomer(), req.getProgress());
+
+    return reservationMapper.entityToUpdatedReservationDtoResponse(reservation, progressList);
   }
 
   // note. 변경된 좌석에 예약이 존재하는지 검증 필요

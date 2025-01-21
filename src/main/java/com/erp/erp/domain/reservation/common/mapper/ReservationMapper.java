@@ -32,7 +32,8 @@ public interface ReservationMapper {
   GetDailyReservationDto.Response entityToGetDailyReservationDtoResponse(Reservation reservation);
 
   @Mapping(target = "reservationId", source = "reservation.id")
-  UpdatedReservationDto.Response entityToUpdatedReservationDtoResponse(Reservation reservation);
+  @Mapping(target = "progressList", expression = "java(entityToProgressResponse(progressList))")
+  UpdatedReservationDto.Response entityToUpdatedReservationDtoResponse(Reservation reservation, List<Progress> progressList);
 
   @Mapping(target = "reservationId", source = "reservation.id")
   UpdatedSeatNumberDto.Response entityToUpdatedSeatNumberDtoResponse(Reservation reservation);
