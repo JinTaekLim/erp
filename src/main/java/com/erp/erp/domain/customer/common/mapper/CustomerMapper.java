@@ -7,6 +7,7 @@ import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto.OtherPaymentR
 import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto.PlanPaymentResponse;
 import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto.ProgressResponse;
 import com.erp.erp.domain.customer.common.dto.GetCustomerDto;
+import com.erp.erp.domain.customer.common.dto.ProgressDto;
 import com.erp.erp.domain.customer.common.dto.SearchCustomerNameDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customer.common.entity.Customer;
@@ -39,11 +40,17 @@ public interface CustomerMapper {
   AddCustomerDto.Response entityToAddCustomerResponse(Customer customer);
 
   @Mapping(target = "customerId", source = "customer.id")
-  @Mapping(target = "progressList", source = "progresses")
+  @Mapping(target = "progressList", expression = "java(entityToProgressResponse(progressList))")
   @Mapping(target = "otherPayment", source = "customer.otherPayments")
   @Mapping(target = "planPaymentStatus", source = "customer.planPayment.status")
-  UpdateCustomerDto.Response entityToUpdateCustomerResponse(Customer customer, List<Progress> progresses);
+  UpdateCustomerDto.Response entityToUpdateCustomerResponse(Customer customer, List<Progress> progressList);
 
+  @Mapping(target = "progressId", source = "id")
+  @Mapping(target = "date", source = "date")
+  @Mapping(target = "content", source = "content")
+  ProgressDto.ProgressResponse progressToProgressResponse(Progress progress);
+
+  List<ProgressDto.ProgressResponse> entityToProgressResponse(List<Progress> progress);
 
   List<GetCustomerDto.Response> entityToGetCustomerResponse(List<Customer> customers);
 

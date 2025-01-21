@@ -25,7 +25,7 @@ public class AccountReader {
     return accountRepository.findById(accountId).orElse(null);
   }
 
-  public Account findByAccountAndPassword(String identifier, String password) {
+  public Account findByIdentifierAndPassword(String identifier, String password) {
     return accountRepository.findByIdentifierAndPassword(identifier, password)
         .orElseThrow(InvalidCredentialsException::new);
   };

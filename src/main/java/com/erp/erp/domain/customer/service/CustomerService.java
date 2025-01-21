@@ -5,8 +5,7 @@ import com.erp.erp.domain.auth.business.AuthProvider;
 import com.erp.erp.domain.customer.business.CustomerCreator;
 import com.erp.erp.domain.customer.business.CustomerReader;
 import com.erp.erp.domain.customer.business.CustomerUpdater;
-import com.erp.erp.domain.customer.business.ProgressCreator;
-import com.erp.erp.domain.customer.business.ProgressDeleter;
+import com.erp.erp.domain.customer.business.ProgressManger;
 import com.erp.erp.domain.customer.business.ProgressReader;
 import com.erp.erp.domain.customer.common.dto.AddCustomerDto;
 import com.erp.erp.domain.customer.common.dto.GetAvailableCustomerNamesDto;
@@ -23,7 +22,9 @@ import com.erp.erp.domain.customer.common.mapper.ProgressMapper;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.plan.business.PlanReader;
 import com.erp.erp.domain.plan.common.entity.Plan;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -44,13 +45,11 @@ public class CustomerService {
   private final CustomerCreator customerCreator;
   private final CustomerReader customerReader;
   private final CustomerUpdater customerUpdater;
-  private final ProgressCreator progressCreator;
   private final PlanReader planReader;
   private final PhotoUtil photoUtil;
   private final ProgressReader progressReader;
-  private final ProgressDeleter progressDeleter;
   private final CustomerMapper customerMapper;
-  private final ProgressMapper progressMapper;
+  private final ProgressManger progressManger;
 
   @Transactional
   public AddCustomerDto.Response addCustomer(AddCustomerDto.Request req) {
@@ -79,9 +78,10 @@ public class CustomerService {
 
     Customer updateCustomer = customerUpdater.updateCustomer(req, customer);
 
-    List<Progress> progresses = progressMapper.dtoToEntityList(req.getProgress(), customer);
-    progressDeleter.deleteAllByCustomerId(customer.getId());
-    progressCreator.saveAll(progresses);
+    List<Progress> progresses = Optional.ofNullable(req.getProgress())
+        .map(progress -> progressManger.add(customer, progress))
+        .orElseGet(ArrayList::new);
+
 
     return customerMapper.entityToUpdateCustomerResponse(updateCustomer, progresses);
   }

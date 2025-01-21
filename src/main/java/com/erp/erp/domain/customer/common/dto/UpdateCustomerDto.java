@@ -1,5 +1,6 @@
 package com.erp.erp.domain.customer.common.dto;
 
+import com.erp.erp.domain.customer.common.dto.ProgressDto.ProgressResponse;
 import com.erp.erp.domain.customer.common.entity.Gender;
 import com.erp.erp.domain.payment.common.entity.PaymentsMethod;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -43,7 +44,7 @@ public class UpdateCustomerDto {
     @Schema(description = "메모")
     private String memo;
     @Schema(description = "진도표")
-    private List<ProgressResponse> progress;
+    private ProgressDto.Request progress;
     @Schema(description = "이용권 결제 여부")
     private boolean planPaymentStatus;
     @Schema(description = "기타 결제")
@@ -105,18 +106,5 @@ public class UpdateCustomerDto {
     @Schema(description = "결제 여부")
     @NotNull(message = "결제 여부를 입력해주세요")
     private boolean status;
-  }
-
-  @Builder
-  @Getter
-  public static class ProgressResponse {
-
-    @Schema(description = "날짜")
-    @NotNull
-    private LocalDate date;
-
-    @Schema(description = "내용")
-    @NotNull
-    private String content;
   }
 }

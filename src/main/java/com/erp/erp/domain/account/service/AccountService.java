@@ -20,7 +20,7 @@ public class AccountService {
   private final TokenExtractor tokenExtractor;
 
   public TokenDto login(AccountLoginDto.Request req) {
-    Account account = accountReader.findByAccountAndPassword(
+    Account account = accountReader.findByIdentifierAndPassword(
         req.getAccount(),
         req.getPassword()
     );
