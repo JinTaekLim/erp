@@ -1164,6 +1164,9 @@ class CustomerTest extends IntegrationTest {
     Customer customer = createCustomer(plan, institute);
     TokenDto tokenDto = tokenManager.createToken(account);
 
+    int progressSize = RandomValue.getInt(0,5);
+    List<Progress> progressList = createProgressList(customer, progressSize);
+
 
     String url = BASE_URL + "/getCustomerDetail/" + customer.getId();
 
@@ -1192,10 +1195,20 @@ class CustomerTest extends IntegrationTest {
     assertThat(apiResponse.getData().getName()).isEqualTo(customer.getName());
     assertThat(apiResponse.getData().getGender()).isEqualTo(customer.getGender());
     assertThat(apiResponse.getData().getPhone()).isEqualTo(customer.getPhone());
+    assertThat(apiResponse.getData().getBirthDate()).isEqualTo(customer.getBirthDate());
     assertThat(apiResponse.getData().getAddress()).isEqualTo(customer.getAddress());
     assertThat(apiResponse.getData().getVisitPath()).isEqualTo(customer.getVisitPath());
     assertThat(apiResponse.getData().getMemo()).isEqualTo(customer.getMemo());
-//    assertThat(apiResponse.getData().getProgressList()).isEqualTo(null);
+
+    List<ProgressResponse> actualProgress = apiResponse.getData().getProgressList();
+    assertThat(actualProgress.size()).isEqualTo(progressSize);
+
+    IntStream.range(0, progressSize)
+        .forEach(i -> {
+          assertThat(actualProgress.get(i).getProgressId()).isEqualTo(progressList.get(i).getId());
+          assertThat(actualProgress.get(i).getContent()).isEqualTo(progressList.get(i).getContent());
+          assertThat(actualProgress.get(i).getDate()).isEqualTo(progressList.get(i).getDate());
+        });
 
     PlanPaymentResponse planPaymentResponse = apiResponse.getData().getPlanPayment();
     PlanPayment planPayment = customer.getPlanPayment();
