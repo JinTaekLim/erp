@@ -25,6 +25,8 @@ public class GetCustomerDetailDto {
     private Gender gender;
     @Schema(description = "전화번호")
     private String phone;
+    @Schema(description = "생년월일")
+    private LocalDate birthDate;
     @Schema(description = "주소")
     private String address;
     @Schema(description = "방문 경로")

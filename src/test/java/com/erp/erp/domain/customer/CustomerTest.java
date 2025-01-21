@@ -1192,6 +1192,7 @@ class CustomerTest extends IntegrationTest {
     assertThat(apiResponse.getData().getName()).isEqualTo(customer.getName());
     assertThat(apiResponse.getData().getGender()).isEqualTo(customer.getGender());
     assertThat(apiResponse.getData().getPhone()).isEqualTo(customer.getPhone());
+    assertThat(apiResponse.getData().getBirthDate()).isEqualTo(customer.getBirthDate());
     assertThat(apiResponse.getData().getAddress()).isEqualTo(customer.getAddress());
     assertThat(apiResponse.getData().getVisitPath()).isEqualTo(customer.getVisitPath());
     assertThat(apiResponse.getData().getMemo()).isEqualTo(customer.getMemo());
