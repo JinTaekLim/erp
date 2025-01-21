@@ -245,29 +245,6 @@ class CustomerTest extends IntegrationTest {
   void updateCustomer() {
     // given
     Customer customer = createCustomer();
-//    int progressSize = RandomValue.getInt(1,5);
-//    createProgressList(customer, progressSize);
-
-//    int addProgressSize = RandomValue.getInt(1,5);
-//    List<AddProgress> addProgress = fixtureMonkey.giveMeBuilder(ProgressDto.AddProgress.class).sampleList(addProgressSize);
-
-//    int updateProgressSize = Math.min(RandomValue.getInt(1, 5), progressSize);
-//    List<UpdateProgress> updateProgress = IntStream.range(0, updateProgressSize)
-//        .mapToObj(i -> {
-//          return UpdateProgress.builder()
-//              .progressId(progressList.get(i).getId())
-//              .date(RandomValue.getRandomLocalDate())
-//              .content(RandomValue.string(5).setNullable(false).get())
-//              .build();
-//        }).toList();
-//
-//    int deleteProgressSize = Math.min(RandomValue.getInt(1, 5), progressSize);
-//    List<DeleteProgress> deleteProgress = IntStream.range(deleteProgressSize, 0)
-//        .mapToObj(i -> {
-//          return DeleteProgress.builder()
-//              .progressId(progressList.get(i).getId())
-//              .build();
-//        }).toList();
 
     ProgressDto.Request progressRequest = ProgressDto.Request.builder()
         .addProgresses(new ArrayList<>())
@@ -309,14 +286,6 @@ class CustomerTest extends IntegrationTest {
     assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
     assertThat(apiResponse.getData().isPlanPaymentStatus()).isEqualTo(request.isPlanPaymentStatus());
 
-//    List<ProgressResponse> actualProgress = apiResponse.getData().getProgress();
-//    List<ProgressResponse> expectedProgress = request.getProgress();
-//    assertThat(actualProgress).hasSameSizeAs(expectedProgress);
-//    IntStream.range(0, actualProgress.size())
-//            .forEach(i -> assertThat(actualProgress.get(i))
-//                    .usingRecursiveComparison()
-//                    .isEqualTo(expectedProgress.get(i)));
-
     List<OtherPaymentResponse> actualPayments = apiResponse.getData().getOtherPayment();
     List<OtherPaymentResponse> expectedPayments = request.getOtherPayment();
     assertThat(actualPayments).hasSameSizeAs(expectedPayments);
@@ -348,12 +317,14 @@ class CustomerTest extends IntegrationTest {
         .set("progress", progressRequest)
         .sample();
 
+    HttpEntity<UpdateCustomerDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
     String url = BASE_URL + "/updateCustomer";
 
     // then
-    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
-        request,
+        HttpMethod.PUT,
+        httpRequest,
         String.class
     );
 
@@ -428,12 +399,14 @@ class CustomerTest extends IntegrationTest {
         .set("progress", progressRequest)
         .sample();
 
+    HttpEntity<UpdateCustomerDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
     String url = BASE_URL + "/updateCustomer";
 
     // then
-    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
-        request,
+        HttpMethod.PUT,
+        httpRequest,
         String.class
     );
 
@@ -507,12 +480,14 @@ class CustomerTest extends IntegrationTest {
         .set("progress", progressRequest)
         .sample();
 
+    HttpEntity<UpdateCustomerDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
     String url = BASE_URL + "/updateCustomer";
 
     // then
-    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
-        request,
+        HttpMethod.PUT,
+        httpRequest,
         String.class
     );
 
@@ -692,14 +667,16 @@ class CustomerTest extends IntegrationTest {
         .set("progress", progressRequest)
         .sample();
 
-    String url = BASE_URL + "/updateCustomer";
-
     NotFoundProgressException exception = new NotFoundProgressException();
 
+    HttpEntity<UpdateCustomerDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
+    String url = BASE_URL + "/updateCustomer";
+
     // then
-    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
-        request,
+        HttpMethod.PUT,
+        httpRequest,
         String.class
     );
 
@@ -750,14 +727,16 @@ class CustomerTest extends IntegrationTest {
         .set("progress", progressRequest)
         .sample();
 
-    String url = BASE_URL + "/updateCustomer";
-
     NotFoundProgressException exception = new NotFoundProgressException();
 
+    HttpEntity<UpdateCustomerDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
+    String url = BASE_URL + "/updateCustomer";
+
     // then
-    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
-        request,
+        HttpMethod.PUT,
+        httpRequest,
         String.class
     );
 
