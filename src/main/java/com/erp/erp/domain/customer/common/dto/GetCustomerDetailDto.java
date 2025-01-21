@@ -1,5 +1,6 @@
 package com.erp.erp.domain.customer.common.dto;
 
+import com.erp.erp.domain.customer.common.dto.ProgressDto.ProgressResponse;
 import com.erp.erp.domain.customer.common.entity.Gender;
 import com.erp.erp.domain.payment.common.entity.PaymentsMethod;
 import com.erp.erp.domain.plan.common.entity.CourseType;
@@ -77,14 +78,5 @@ public class GetCustomerDetailDto {
     private int price;
     @Schema(description = "미납 여부")
     private boolean status;
-  }
-
-  @Getter
-  @Builder
-  public static class ProgressResponse {
-    @Schema(description = "날짜")
-    private LocalDate date;
-    @Schema(description = "내용")
-    private String content;
   }
 }

@@ -5,7 +5,6 @@ import com.erp.erp.domain.customer.common.dto.GetAvailableCustomerNamesDto;
 import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto;
 import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto.OtherPaymentResponse;
 import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto.PlanPaymentResponse;
-import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto.ProgressResponse;
 import com.erp.erp.domain.customer.common.dto.GetCustomerDto;
 import com.erp.erp.domain.customer.common.dto.ProgressDto;
 import com.erp.erp.domain.customer.common.dto.SearchCustomerNameDto;
@@ -75,9 +74,10 @@ public interface CustomerMapper {
   SearchCustomerNameDto.Response entityToSearchCustomerNameResponse(Customer customers);
 
 
-  @Mapping(target = "progressList", expression = "java(planPaymentResponseToProgressResponse(progress))")
   @Mapping(target = "otherPayment", expression = "java(otherPaymentResponseToOtherPaymentResponse(customer.getOtherPayments()))")
-  GetCustomerDetailDto.Response entityToGetCustomerDetailResponse(Customer customer, List<Progress> progress);
+  @Mapping(target = "progressList", expression = "java(entityToProgressResponse(progressList))")
+  GetCustomerDetailDto.Response entityToGetCustomerDetailResponse(Customer customer, List<Progress> progressList);
+
   @Mapping(target = "licenseType", source = "planPayment.plan.licenseType")
   @Mapping(target = "planName", source = "planPayment.plan.name")
   @Mapping(target = "courseType", source = "planPayment.plan.courseType")
@@ -85,7 +85,6 @@ public interface CustomerMapper {
   @Mapping(target = "discountPrice", expression = "java(calculateDiscountPrice(planPayment))")
   @Mapping(target = "paymentTotal", expression = "java(calculatePaymentTotal(planPayment))")
   PlanPaymentResponse entityToGetCustomerDetailResponse(PlanPayment planPayment);
-  List<ProgressResponse> planPaymentResponseToProgressResponse(List<Progress> progresses);
   List<OtherPaymentResponse> otherPaymentResponseToOtherPaymentResponse(List<OtherPayment> otherPayments);
 
   default int calculateDiscountPrice(PlanPayment planPayment) {
