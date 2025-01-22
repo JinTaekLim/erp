@@ -65,6 +65,9 @@ public class AddCustomerDto {
       @NotNull(message = "결제 방법을 입력해주세요")
       private PaymentsMethod paymentsMethod;
 
+      @Schema(description = "기타 결제 방법")
+      private String otherPaymentMethod;
+
       @Schema(description = "결제 일자")
       @NotNull(message = "결제 일자를 입력해주세요.")
       private LocalDateTime registrationAt;
@@ -85,6 +88,9 @@ public class AddCustomerDto {
       @Schema(description = "결제 방법")
       @NotNull(message = "결제 방법을 입력해주세요")
       private PaymentsMethod paymentsMethod;
+
+      @Schema(description = "기타 결제 방법")
+      private String otherPaymentMethod;
 
       @Schema(description = "결제 일자")
       @NotNull(message = "결제 일자를 입력해주세요.")

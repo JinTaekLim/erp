@@ -24,6 +24,8 @@ public class OtherPayment {
   @NotNull
   private PaymentsMethod paymentsMethod;
 
+  private String otherPaymentMethod;
+
   @NotNull
   private LocalDateTime registrationAt;
 
@@ -35,10 +37,11 @@ public class OtherPayment {
 
   @Builder
   public OtherPayment(boolean status, LocalDateTime registrationAt, PaymentsMethod paymentsMethod,
-      String content, int price) {
+      String otherPaymentMethod, String content, int price) {
     this.status = status;
     this.registrationAt = registrationAt;
     this.paymentsMethod = paymentsMethod;
+    this.otherPaymentMethod = otherPaymentMethod;
     this.content = content;
     this.price = price;
   }
