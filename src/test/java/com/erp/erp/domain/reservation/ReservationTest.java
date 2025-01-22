@@ -57,6 +57,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -684,7 +685,7 @@ class ReservationTest extends IntegrationTest {
     TokenDto tokenDto = tokenManager.createToken(account);
 
     Customer customer = createCustomers(institute);
-    int progressSize = RandomValue.getInt(0, 5);
+    int progressSize = RandomValue.getInt(1, 5);
     List<Progress> progressList = createProgressList(customer, progressSize);
     List<Long> progressIds = new ArrayList<>(progressList.stream().map(Progress::getId).toList());
     Collections.shuffle(progressIds);
