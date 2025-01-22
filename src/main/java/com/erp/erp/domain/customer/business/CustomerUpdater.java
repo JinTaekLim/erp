@@ -44,6 +44,7 @@ public class CustomerUpdater {
     return otherPayments.stream()
         .map(otherPayment -> OtherPayment.builder()
             .paymentsMethod(otherPayment.getPaymentsMethod())
+            .otherPaymentMethod(otherPayment.getOtherPaymentMethod())
             .content(otherPayment.getContent())
             .status(otherPayment.isStatus())
             .registrationAt(otherPayment.getRegistrationAt())
