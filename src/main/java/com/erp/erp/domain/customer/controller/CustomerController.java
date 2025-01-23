@@ -22,7 +22,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/customer")
@@ -33,13 +35,13 @@ public class CustomerController {
 
   private final CustomerService customerService;
 
-  // note. 이후 프로필 사진 관련 처리 필요
   @Operation(summary = "고객 추가")
   @PostMapping("/addCustomer")
   public ApiResult<AddCustomerDto.Response> addCustomer(
-      @Valid @RequestBody AddCustomerDto.Request req
+      @Valid @RequestPart AddCustomerDto.Request req,
+      @RequestPart(value = "file", required = false) MultipartFile file
       ) {
-    AddCustomerDto.Response response = customerService.addCustomer(req);
+    AddCustomerDto.Response response = customerService.addCustomer(req, file);
     return ApiResult.success(response);
   }
 
