@@ -86,7 +86,7 @@ public class ReservationService {
 
     instituteValidator.isValidSeatNumber(institute, req.getSeatNumber());
     reservationUpdater.updatedReservations(reservation, req);
-    List<Progress> progressList = progressManger.add(reservation.getCustomer(), req.getProgress());
+    List<Progress> progressList = progressManger.add(reservation.getCustomer(), req.getProgressList());
 
     return reservationMapper.entityToUpdatedReservationDtoResponse(reservation, progressList);
   }

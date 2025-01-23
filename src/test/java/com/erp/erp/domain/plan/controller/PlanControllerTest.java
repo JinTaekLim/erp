@@ -76,7 +76,7 @@ class PlanControllerTest extends IntegrationTest {
       assertThat(apiResponse.getData().get(i).getPlanType()).isEqualTo(plans.get(i).getPlanType());
       assertThat(apiResponse.getData().get(i).getLicenseType()).isEqualTo(plans.get(i).getLicenseType());
       assertThat(apiResponse.getData().get(i).getCourseType()).isEqualTo(plans.get(i).getCourseType());
-      assertThat(apiResponse.getData().get(i).getName()).isEqualTo(plans.get(i).getName());
+      assertThat(apiResponse.getData().get(i).getPlanName()).isEqualTo(plans.get(i).getName());
       assertThat(apiResponse.getData().get(i).getPrice()).isEqualTo(plans.get(i).getPrice());
     });
   }

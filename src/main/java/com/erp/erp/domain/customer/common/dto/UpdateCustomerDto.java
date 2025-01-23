@@ -44,7 +44,7 @@ public class UpdateCustomerDto {
     @Schema(description = "메모")
     private String memo;
     @Schema(description = "진도표")
-    private ProgressDto.Request progress;
+    private ProgressDto.Request progressList;
     @Schema(description = "이용권 결제 여부")
     private boolean planPaymentStatus;
     @Schema(description = "기타 결제")

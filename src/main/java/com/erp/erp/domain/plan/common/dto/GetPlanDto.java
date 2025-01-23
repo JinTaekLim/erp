@@ -23,7 +23,7 @@ public class GetPlanDto {
     @Schema(description = "이용 과정 (취득/장롱/일반)")
     private CourseType courseType;
     @Schema(description = "이용권 이름")
-    private String name;
+    private String planName;
     @Schema(description = "이용권 가격")
     private int price;
   }
