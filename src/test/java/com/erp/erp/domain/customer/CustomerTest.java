@@ -3,6 +3,8 @@ package com.erp.erp.domain.customer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import com.erp.erp.domain.account.business.PhotoUtil;
 import com.erp.erp.domain.account.common.entity.Account;
@@ -62,10 +64,15 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.stream.IntStream;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.multipart.MultipartFile;
 
 class CustomerTest extends IntegrationTest {
 
@@ -146,8 +153,6 @@ class CustomerTest extends IntegrationTest {
   }
 
 
-
-  // note. 이후 이미지 처리 필요
   @Test
   @DisplayName("addCustomer 성공")
   void addCustomer() {
@@ -157,12 +162,35 @@ class CustomerTest extends IntegrationTest {
         .set("planId", plan.getId())
         .sample();
 
+    MockMultipartFile mockFile = new MockMultipartFile(
+        "file",
+        "test-image.jpg",
+        "image/jpeg",
+        "test-image-content".getBytes());
+
+    String photoUrl = RandomValue.string(5,30).setNullable(false).get();
+
+    HttpHeaders partHeaders = new HttpHeaders();
+    partHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+    HttpHeaders requestHeaders = new HttpHeaders();
+    requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+    MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+    body.add("req", new HttpEntity<>(gson.toJson(request), partHeaders));
+    body.add("file", mockFile.getResource());
+
+    HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(body, requestHeaders);
+
+
     String url = BASE_URL + "/addCustomer";
 
     //when
+    when(photoUtil.upload(any(MultipartFile.class))).thenReturn(photoUrl);
+
     ResponseEntity<String> responseEntity = restTemplate.postForEntity(
         url,
-        request,
+        httpEntity,
         String.class
     );
 
@@ -181,7 +209,7 @@ class CustomerTest extends IntegrationTest {
     assertThat(apiResponse.getData().getAddress()).isEqualTo(request.getAddress());
     assertThat(apiResponse.getData().getVisitPath()).isEqualTo(request.getVisitPath());
     assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
-//    assertThat(apiResponse.getData().getPhotoUrl()).isEqualTo(photoUrl);
+    assertThat(apiResponse.getData().getPhotoUrl()).isEqualTo(photoUrl);
     assertThat(apiResponse.getData().getBirthDate()).isEqualTo(request.getBirthDate());
   }
 
@@ -191,12 +219,24 @@ class CustomerTest extends IntegrationTest {
     //given
     AddCustomerDto.Request request = AddCustomerDto.Request.builder().build();
 
+    HttpHeaders partHeaders = new HttpHeaders();
+    partHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+    HttpHeaders requestHeaders = new HttpHeaders();
+    requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+    MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+    body.add("req", new HttpEntity<>(gson.toJson(request), partHeaders));
+
+
+    HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(body, requestHeaders);
+
     String url = BASE_URL + "/addCustomer";
 
     //when
     ResponseEntity<String> responseEntity = restTemplate.postForEntity(
         url,
-        request,
+        httpEntity,
         String.class
     );
 
@@ -216,6 +256,18 @@ class CustomerTest extends IntegrationTest {
     //given
     AddCustomerDto.Request request = fixtureMonkey.giveMeOne(AddCustomerDto.Request.class);
 
+    HttpHeaders partHeaders = new HttpHeaders();
+    partHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+    HttpHeaders requestHeaders = new HttpHeaders();
+    requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+    MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+    body.add("req", new HttpEntity<>(gson.toJson(request), partHeaders));
+
+
+    HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(body, requestHeaders);
+
     String url = BASE_URL + "/addCustomer";
 
     NotFoundPlanException exception = new NotFoundPlanException();
@@ -223,7 +275,7 @@ class CustomerTest extends IntegrationTest {
     //when
     ResponseEntity<String> responseEntity = restTemplate.postForEntity(
             url,
-            request,
+            httpEntity,
             String.class
     );
 

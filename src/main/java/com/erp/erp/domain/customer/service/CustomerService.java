@@ -49,11 +49,10 @@ public class CustomerService {
   private final ProgressManger progressManger;
 
   @Transactional
-  public AddCustomerDto.Response addCustomer(AddCustomerDto.Request req) {
+  public AddCustomerDto.Response addCustomer(AddCustomerDto.Request req, MultipartFile file) {
     Institute institute = authProvider.getCurrentInstitute();
     Plan plan = planReader.findById(req.getPlanId());
-    MultipartFile photo = null;
-    String photoUrl = (photo == null) ? null : photoUtil.upload(photo);
+    String photoUrl = photoUtil.upload(file);
 
     Customer customer = customerMapper.dtoToEntity(req, institute, plan, photoUrl);
     customerCreator.save(customer);
