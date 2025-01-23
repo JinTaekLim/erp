@@ -79,7 +79,7 @@ class adminTest extends IntegrationTest {
     assertEquals(apiResponse.getData().getLicenseType(), request.getLicenseType());
     assertEquals(apiResponse.getData().getCourseType(), request.getCourseType());
     assertEquals(apiResponse.getData().getPrice(), request.getPrice());
-    assertEquals(apiResponse.getData().getName(), request.getName());
+    assertEquals(apiResponse.getData().getPlanName(), request.getPlanName());
   }
 
   @Test

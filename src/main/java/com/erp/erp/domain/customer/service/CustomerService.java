@@ -73,7 +73,7 @@ public class CustomerService {
         req.getCustomerId());
 
     Customer updateCustomer = customerUpdater.updateCustomer(req, customer);
-    List<Progress> progresses = progressManger.add(customer, req.getProgress());
+    List<Progress> progresses = progressManger.add(customer, req.getProgressList());
 
     return customerMapper.entityToUpdateCustomerResponse(updateCustomer, progresses);
   }

@@ -33,7 +33,7 @@ public class UpdatedReservationDto {
     @NotNull
     private int seatNumber;
     @Schema(description = "진도표")
-    private ProgressDto.Request progress;
+    private ProgressDto.Request progressList;
 
   }
 

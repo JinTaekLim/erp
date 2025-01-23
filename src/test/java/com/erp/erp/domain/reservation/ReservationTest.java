@@ -539,7 +539,7 @@ class ReservationTest extends IntegrationTest {
         .endTime(updateEndTime)
         .memo(RandomValue.string(255).get())
         .seatNumber(seatNumber)
-        .progress(progressRequest)
+        .progressList(progressRequest)
         .build();
 
     String url = BASE_URL + "/updatedReservation";
@@ -630,7 +630,7 @@ class ReservationTest extends IntegrationTest {
         .endTime(updateEndTime)
         .memo(RandomValue.string(255).get())
         .seatNumber(seatNumber)
-        .progress(progressRequest)
+        .progressList(progressRequest)
         .build();
 
     String url = BASE_URL + "/updatedReservation";
@@ -719,7 +719,7 @@ class ReservationTest extends IntegrationTest {
         .endTime(updateEndTime)
         .memo(RandomValue.string(255).get())
         .seatNumber(seatNumber)
-        .progress(progressRequest)
+        .progressList(progressRequest)
         .build();
 
     String url = BASE_URL + "/updatedReservation";
@@ -945,7 +945,7 @@ class ReservationTest extends IntegrationTest {
         .endTime(updateEndTime)
         .memo(RandomValue.string(255).get())
         .seatNumber(seatNumber)
-        .progress(progressRequest)
+        .progressList(progressRequest)
         .build();
 
     String url = BASE_URL + "/updatedReservation";
@@ -1025,7 +1025,7 @@ class ReservationTest extends IntegrationTest {
         .endTime(updateEndTime)
         .memo(RandomValue.string(255).get())
         .seatNumber(seatNumber)
-        .progress(progressRequest)
+        .progressList(progressRequest)
         .build();
 
     String url = BASE_URL + "/updatedReservation";

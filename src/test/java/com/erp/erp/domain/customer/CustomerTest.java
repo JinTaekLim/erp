@@ -305,9 +305,9 @@ class CustomerTest extends IntegrationTest {
         .build();
 
     UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
-            .set("customerId", customer.getId())
-        .set("progress", progressRequest)
-            .sample();
+        .set("customerId", customer.getId())
+        .set("progressList", progressRequest)
+        .sample();
 
     String url = BASE_URL + "/updateCustomer";
     HttpEntity<UpdateCustomerDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
@@ -366,7 +366,7 @@ class CustomerTest extends IntegrationTest {
 
     UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
         .set("customerId", customer.getId())
-        .set("progress", progressRequest)
+        .set("progressList", progressRequest)
         .sample();
 
     HttpEntity<UpdateCustomerDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
@@ -448,7 +448,7 @@ class CustomerTest extends IntegrationTest {
 
     UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
         .set("customerId", customer.getId())
-        .set("progress", progressRequest)
+        .set("progressList", progressRequest)
         .sample();
 
     HttpEntity<UpdateCustomerDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
@@ -530,7 +530,7 @@ class CustomerTest extends IntegrationTest {
 
     UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
         .set("customerId", customer.getId())
-        .set("progress", progressRequest)
+        .set("progressList", progressRequest)
         .sample();
 
     HttpEntity<UpdateCustomerDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());

@@ -32,7 +32,7 @@ public class AddPlanDto {
 
     @Schema(description = "이용권 이름", example = "5시간 이용권")
     @NotNull
-    private String name;
+    private String planName;
     @Schema(description = "이용권 가격", example = "5000")
     @Positive(message = "-1 이하의 값은 입력할 수 없습니다.")
     private int price;
@@ -61,7 +61,7 @@ public class AddPlanDto {
     @Schema(description = "이용 과정 (취득/장롱/일반)")
     private CourseType courseType;
     @Schema(description = "이용권 이름")
-    private String name;
+    private String planName;
     @Schema(description = "이용권 가격")
     private int price;
 
