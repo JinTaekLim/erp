@@ -717,7 +717,7 @@ class CustomerTest extends IntegrationTest {
 
     UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
         .set("customerId", customer.getId())
-        .set("progress", progressRequest)
+        .set("progressList", progressRequest)
         .sample();
 
     NotFoundProgressException exception = new NotFoundProgressException();
@@ -777,7 +777,7 @@ class CustomerTest extends IntegrationTest {
 
     UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
         .set("customerId", customer.getId())
-        .set("progress", progressRequest)
+        .set("progressList", progressRequest)
         .sample();
 
     NotFoundProgressException exception = new NotFoundProgressException();
@@ -1038,6 +1038,11 @@ class CustomerTest extends IntegrationTest {
       assertThat(response.getRegistrationDate()).isEqualTo(customer.getPlanPayment().getRegistrationAt());
 //      assertThat(response.getTardinessCount())
 //      assertThat(response.getAbsenceCount())
+
+      int otherPaymentPrice = customer.getOtherPayments().stream()
+          .mapToInt(OtherPayment::getPrice)
+          .sum();
+      assertThat(response.getOtherPaymentPrice()).isEqualTo(otherPaymentPrice);
     });
   }
 
@@ -1094,6 +1099,10 @@ class CustomerTest extends IntegrationTest {
       assertThat(response.getRegistrationDate()).isEqualTo(customer.getPlanPayment().getRegistrationAt());
 //      assertThat(response.getTardinessCount())
 //      assertThat(response.getAbsenceCount())
+      int otherPaymentPrice = customer.getOtherPayments().stream()
+          .mapToInt(OtherPayment::getPrice)
+          .sum();
+      assertThat(response.getOtherPaymentPrice()).isEqualTo(otherPaymentPrice);
     });
   }
 

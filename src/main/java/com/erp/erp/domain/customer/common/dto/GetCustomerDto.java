@@ -46,5 +46,7 @@ public class GetCustomerDto {
     private int tardinessCount;
     @Schema(description = "결석 횟수")
     private int absenceCount;
+    @Schema(description = "기타 결제 금액")
+    private int otherPaymentPrice;
   }
 }

@@ -65,7 +65,14 @@ public interface CustomerMapper {
   @Mapping(target = "registrationDate", source = "customer.planPayment.registrationAt")
   @Mapping(target = "tardinessCount", expression = "java(0)")
   @Mapping(target = "absenceCount", expression = "java(0)")
+  @Mapping(target = "otherPaymentPrice", expression = "java(getOtherPaymentPrice(customer.getOtherPayments()))")
   GetCustomerDto.Response entityToGetCustomerResponse(Customer customer);
+
+  default int getOtherPaymentPrice(List<OtherPayment> otherPaymentList) {
+    return otherPaymentList.stream()
+        .mapToInt(OtherPayment::getPrice)
+        .sum();
+  }
 
   List<GetAvailableCustomerNamesDto.Response> entityToGetAvailableCustomerNamesResponse(List<Customer> customers);
 
