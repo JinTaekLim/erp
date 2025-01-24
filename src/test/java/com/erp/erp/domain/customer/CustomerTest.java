@@ -1038,6 +1038,11 @@ class CustomerTest extends IntegrationTest {
       assertThat(response.getRegistrationDate()).isEqualTo(customer.getPlanPayment().getRegistrationAt());
 //      assertThat(response.getTardinessCount())
 //      assertThat(response.getAbsenceCount())
+
+      int otherPaymentPrice = customer.getOtherPayments().stream()
+          .mapToInt(OtherPayment::getPrice)
+          .sum();
+      assertThat(response.getOtherPaymentPrice()).isEqualTo(otherPaymentPrice);
     });
   }
 
@@ -1094,6 +1099,10 @@ class CustomerTest extends IntegrationTest {
       assertThat(response.getRegistrationDate()).isEqualTo(customer.getPlanPayment().getRegistrationAt());
 //      assertThat(response.getTardinessCount())
 //      assertThat(response.getAbsenceCount())
+      int otherPaymentPrice = customer.getOtherPayments().stream()
+          .mapToInt(OtherPayment::getPrice)
+          .sum();
+      assertThat(response.getOtherPaymentPrice()).isEqualTo(otherPaymentPrice);
     });
   }
 
