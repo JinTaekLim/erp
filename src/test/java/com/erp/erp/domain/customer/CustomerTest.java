@@ -717,7 +717,7 @@ class CustomerTest extends IntegrationTest {
 
     UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
         .set("customerId", customer.getId())
-        .set("progress", progressRequest)
+        .set("progressList", progressRequest)
         .sample();
 
     NotFoundProgressException exception = new NotFoundProgressException();
@@ -777,7 +777,7 @@ class CustomerTest extends IntegrationTest {
 
     UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
         .set("customerId", customer.getId())
-        .set("progress", progressRequest)
+        .set("progressList", progressRequest)
         .sample();
 
     NotFoundProgressException exception = new NotFoundProgressException();
