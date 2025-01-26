@@ -30,6 +30,7 @@ import com.erp.erp.domain.reservation.common.dto.GetDailyReservationDto;
 import com.erp.erp.domain.reservation.common.dto.GetReservationCustomerDetailsDto;
 import com.erp.erp.domain.reservation.common.dto.UpdatedReservationDto;
 import com.erp.erp.domain.reservation.common.dto.UpdatedSeatNumberDto;
+import com.erp.erp.domain.reservation.common.entity.AttendanceStatus;
 import com.erp.erp.domain.reservation.common.entity.Reservation;
 import com.erp.erp.domain.reservation.common.exception.InvalidReservationTimeException;
 import com.erp.erp.domain.reservation.common.exception.InvalidSeatRangeException;
@@ -462,6 +463,7 @@ class ReservationTest extends IntegrationTest {
         .endTime(updateEndTime)
         .memo(RandomValue.string(255).get())
         .seatNumber(seatNumber)
+        .attendanceStatus(RandomValue.getRandomEnum(AttendanceStatus.class))
         .build();
 
     String url = BASE_URL + "/updatedReservation";
@@ -491,6 +493,7 @@ class ReservationTest extends IntegrationTest {
     assertThat(apiResponse.getData().getEndTime()).isEqualTo(request.getEndTime());
     assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
     assertThat(apiResponse.getData().getSeatNumber()).isEqualTo(request.getSeatNumber());
+    assertThat(apiResponse.getData().getAttendanceStatus()).isEqualTo(request.getAttendanceStatus());
 
     List<ProgressResponse> actualProgress = apiResponse.getData().getProgressList();
     assertThat(actualProgress.size()).isEqualTo(progressSize);
@@ -539,6 +542,7 @@ class ReservationTest extends IntegrationTest {
         .endTime(updateEndTime)
         .memo(RandomValue.string(255).get())
         .seatNumber(seatNumber)
+        .attendanceStatus(RandomValue.getRandomEnum(AttendanceStatus.class))
         .progressList(progressRequest)
         .build();
 
@@ -569,6 +573,7 @@ class ReservationTest extends IntegrationTest {
     assertThat(apiResponse.getData().getEndTime()).isEqualTo(request.getEndTime());
     assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
     assertThat(apiResponse.getData().getSeatNumber()).isEqualTo(request.getSeatNumber());
+    assertThat(apiResponse.getData().getAttendanceStatus()).isEqualTo(request.getAttendanceStatus());
 
     List<ProgressResponse> actualProgress = apiResponse.getData().getProgressList();
     assertThat(actualProgress.size()).isEqualTo(addProgressSize + progressSize);
@@ -630,6 +635,7 @@ class ReservationTest extends IntegrationTest {
         .endTime(updateEndTime)
         .memo(RandomValue.string(255).get())
         .seatNumber(seatNumber)
+        .attendanceStatus(RandomValue.getRandomEnum(AttendanceStatus.class))
         .progressList(progressRequest)
         .build();
 
@@ -660,6 +666,7 @@ class ReservationTest extends IntegrationTest {
     assertThat(apiResponse.getData().getEndTime()).isEqualTo(request.getEndTime());
     assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
     assertThat(apiResponse.getData().getSeatNumber()).isEqualTo(request.getSeatNumber());
+    assertThat(apiResponse.getData().getAttendanceStatus()).isEqualTo(request.getAttendanceStatus());
 
     List<ProgressResponse> actualProgress = apiResponse.getData().getProgressList();
     actualProgress.sort(Comparator.comparing(ProgressResponse::getProgressId).reversed());
@@ -719,6 +726,7 @@ class ReservationTest extends IntegrationTest {
         .endTime(updateEndTime)
         .memo(RandomValue.string(255).get())
         .seatNumber(seatNumber)
+        .attendanceStatus(RandomValue.getRandomEnum(AttendanceStatus.class))
         .progressList(progressRequest)
         .build();
 
@@ -749,6 +757,7 @@ class ReservationTest extends IntegrationTest {
     assertThat(apiResponse.getData().getEndTime()).isEqualTo(request.getEndTime());
     assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
     assertThat(apiResponse.getData().getSeatNumber()).isEqualTo(request.getSeatNumber());
+    assertThat(apiResponse.getData().getAttendanceStatus()).isEqualTo(request.getAttendanceStatus());
 
     List<ProgressResponse> actualProgress = apiResponse.getData().getProgressList();
 
@@ -945,6 +954,7 @@ class ReservationTest extends IntegrationTest {
         .endTime(updateEndTime)
         .memo(RandomValue.string(255).get())
         .seatNumber(seatNumber)
+        .attendanceStatus(RandomValue.getRandomEnum(AttendanceStatus.class))
         .progressList(progressRequest)
         .build();
 
@@ -1025,6 +1035,7 @@ class ReservationTest extends IntegrationTest {
         .endTime(updateEndTime)
         .memo(RandomValue.string(255).get())
         .seatNumber(seatNumber)
+        .attendanceStatus(RandomValue.getRandomEnum(AttendanceStatus.class))
         .progressList(progressRequest)
         .build();
 

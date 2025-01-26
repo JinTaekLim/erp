@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 public class ReservationUpdater {
+
   private final ReservationRepository reservationRepository;
 
   public Reservation updatedReservations(
@@ -18,7 +19,8 @@ public class ReservationUpdater {
       UpdatedReservationDto.Request req
   ) {
     reservation.updatedReservations(
-        req.getStartTime(), req.getEndTime(), req.getMemo(), req.getSeatNumber());
+        req.getStartTime(), req.getEndTime(), req.getMemo(), req.getSeatNumber(),
+        req.getAttendanceStatus());
     return reservationRepository.save(reservation);
   }
 
