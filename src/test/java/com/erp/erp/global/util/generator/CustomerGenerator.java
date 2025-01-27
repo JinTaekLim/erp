@@ -16,6 +16,7 @@ public class CustomerGenerator extends EntityGenerator {
     List<OtherPayment> otherPaymentList = OtherPaymentGenerator.getList(plan);
     return fixtureMonkey.giveMeBuilder(Customer.class)
         .setNull("id")
+        .setNull("reservations")
         .set("institute", institute)
         .set("planPayment", planPayment)
         .set("otherPayments", otherPaymentList)
@@ -28,6 +29,7 @@ public class CustomerGenerator extends EntityGenerator {
     List<OtherPayment> otherPaymentList = OtherPaymentGenerator.getList(plan);
     return fixtureMonkey.giveMeBuilder(Customer.class)
         .setNull("id")
+        .setNull("reservations")
         .set("institute", institute)
         .set("planPayment", planPayment)
         .set("otherPayments", otherPaymentList)
@@ -41,6 +43,7 @@ public class CustomerGenerator extends EntityGenerator {
     List<OtherPayment> otherPaymentList = OtherPaymentGenerator.getList(plan);
     return fixtureMonkey.giveMeBuilder(Customer.class)
         .setNull("id")
+        .setNull("reservations")
         .set("institute", institute)
         .set("planPayment", planPayment)
         .set("otherPayments", otherPaymentList)

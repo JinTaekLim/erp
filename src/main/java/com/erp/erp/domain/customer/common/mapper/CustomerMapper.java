@@ -15,9 +15,14 @@ import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.payment.common.entity.OtherPayment;
 import com.erp.erp.domain.payment.common.entity.PlanPayment;
 import com.erp.erp.domain.plan.common.entity.Plan;
+import com.erp.erp.domain.reservation.common.entity.AttendanceStatus;
+import com.erp.erp.domain.reservation.common.entity.Reservation;
+import com.erp.erp.global.util.TimeUtil;
 import java.util.List;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface CustomerMapper {
@@ -59,12 +64,12 @@ public interface CustomerMapper {
   @Mapping(target = "planName", source = "customer.planPayment.plan.name")
   @Mapping(target = "planType", source = "customer.planPayment.plan.planType")
   @Mapping(target = "courseType", source = "customer.planPayment.plan.courseType")
-  @Mapping(target = "remainingTime", expression = "java(0)")
-  @Mapping(target = "remainingPeriod", expression = "java(0)")
-  @Mapping(target = "usedTime", expression = "java(0)")
+  @Mapping(target = "remainingTime", ignore = true)
+  @Mapping(target = "remainingPeriod", expression = "java(getRemainingPeriod(customer.getPlanPayment()))")
+  @Mapping(target = "usedTime", ignore = true)
   @Mapping(target = "registrationDate", source = "customer.planPayment.registrationAt")
-  @Mapping(target = "tardinessCount", expression = "java(0)")
-  @Mapping(target = "absenceCount", expression = "java(0)")
+  @Mapping(target = "lateCount", ignore = true)
+  @Mapping(target = "absenceCount", ignore = true)
   @Mapping(target = "otherPaymentPrice", expression = "java(getOtherPaymentPrice(customer.getOtherPayments()))")
   GetCustomerDto.Response entityToGetCustomerResponse(Customer customer);
 
@@ -73,6 +78,31 @@ public interface CustomerMapper {
         .mapToInt(OtherPayment::getPrice)
         .sum();
   }
+
+  default int getRemainingPeriod(PlanPayment planPayment) {
+    int daysSince = TimeUtil.daysBetween(planPayment.getRegistrationAt().toLocalDate());
+    return planPayment.getPlan().getAvailablePeriod() - daysSince;
+  }
+
+  @AfterMapping
+  default void afterMapping(@MappingTarget GetCustomerDto.Response response, Customer customer) {
+    double useTime = 0;
+    int lateCount = 0;
+    int absenceCount = 0;
+
+    for (Reservation reservation : customer.getReservations()) {
+      if ( reservation.getAttendanceStatus() == AttendanceStatus.LATE ) lateCount ++;
+      if ( reservation.getAttendanceStatus() == AttendanceStatus.ABSENT ) absenceCount ++;
+
+      useTime += TimeUtil.calculateHalfHours(reservation.getStartTime(), reservation.getEndTime());
+    }
+
+    double remainingTime = customer.getPlanPayment().getPlan().getAvailableTime() - useTime;
+
+    response.updateTime(remainingTime, useTime);
+    response.updateAttendance(lateCount,absenceCount);
+  }
+
 
   List<GetAvailableCustomerNamesDto.Response> entityToGetAvailableCustomerNamesResponse(List<Customer> customers);
 

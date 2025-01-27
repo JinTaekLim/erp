@@ -33,7 +33,7 @@ public class Plan {
   private int price;
 
   @PositiveOrZero
-  private int availableTime;
+  private double availableTime;
 
   @NotNull
   @PositiveOrZero
@@ -41,7 +41,7 @@ public class Plan {
 
   @Builder
   public Plan(PlanType planType, LicenseType licenseType, CourseType courseType, String name,
-      int price, int availableTime, int availablePeriod) {
+      int price, double availableTime, int availablePeriod) {
     this.planType = planType;
     this.licenseType = licenseType;
     this.courseType = courseType;

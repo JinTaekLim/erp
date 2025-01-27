@@ -11,10 +11,10 @@ import lombok.Getter;
 
 public class GetCustomerDto {
 
-  @Schema(name = "GetCustomerDto_Response" , description = "회원 정보 반환")
+  @Schema(name = "GetCustomerDto_Response", description = "회원 정보 반환")
   @Getter
   @Builder
-  public static class Response{
+  public static class Response {
 
     @Schema
     private Long customerId;
@@ -43,10 +43,20 @@ public class GetCustomerDto {
     @Schema(description = "등록 날짜")
     private LocalDateTime registrationDate;
     @Schema(description = "지각 횟수")
-    private int tardinessCount;
+    private int lateCount;
     @Schema(description = "결석 횟수")
     private int absenceCount;
     @Schema(description = "기타 결제 금액")
     private int otherPaymentPrice;
+
+    public void updateTime(double remainingTime, double useTime) {
+      this.remainingTime = remainingTime;
+      this.usedTime = useTime;
+    }
+
+    public void updateAttendance(int lateCount, int absenceCount) {
+      this.lateCount = lateCount;
+      this.absenceCount = absenceCount;
+    }
   }
 }
