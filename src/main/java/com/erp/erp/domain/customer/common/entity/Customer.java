@@ -3,6 +3,7 @@ package com.erp.erp.domain.customer.common.entity;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.payment.common.entity.OtherPayment;
 import com.erp.erp.domain.payment.common.entity.PlanPayment;
+import com.erp.erp.domain.reservation.common.entity.Reservation;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -58,6 +59,9 @@ public class Customer {
   @OneToMany(cascade = CascadeType.ALL)
   @Valid
   private List<OtherPayment> otherPayments;
+
+  @OneToMany
+  private List<Reservation> reservations;
 
 
   @Builder
