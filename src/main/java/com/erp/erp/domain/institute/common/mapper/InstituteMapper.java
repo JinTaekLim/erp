@@ -1,9 +1,11 @@
 package com.erp.erp.domain.institute.common.mapper;
 
 import com.erp.erp.domain.admin.common.dto.AddInstituteDto;
+import com.erp.erp.domain.customer.common.dto.GetInstituteDto;
 import com.erp.erp.domain.institute.common.dto.GetInstituteInfoDto;
 import com.erp.erp.domain.institute.common.dto.UpdateTotalSeatDto;
 import com.erp.erp.domain.institute.common.entity.Institute;
+import java.util.List;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
@@ -16,4 +18,6 @@ public interface InstituteMapper {
   UpdateTotalSeatDto.Response entityToUpdateTotalSeatResponse(Institute institute);
 
   GetInstituteInfoDto.Response entityToGetInstituteInfoDtoResponse(Institute institute);
+
+  List<GetInstituteDto.Response> entityToGetInstituteDto(List<Institute> institute);
 }

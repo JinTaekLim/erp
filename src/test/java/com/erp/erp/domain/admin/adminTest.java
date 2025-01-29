@@ -5,6 +5,7 @@ import com.erp.erp.domain.account.repository.AccountRepository;
 import com.erp.erp.domain.admin.common.dto.AddAccountDto;
 import com.erp.erp.domain.admin.common.dto.AddInstituteDto;
 import com.erp.erp.domain.admin.common.dto.AddPlanDto;
+import com.erp.erp.domain.customer.common.dto.GetInstituteDto;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.common.exception.NotFoundInstituteException;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
@@ -15,6 +16,8 @@ import com.erp.erp.global.util.generator.InstituteGenerator;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
+import java.util.List;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -260,5 +263,39 @@ class adminTest extends IntegrationTest {
     // then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     assertNull(apiResponse.getData());
+  }
+
+  @Test
+  void getInstitute() {
+    // given
+    int instituteCount = RandomValue.getInt(1,5);
+    List<Institute> institutes = IntStream.range(0,instituteCount).mapToObj(
+        i-> {return createInstitute();}
+    ).toList();
+
+    String url = BASE_URL + "/getInstitutes";
+
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+        url,
+        String.class
+    );
+
+    ApiResult<List<GetInstituteDto.Response>> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<List<GetInstituteDto.Response>>>() {
+        }
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(instituteCount).isEqualTo(apiResponse.getData().size());
+    IntStream.range(0,instituteCount).forEach(
+        i-> {
+          assertThat(apiResponse.getData().get(i).getName()).isEqualTo(institutes.get(i).getName());
+          assertThat(apiResponse.getData().get(i).getOpenTime()).isEqualTo(institutes.get(i).getOpenTime());
+          assertThat(apiResponse.getData().get(i).getCloseTime()).isEqualTo(institutes.get(i).getCloseTime());
+        }
+    );
   }
 }

@@ -4,6 +4,7 @@ package com.erp.erp.domain.institute.business;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.common.exception.NotFoundInstituteException;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -16,5 +17,9 @@ public class InstituteReader {
 
   public Institute findById(Long id) {
     return instituteRepository.findById(id).orElseThrow(NotFoundInstituteException::new);
+  }
+
+  public List<Institute> findAll() {
+    return instituteRepository.findAll();
   }
 }

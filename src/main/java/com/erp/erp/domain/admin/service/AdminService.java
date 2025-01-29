@@ -6,6 +6,7 @@ import com.erp.erp.domain.account.common.mapper.AccountMapper;
 import com.erp.erp.domain.admin.common.dto.AddAccountDto;
 import com.erp.erp.domain.admin.common.dto.AddInstituteDto;
 import com.erp.erp.domain.admin.common.dto.AddPlanDto;
+import com.erp.erp.domain.customer.common.dto.GetInstituteDto;
 import com.erp.erp.domain.institute.business.InstituteCreator;
 import com.erp.erp.domain.institute.business.InstituteReader;
 import com.erp.erp.domain.institute.common.entity.Institute;
@@ -13,6 +14,7 @@ import com.erp.erp.domain.institute.common.mapper.InstituteMapper;
 import com.erp.erp.domain.plan.business.PlanCreator;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.common.mapper.PlanMapper;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +47,11 @@ public class AdminService {
     Institute institute = instituteMapper.dtoToEntity(req);
     instituteCreator.save(institute);
     return instituteMapper.entityToAddInstituteResponse(institute);
+  }
+
+  public List<GetInstituteDto.Response> getInstitutes() {
+    List<Institute> institutes = instituteReader.findAll();
+    return instituteMapper.entityToGetInstituteDto(institutes);
   }
 
 }
