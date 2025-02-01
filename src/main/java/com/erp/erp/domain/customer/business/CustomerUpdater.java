@@ -23,14 +23,14 @@ public class CustomerUpdater {
     customerRepository.updateStatusById(customersId, status);
   }
 
-  public Customer updateCustomer(UpdateCustomerDto.Request req, Customer customer) {
+  public Customer updateCustomer(UpdateCustomerDto.Request req, String photoUrl, Customer customer) {
     customer.update(
         req.getName(),
         req.getGender(),
         req.getPhone(),
         req.getAddress(),
         req.getVisitPath(),
-        req.getPhotoUrl(),
+        photoUrl,
         req.getMemo(),
         req.getBirthDate(),
         req.isPlanPaymentStatus(),

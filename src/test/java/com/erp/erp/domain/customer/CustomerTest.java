@@ -309,10 +309,31 @@ class CustomerTest extends IntegrationTest {
         .set("progressList", progressRequest)
         .sample();
 
+    MockMultipartFile mockFile = new MockMultipartFile(
+        "file",
+        "test-image.jpg",
+        "image/jpeg",
+        "test-image-content".getBytes());
+
+    String photoUrl = RandomValue.string(5,30).setNullable(false).get();
+
+    HttpHeaders partHeaders = new HttpHeaders();
+    partHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+    HttpHeaders requestHeaders = new HttpHeaders();
+    requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+    MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+    body.add("req", new HttpEntity<>(gson.toJson(request), partHeaders));
+    body.add("file", mockFile.getResource());
+
+    HttpEntity<MultiValueMap<String, Object>> httpRequest = new HttpEntity<>(body, requestHeaders);
+
     String url = BASE_URL + "/updateCustomer";
-    HttpEntity<UpdateCustomerDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
 
     // then
+    when(photoUtil.upload(any(MultipartFile.class))).thenReturn(photoUrl);
+
     ResponseEntity<String> responseEntity = restTemplate.exchange(
             url,
             HttpMethod.PUT,
@@ -329,7 +350,7 @@ class CustomerTest extends IntegrationTest {
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertNotNull(apiResponse.getData());
     assertThat(apiResponse.getData().getCustomerId()).isEqualTo(request.getCustomerId());
-    assertThat(apiResponse.getData().getPhotoUrl()).isEqualTo(request.getPhotoUrl());
+    assertThat(apiResponse.getData().getPhotoUrl()).isEqualTo(photoUrl);
     assertThat(apiResponse.getData().getName()).isEqualTo(request.getName());
     assertThat(apiResponse.getData().getGender()).isEqualTo(request.getGender());
     assertThat(apiResponse.getData().getBirthDate()).isEqualTo(request.getBirthDate());
@@ -369,10 +390,31 @@ class CustomerTest extends IntegrationTest {
         .set("progressList", progressRequest)
         .sample();
 
-    HttpEntity<UpdateCustomerDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
+    MockMultipartFile mockFile = new MockMultipartFile(
+        "file",
+        "test-image.jpg",
+        "image/jpeg",
+        "test-image-content".getBytes());
+
+    String photoUrl = RandomValue.string(5,30).setNullable(false).get();
+
+    HttpHeaders partHeaders = new HttpHeaders();
+    partHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+    HttpHeaders requestHeaders = new HttpHeaders();
+    requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+    MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+    body.add("req", new HttpEntity<>(gson.toJson(request), partHeaders));
+    body.add("file", mockFile.getResource());
+
+    HttpEntity<MultiValueMap<String, Object>> httpRequest = new HttpEntity<>(body, requestHeaders);
+
     String url = BASE_URL + "/updateCustomer";
 
     // then
+    when(photoUtil.upload(any(MultipartFile.class))).thenReturn(photoUrl);
+
     ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
         HttpMethod.PUT,
@@ -389,7 +431,7 @@ class CustomerTest extends IntegrationTest {
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertNotNull(apiResponse.getData());
     assertThat(apiResponse.getData().getCustomerId()).isEqualTo(request.getCustomerId());
-    assertThat(apiResponse.getData().getPhotoUrl()).isEqualTo(request.getPhotoUrl());
+    assertThat(apiResponse.getData().getPhotoUrl()).isEqualTo(photoUrl);
     assertThat(apiResponse.getData().getName()).isEqualTo(request.getName());
     assertThat(apiResponse.getData().getGender()).isEqualTo(request.getGender());
     assertThat(apiResponse.getData().getBirthDate()).isEqualTo(request.getBirthDate());
@@ -451,17 +493,37 @@ class CustomerTest extends IntegrationTest {
         .set("progressList", progressRequest)
         .sample();
 
-    HttpEntity<UpdateCustomerDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
+    MockMultipartFile mockFile = new MockMultipartFile(
+        "file",
+        "test-image.jpg",
+        "image/jpeg",
+        "test-image-content".getBytes());
+
+    String photoUrl = RandomValue.string(5,30).setNullable(false).get();
+
+    HttpHeaders partHeaders = new HttpHeaders();
+    partHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+    HttpHeaders requestHeaders = new HttpHeaders();
+    requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+    MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+    body.add("req", new HttpEntity<>(gson.toJson(request), partHeaders));
+    body.add("file", mockFile.getResource());
+
+    HttpEntity<MultiValueMap<String, Object>> httpRequest = new HttpEntity<>(body, requestHeaders);
+
     String url = BASE_URL + "/updateCustomer";
 
     // then
+    when(photoUtil.upload(any(MultipartFile.class))).thenReturn(photoUrl);
+
     ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
         HttpMethod.PUT,
         httpRequest,
         String.class
     );
-
     ApiResult<UpdateCustomerDto.Response> apiResponse = gson.fromJson(
         responseEntity.getBody(),
         new TypeToken<ApiResult<UpdateCustomerDto.Response>>(){}
@@ -471,7 +533,7 @@ class CustomerTest extends IntegrationTest {
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertNotNull(apiResponse.getData());
     assertThat(apiResponse.getData().getCustomerId()).isEqualTo(request.getCustomerId());
-    assertThat(apiResponse.getData().getPhotoUrl()).isEqualTo(request.getPhotoUrl());
+    assertThat(apiResponse.getData().getPhotoUrl()).isEqualTo(photoUrl);
     assertThat(apiResponse.getData().getName()).isEqualTo(request.getName());
     assertThat(apiResponse.getData().getGender()).isEqualTo(request.getGender());
     assertThat(apiResponse.getData().getBirthDate()).isEqualTo(request.getBirthDate());
@@ -533,10 +595,31 @@ class CustomerTest extends IntegrationTest {
         .set("progressList", progressRequest)
         .sample();
 
-    HttpEntity<UpdateCustomerDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
+    MockMultipartFile mockFile = new MockMultipartFile(
+        "file",
+        "test-image.jpg",
+        "image/jpeg",
+        "test-image-content".getBytes());
+
+    String photoUrl = RandomValue.string(5,30).setNullable(false).get();
+
+    HttpHeaders partHeaders = new HttpHeaders();
+    partHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+    HttpHeaders requestHeaders = new HttpHeaders();
+    requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+    MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+    body.add("req", new HttpEntity<>(gson.toJson(request), partHeaders));
+    body.add("file", mockFile.getResource());
+
+    HttpEntity<MultiValueMap<String, Object>> httpRequest = new HttpEntity<>(body, requestHeaders);
+
     String url = BASE_URL + "/updateCustomer";
 
     // then
+    when(photoUtil.upload(any(MultipartFile.class))).thenReturn(photoUrl);
+
     ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
         HttpMethod.PUT,
@@ -553,7 +636,7 @@ class CustomerTest extends IntegrationTest {
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertNotNull(apiResponse.getData());
     assertThat(apiResponse.getData().getCustomerId()).isEqualTo(request.getCustomerId());
-    assertThat(apiResponse.getData().getPhotoUrl()).isEqualTo(request.getPhotoUrl());
+    assertThat(apiResponse.getData().getPhotoUrl()).isEqualTo(photoUrl);
     assertThat(apiResponse.getData().getName()).isEqualTo(request.getName());
     assertThat(apiResponse.getData().getGender()).isEqualTo(request.getGender());
     assertThat(apiResponse.getData().getBirthDate()).isEqualTo(request.getBirthDate());
@@ -588,8 +671,18 @@ class CustomerTest extends IntegrationTest {
     // given
     UpdateCustomerDto.Request request = UpdateCustomerDto.Request.builder().build();
 
+    HttpHeaders partHeaders = new HttpHeaders();
+    partHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+    HttpHeaders requestHeaders = new HttpHeaders();
+    requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+    MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+    body.add("req", new HttpEntity<>(gson.toJson(request), partHeaders));
+
+    HttpEntity<MultiValueMap<String, Object>> httpRequest = new HttpEntity<>(body, requestHeaders);
+
     String url = BASE_URL + "/updateCustomer";
-    HttpEntity<UpdateCustomerDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
 
     // then
     ResponseEntity<String> responseEntity = restTemplate.exchange(
@@ -615,10 +708,20 @@ class CustomerTest extends IntegrationTest {
     // given
     UpdateCustomerDto.Request request = fixtureMonkey.giveMeOne(UpdateCustomerDto.Request.class);
 
+    HttpHeaders partHeaders = new HttpHeaders();
+    partHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+    HttpHeaders requestHeaders = new HttpHeaders();
+    requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+    MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+    body.add("req", new HttpEntity<>(gson.toJson(request), partHeaders));
+
+    HttpEntity<MultiValueMap<String, Object>> httpRequest = new HttpEntity<>(body, requestHeaders);
+
     String url = BASE_URL + "/updateCustomer";
 
     NotFoundCustomerException exception = new NotFoundCustomerException();
-    HttpEntity<UpdateCustomerDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
 
     // then
     ResponseEntity<String> responseEntity = restTemplate.exchange(
@@ -654,14 +757,21 @@ class CustomerTest extends IntegrationTest {
         .set("customerId", customer.getId())
         .sample();
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.setBearerAuth(tokenDto.getAccessToken());
-    HttpEntity<UpdateCustomerDto.Request> requestEntity = new HttpEntity<>(request, headers);
+    HttpHeaders partHeaders = new HttpHeaders();
+    partHeaders.setContentType(MediaType.APPLICATION_JSON);
+    partHeaders.setBearerAuth(tokenDto.getAccessToken());
+
+    HttpHeaders requestHeaders = new HttpHeaders();
+    requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+    MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+    body.add("req", new HttpEntity<>(gson.toJson(request), partHeaders));
+
+    HttpEntity<MultiValueMap<String, Object>> httpRequest = new HttpEntity<>(body, requestHeaders);
 
     String url = BASE_URL + "/updateCustomer";
 
     NotFoundCustomerException exception = new NotFoundCustomerException();
-    HttpEntity<UpdateCustomerDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
 
     // then
     ResponseEntity<String> responseEntity = restTemplate.exchange(
@@ -722,7 +832,17 @@ class CustomerTest extends IntegrationTest {
 
     NotFoundProgressException exception = new NotFoundProgressException();
 
-    HttpEntity<UpdateCustomerDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
+    HttpHeaders partHeaders = new HttpHeaders();
+    partHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+    HttpHeaders requestHeaders = new HttpHeaders();
+    requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+    MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+    body.add("req", new HttpEntity<>(gson.toJson(request), partHeaders));
+
+    HttpEntity<MultiValueMap<String, Object>> httpRequest = new HttpEntity<>(body, requestHeaders);
+
     String url = BASE_URL + "/updateCustomer";
 
     // then
@@ -782,7 +902,17 @@ class CustomerTest extends IntegrationTest {
 
     NotFoundProgressException exception = new NotFoundProgressException();
 
-    HttpEntity<UpdateCustomerDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
+    HttpHeaders partHeaders = new HttpHeaders();
+    partHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+    HttpHeaders requestHeaders = new HttpHeaders();
+    requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+    MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+    body.add("req", new HttpEntity<>(gson.toJson(request), partHeaders));
+
+    HttpEntity<MultiValueMap<String, Object>> httpRequest = new HttpEntity<>(body, requestHeaders);
+
     String url = BASE_URL + "/updateCustomer";
 
     // then
