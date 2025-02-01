@@ -22,8 +22,6 @@ public class UpdateCustomerDto {
     @Schema(description = "회원 ID")
     @NotNull
     private Long customerId;
-    @Schema(description = "프로필 URL")
-    private String photoUrl;
     @Schema(description = "이름")
     @NotNull
     private String name;

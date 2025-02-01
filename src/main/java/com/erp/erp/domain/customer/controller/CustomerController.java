@@ -47,11 +47,12 @@ public class CustomerController {
   }
 
   @Operation(summary = "고객 정보 수정")
-  @PutMapping("/updateCustomer")
+  @PutMapping(value = "/updateCustomer", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ApiResult<UpdateCustomerDto.Response> updatedCustomerInfo(
-      @Valid @RequestBody UpdateCustomerDto.Request req
+      @Valid @RequestPart UpdateCustomerDto.Request req,
+      @RequestPart(value = "file", required = false) MultipartFile file
   ) {
-    UpdateCustomerDto.Response response = customerService.updateCustomer(req);
+    UpdateCustomerDto.Response response = customerService.updateCustomer(req, file);
     return ApiResult.success(response);
   }
 

@@ -67,12 +67,14 @@ public class CustomerService {
   }
 
   @Transactional
-  public UpdateCustomerDto.Response updateCustomer(UpdateCustomerDto.Request req) {
+  public UpdateCustomerDto.Response updateCustomer(UpdateCustomerDto.Request req, MultipartFile file) {
     Institute institute = authProvider.getCurrentInstitute();
     Customer customer = customerReader.findByIdAndInstituteId(institute.getId(),
         req.getCustomerId());
+    String photoUrl = customer.getPhotoUrl();
+    if (file != null) photoUrl = photoUtil.upload(file);
 
-    Customer updateCustomer = customerUpdater.updateCustomer(req, customer);
+    Customer updateCustomer = customerUpdater.updateCustomer(req, photoUrl, customer);
     List<Progress> progresses = progressManger.add(customer, req.getProgressList());
 
     return customerMapper.entityToUpdateCustomerResponse(updateCustomer, progresses);
