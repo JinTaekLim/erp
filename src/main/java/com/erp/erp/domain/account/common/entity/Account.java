@@ -44,4 +44,10 @@ public class Account {
     this.identifier = identifier;
     this.password = password;
   }
+
+  public Account updateIdentifierAndPassword(String identifier, String password) {
+    this.identifier = identifier;
+    this.password = password;
+    return this;
+  }
 }

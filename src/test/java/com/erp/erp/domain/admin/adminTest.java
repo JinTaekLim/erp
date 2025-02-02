@@ -1,10 +1,12 @@
 package com.erp.erp.domain.admin;
 
 import com.erp.erp.domain.account.common.entity.Account;
+import com.erp.erp.domain.account.common.exception.NotFoundAccountException;
 import com.erp.erp.domain.account.repository.AccountRepository;
 import com.erp.erp.domain.admin.common.dto.AddAccountDto;
 import com.erp.erp.domain.admin.common.dto.AddInstituteDto;
 import com.erp.erp.domain.admin.common.dto.AddPlanDto;
+import com.erp.erp.domain.admin.common.dto.UpdateAccountDto;
 import com.erp.erp.domain.customer.common.dto.GetInstituteDto;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.common.exception.NotFoundInstituteException;
@@ -22,6 +24,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -297,5 +301,69 @@ class adminTest extends IntegrationTest {
           assertThat(apiResponse.getData().get(i).getCloseTime()).isEqualTo(institutes.get(i).getCloseTime());
         }
     );
+  }
+
+  @Test
+  void updateAccount() {
+    // given
+    Institute institute = createInstitute();
+    Account account = createAccount(institute);
+
+    UpdateAccountDto.Request req = fixtureMonkey.giveMeBuilder(UpdateAccountDto.Request.class)
+        .set("accountId", account.getId())
+        .sample();
+
+    String url = BASE_URL + "/updateAccount";
+
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
+        url,
+        HttpMethod.PATCH,
+        new HttpEntity<>(req),
+        String.class
+    );
+
+    ApiResult<UpdateAccountDto.Response> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<UpdateAccountDto.Response>>() {
+        }
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(apiResponse.getData().getAccountId()).isEqualTo(account.getId());
+    assertThat(apiResponse.getData().getIdentifier()).isEqualTo(req.getIdentifier());
+  }
+
+  @Test
+  @DisplayName("잘못된 accountId")
+  void updateAccount_fail() {
+    // given
+    UpdateAccountDto.Request req = fixtureMonkey.giveMeBuilder(UpdateAccountDto.Request.class)
+        .set("accountId", RandomValue.getRandomLong(0,9999))
+        .sample();
+
+    String url = BASE_URL + "/updateAccount";
+
+    NotFoundAccountException exception = new NotFoundAccountException();
+
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
+        url,
+        HttpMethod.PATCH,
+        new HttpEntity<>(req),
+        String.class
+    );
+
+    ApiResult<UpdateAccountDto.Response> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<UpdateAccountDto.Response>>() {
+        }
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
+    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
   }
 }
