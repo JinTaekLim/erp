@@ -17,4 +17,9 @@ public class AccountUpdater {
     account.updateIdentifierAndPassword(req.getIdentifier(), req.getPassword());
     return accountRepository.save(account);
   }
+
+  public void lockAccount(Account account) {
+    account.updateLocked(true);
+    accountRepository.save(account);
+  }
 }

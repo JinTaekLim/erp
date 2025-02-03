@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -72,4 +73,10 @@ public class AdminController {
     return ApiResult.success(response);
   }
 
+  @Operation(summary = "계정 삭제")
+  @DeleteMapping("/deleteAccount")
+  public ApiResult<?> lockAccount(@RequestBody Long accountId) {
+    adminService.lockAccount(accountId);
+    return ApiResult.success(true);
+  }
 }
