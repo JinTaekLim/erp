@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum AccountErrorType {
+  NOT_FOUND_ACCOUNT("계정을 찾을 수 없습니다."),
   INVALID_CREDENTIALS("아이디 혹은 비밀번호를 잘못 입력하셨습니다."),
 
   ACCOUNT_INSTITUTE_NOT_FOUND("계정과 연결된 매장 정보를 찾을 수 없습니다.");

@@ -1,11 +1,14 @@
 package com.erp.erp.domain.admin.service;
 
 import com.erp.erp.domain.account.business.AccountCreator;
+import com.erp.erp.domain.account.business.AccountReader;
+import com.erp.erp.domain.account.business.AccountUpdater;
 import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.account.common.mapper.AccountMapper;
 import com.erp.erp.domain.admin.common.dto.AddAccountDto;
 import com.erp.erp.domain.admin.common.dto.AddInstituteDto;
 import com.erp.erp.domain.admin.common.dto.AddPlanDto;
+import com.erp.erp.domain.admin.common.dto.UpdateAccountDto;
 import com.erp.erp.domain.customer.common.dto.GetInstituteDto;
 import com.erp.erp.domain.institute.business.InstituteCreator;
 import com.erp.erp.domain.institute.business.InstituteReader;
@@ -23,6 +26,8 @@ import org.springframework.stereotype.Service;
 public class AdminService {
 
   private final AccountCreator accountCreator;
+  private final AccountReader accountReader;
+  private final AccountUpdater accountUpdater;
   private final InstituteReader instituteReader;
   private final PlanCreator planCreator;
   private final InstituteCreator instituteCreator;
@@ -54,4 +59,9 @@ public class AdminService {
     return instituteMapper.entityToGetInstituteDto(institutes);
   }
 
+  public UpdateAccountDto.Response updateAccount(UpdateAccountDto.Request req) {
+    Account account = accountReader.findById(req.getAccountId());
+    accountUpdater.update(account, req);
+    return accountMapper.entityToUpdateAccountDto(account);
+  }
 }

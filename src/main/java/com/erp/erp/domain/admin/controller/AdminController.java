@@ -4,6 +4,7 @@ package com.erp.erp.domain.admin.controller;
 import com.erp.erp.domain.admin.common.dto.AddAccountDto;
 import com.erp.erp.domain.admin.common.dto.AddInstituteDto;
 import com.erp.erp.domain.admin.common.dto.AddPlanDto;
+import com.erp.erp.domain.admin.common.dto.UpdateAccountDto;
 import com.erp.erp.domain.admin.service.AdminService;
 import com.erp.erp.domain.customer.common.dto.GetInstituteDto;
 import com.erp.erp.global.response.ApiResult;
@@ -14,6 +15,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,4 +63,13 @@ public class AdminController {
     List<GetInstituteDto.Response> response = adminService.getInstitutes();
     return ApiResult.success(response);
   }
+
+  @Operation(summary = "계정 수정")
+  @PatchMapping("/updateAccount")
+  public ApiResult<UpdateAccountDto.Response> updateAccount(
+      @RequestBody @Valid UpdateAccountDto.Request req) {
+    UpdateAccountDto.Response response = adminService.updateAccount(req);
+    return ApiResult.success(response);
+  }
+
 }
