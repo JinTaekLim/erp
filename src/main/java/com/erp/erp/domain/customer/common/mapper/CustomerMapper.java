@@ -88,6 +88,7 @@ public interface CustomerMapper {
 
   @Mapping(target = "licenseType", source = "planPayment.plan.licenseType")
   @Mapping(target = "planName", source = "planPayment.plan.name")
+  @Mapping(target = "planType", source = "planPayment.plan.planType")
   @Mapping(target = "courseType", source = "planPayment.plan.courseType")
   @Mapping(target = "planPrice", source = "planPayment.plan.price")
   @Mapping(target = "discountPrice", expression = "java(calculateDiscountPrice(planPayment))")
