@@ -1408,6 +1408,7 @@ class CustomerTest extends IntegrationTest {
     int paymentTotal = planPrice - discountPrice;
     assertThat(planPaymentResponse.getLicenseType()).isEqualTo(planPayment.getPlan().getLicenseType());
     assertThat(planPaymentResponse.getPlanName()).isEqualTo(planPayment.getPlan().getName());
+    assertThat(planPaymentResponse.getPlanType()).isEqualTo(planPayment.getPlan().getPlanType());
     assertThat(planPaymentResponse.getCourseType()).isEqualTo(planPayment.getPlan().getCourseType());
     assertThat(planPaymentResponse.getPlanPrice()).isEqualTo(planPayment.getPlan().getPrice());
     assertThat(planPaymentResponse.getDiscountRate()).isEqualTo(planPayment.getDiscountRate());
