@@ -6,7 +6,10 @@ import com.erp.erp.domain.account.repository.AccountRepository;
 import com.erp.erp.domain.admin.common.dto.AddAccountDto;
 import com.erp.erp.domain.admin.common.dto.AddInstituteDto;
 import com.erp.erp.domain.admin.common.dto.AddPlanDto;
+import com.erp.erp.domain.admin.common.dto.LoginDto;
 import com.erp.erp.domain.admin.common.dto.UpdateAccountDto;
+import com.erp.erp.domain.admin.common.entity.Admin;
+import com.erp.erp.domain.admin.repository.AdminRepository;
 import com.erp.erp.domain.customer.common.dto.GetInstituteDto;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.common.exception.NotFoundInstituteException;
@@ -14,6 +17,7 @@ import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.domain.plan.common.entity.LicenseType;
 import com.erp.erp.global.response.ApiResult;
 import com.erp.erp.global.util.generator.AccountGenerator;
+import com.erp.erp.global.util.generator.AdminGenerator;
 import com.erp.erp.global.util.generator.InstituteGenerator;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.test.IntegrationTest;
@@ -47,6 +51,8 @@ class adminTest extends IntegrationTest {
   private InstituteRepository instituteRepository;
   @Autowired
   private AccountRepository accountRepository;
+  @Autowired
+  private AdminRepository adminRepository;
 
 
   private Institute createInstitute() {
@@ -54,6 +60,9 @@ class adminTest extends IntegrationTest {
   }
   private Account createAccount(Institute institute) {
     return accountRepository.save(AccountGenerator.get(institute));
+  }
+  private Admin createAdmin() {
+    return adminRepository.save(AdminGenerator.get());
   }
 
 
@@ -365,5 +374,35 @@ class adminTest extends IntegrationTest {
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
     assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
+  }
+
+  @Test
+  void login() {
+    // given
+    Admin admin = createAdmin();
+
+    LoginDto.Request req = LoginDto.Request.builder()
+        .identifier(admin.getIdentifier())
+        .password(admin.getPassword())
+        .build();
+
+    String url = BASE_URL + "/login";
+
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
+        url,
+        HttpMethod.POST,
+        new HttpEntity<>(req),
+        String.class
+    );
+
+    ApiResult<Boolean> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<Boolean>>() {
+        }
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
 }

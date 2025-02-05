@@ -4,6 +4,7 @@ package com.erp.erp.domain.admin.controller;
 import com.erp.erp.domain.admin.common.dto.AddAccountDto;
 import com.erp.erp.domain.admin.common.dto.AddInstituteDto;
 import com.erp.erp.domain.admin.common.dto.AddPlanDto;
+import com.erp.erp.domain.admin.common.dto.LoginDto;
 import com.erp.erp.domain.admin.common.dto.UpdateAccountDto;
 import com.erp.erp.domain.admin.service.AdminService;
 import com.erp.erp.domain.customer.common.dto.GetInstituteDto;
@@ -72,4 +73,10 @@ public class AdminController {
     return ApiResult.success(response);
   }
 
+  @Operation(summary = "로그인")
+  @PostMapping("/login")
+  public ApiResult<Boolean> login(@RequestBody @Valid LoginDto.Request req) {
+    adminService.login(req);
+    return ApiResult.success(true);
+  }
 }
