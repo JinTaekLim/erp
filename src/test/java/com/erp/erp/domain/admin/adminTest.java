@@ -377,6 +377,32 @@ class adminTest extends IntegrationTest {
   }
 
   @Test
+  void lockAccount() {
+    // given
+    Institute institute = createInstitute();
+    Account account = createAccount(institute);
+
+    String url = BASE_URL + "/deleteAccount";
+
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
+        url,
+        HttpMethod.DELETE,
+        new HttpEntity<>(account.getId()),
+        String.class
+    );
+
+    ApiResult<?> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<?>>() {
+        }
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+  }
+
+  @Test
   void login() {
     // given
     Admin admin = createAdmin();

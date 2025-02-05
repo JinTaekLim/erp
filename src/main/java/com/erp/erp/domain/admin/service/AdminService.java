@@ -70,6 +70,11 @@ public class AdminService {
     return accountMapper.entityToUpdateAccountDto(account);
   }
 
+  public void lockAccount(Long accountId) {
+    Account account = accountReader.findById(accountId);
+    accountUpdater.lockAccount(account);
+  }
+
   public void login(LoginDto.Request req) {
     Admin admin = adminReader.findByIdentifierAndPassword(req);
     adminAuthProvider.setAttribute(admin);

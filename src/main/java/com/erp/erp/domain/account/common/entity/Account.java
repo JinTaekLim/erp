@@ -50,4 +50,8 @@ public class Account {
     this.password = password;
     return this;
   }
+
+  public void updateLocked(boolean locked) {
+    this.locked = locked;
+  }
 }
