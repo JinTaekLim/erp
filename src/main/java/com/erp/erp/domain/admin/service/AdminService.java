@@ -64,4 +64,9 @@ public class AdminService {
     accountUpdater.update(account, req);
     return accountMapper.entityToUpdateAccountDto(account);
   }
+
+  public void lockAccount(Long accountId) {
+    Account account = accountReader.findById(accountId);
+    accountUpdater.lockAccount(account);
+  }
 }
