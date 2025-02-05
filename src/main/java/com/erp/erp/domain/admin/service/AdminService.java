@@ -5,10 +5,13 @@ import com.erp.erp.domain.account.business.AccountReader;
 import com.erp.erp.domain.account.business.AccountUpdater;
 import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.account.common.mapper.AccountMapper;
+import com.erp.erp.domain.admin.business.AdminReader;
 import com.erp.erp.domain.admin.common.dto.AddAccountDto;
 import com.erp.erp.domain.admin.common.dto.AddInstituteDto;
 import com.erp.erp.domain.admin.common.dto.AddPlanDto;
+import com.erp.erp.domain.admin.common.dto.LoginDto;
 import com.erp.erp.domain.admin.common.dto.UpdateAccountDto;
+import com.erp.erp.domain.admin.common.entity.Admin;
 import com.erp.erp.domain.customer.common.dto.GetInstituteDto;
 import com.erp.erp.domain.institute.business.InstituteCreator;
 import com.erp.erp.domain.institute.business.InstituteReader;
@@ -34,6 +37,8 @@ public class AdminService {
   private final AccountMapper accountMapper;
   private final PlanMapper planMapper;
   private final InstituteMapper instituteMapper;
+  private final AdminReader adminReader;
+  private final AdminAuthProvider adminAuthProvider;
 
   public AddAccountDto.Response addAccount(AddAccountDto.Request req) {
     Institute institute = instituteReader.findById(req.getInstituteId());
@@ -68,5 +73,10 @@ public class AdminService {
   public void lockAccount(Long accountId) {
     Account account = accountReader.findById(accountId);
     accountUpdater.lockAccount(account);
+  }
+
+  public void login(LoginDto.Request req) {
+    Admin admin = adminReader.findByIdentifierAndPassword(req);
+    adminAuthProvider.setAttribute(admin);
   }
 }
