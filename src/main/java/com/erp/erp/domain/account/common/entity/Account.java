@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,12 +38,18 @@ public class Account {
 
   private boolean locked;
 
+  private String createdId;
+
+  private LocalDateTime createdAt;
+
 
   @Builder
-  public Account(Institute institute, String identifier, String password) {
+  public Account(Institute institute, String identifier, String password, String createdId) {
     this.institute = institute;
     this.identifier = identifier;
     this.password = password;
+    this.createdId = createdId;
+    this.createdAt = LocalDateTime.now();
   }
 
   public Account updateIdentifierAndPassword(String identifier, String password) {

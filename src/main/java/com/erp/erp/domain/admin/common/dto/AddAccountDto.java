@@ -32,12 +32,13 @@ public class AddAccountDto {
   public static class Response{
 
     @Schema(description = "매장 ID")
-    @NotNull
     private Long instituteId;
 
     @Schema(description = "아이디")
-    @NotNull
     private String identifier;
+
+    @Schema(description = "생성자")
+    private String createdId;
   }
 
 
