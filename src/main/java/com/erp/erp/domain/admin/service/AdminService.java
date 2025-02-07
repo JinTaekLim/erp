@@ -5,6 +5,7 @@ import com.erp.erp.domain.account.business.AccountReader;
 import com.erp.erp.domain.account.business.AccountUpdater;
 import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.account.common.mapper.AccountMapper;
+import com.erp.erp.domain.admin.business.AdminAuthProvider;
 import com.erp.erp.domain.admin.business.AdminReader;
 import com.erp.erp.domain.admin.common.dto.AddAccountDto;
 import com.erp.erp.domain.admin.common.dto.AddInstituteDto;
@@ -41,8 +42,9 @@ public class AdminService {
   private final AdminAuthProvider adminAuthProvider;
 
   public AddAccountDto.Response addAccount(AddAccountDto.Request req) {
+    Admin admin = adminAuthProvider.getAdmin();
     Institute institute = instituteReader.findById(req.getInstituteId());
-    Account account = accountMapper.dtoToEntity(req, institute);
+    Account account = accountMapper.dtoToEntity(req, institute, admin);
     accountCreator.save(account);
     return accountMapper.entityToDto(account);
   }
