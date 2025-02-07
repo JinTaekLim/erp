@@ -10,6 +10,7 @@ import com.erp.erp.domain.admin.common.dto.AddPlanDto;
 import com.erp.erp.domain.admin.common.dto.LoginDto;
 import com.erp.erp.domain.admin.common.dto.UpdateAccountDto;
 import com.erp.erp.domain.admin.common.entity.Admin;
+import com.erp.erp.domain.admin.common.exception.NotFoundAdminException;
 import com.erp.erp.domain.admin.common.exception.UnauthorizedAccessException;
 import com.erp.erp.domain.admin.repository.AdminRepository;
 import com.erp.erp.domain.customer.common.dto.GetInstituteDto;
@@ -18,6 +19,7 @@ import com.erp.erp.domain.institute.common.exception.NotFoundInstituteException;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.domain.plan.common.entity.LicenseType;
 import com.erp.erp.global.response.ApiResult;
+import com.erp.erp.global.util.ReflectionUtil;
 import com.erp.erp.global.util.generator.AccountGenerator;
 import com.erp.erp.global.util.generator.AdminGenerator;
 import com.erp.erp.global.util.generator.InstituteGenerator;
@@ -341,6 +343,43 @@ class adminTest extends IntegrationTest {
   }
 
   @Test
+  @DisplayName("존재하지 않는 관리자 요청")
+  void addAccount_fail_4() {
+    // given
+    Admin admin = fixtureMonkey.giveMeBuilder(Admin.class).sample();
+    ReflectionUtil.setFieldValue(admin, "id", RandomValue.getRandomLong(0, 9999));
+    setSession(admin);
+
+    Institute institute = createInstitute();
+
+    AddAccountDto.Request req = fixtureMonkey.giveMeBuilder(AddAccountDto.Request.class)
+        .set("instituteId", institute.getId())
+        .sample();
+
+    NotFoundAdminException exception = new NotFoundAdminException();
+
+    String url = BASE_URL + "/addAccount";
+
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+        url,
+        req,
+        String.class
+    );
+
+    ApiResult<AddAccountDto.Response> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<AddAccountDto.Response>>() {
+        }
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
+    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
+  }
+
+  @Test
   void getInstitute() {
     // given
     int instituteCount = RandomValue.getInt(1,5);
@@ -493,5 +532,40 @@ class adminTest extends IntegrationTest {
 
     // then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+  }
+
+  @Test
+  @DisplayName("잘못된 아이디/비밀번호 입력")
+  void login_fail_1() {
+    // given
+    Admin admin = createAdmin();
+
+    LoginDto.Request req = LoginDto.Request.builder()
+        .identifier(admin.getIdentifier() + RandomValue.string(5,10).setNullable(false))
+        .password(admin.getPassword() + RandomValue.string(5,10).setNullable(false))
+        .build();
+
+    String url = BASE_URL + "/login";
+
+    NotFoundAdminException exception = new NotFoundAdminException();
+
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
+        url,
+        HttpMethod.POST,
+        new HttpEntity<>(req),
+        String.class
+    );
+
+    ApiResult<Boolean> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<Boolean>>() {
+        }
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
+    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
   }
 }
