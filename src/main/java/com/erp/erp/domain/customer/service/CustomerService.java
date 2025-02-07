@@ -63,7 +63,7 @@ public class CustomerService {
     Institute institute = authProvider.getCurrentInstitute();
     Long customersId = req.getCustomerId();
     customerUpdater.updateStatus(customersId, req.getStatus());
-    return customerReader.findByIdAndInstituteId(institute.getId(), customersId).getStatus();
+    return customerReader.findByIdAndInstituteId(customersId, institute.getId()).getStatus();
   }
 
   @Transactional
