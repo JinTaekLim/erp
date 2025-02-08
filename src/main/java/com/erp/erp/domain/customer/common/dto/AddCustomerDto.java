@@ -72,6 +72,9 @@ public class AddCustomerDto {
       @NotNull(message = "결제 일자를 입력해주세요.")
       private LocalDateTime registrationAt;
 
+      @Schema(description = "할인명")
+      private String discountName;
+
       @Schema(description = "할인률")
       @Positive(message = "-1 이하의 값은 입력될 수 없습니다.")
       private int discountRate;
