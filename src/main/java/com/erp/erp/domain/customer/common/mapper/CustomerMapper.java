@@ -32,6 +32,7 @@ public interface CustomerMapper {
   @Mapping(target = "status", source = "req.planPayment.status")
   @Mapping(target = "registrationAt", source = "req.planPayment.registrationAt")
   @Mapping(target = "paymentsMethod", source = "req.planPayment.paymentsMethod")
+  @Mapping(target = "discountName", source = "req.planPayment.discountName")
   @Mapping(target = "discountRate", source = "req.planPayment.discountRate")
   @Mapping(target = "otherPaymentMethod", source = "req.planPayment.otherPaymentMethod")
   PlanPayment planPaymentResponseToPlanPayment(AddCustomerDto.Request req, Plan plan);

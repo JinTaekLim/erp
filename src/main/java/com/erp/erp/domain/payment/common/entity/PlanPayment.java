@@ -38,16 +38,20 @@ public class PlanPayment {
 
   private String otherPaymentMethod;
 
+  private String discountName;
+
   private double discountRate;
 
   @Builder
-  public PlanPayment(boolean status, Plan plan,
-                     LocalDateTime registrationAt, PaymentsMethod paymentsMethod, double discountRate, String otherPaymentMethod) {
+  public PlanPayment(boolean status, Plan plan, LocalDateTime registrationAt,
+      PaymentsMethod paymentsMethod, String discountName, double discountRate,
+      String otherPaymentMethod) {
     this.status = status;
     this.plan = plan;
     this.registrationAt = registrationAt;
     this.paymentsMethod = paymentsMethod;
     this.otherPaymentMethod = otherPaymentMethod;
+    this.discountName = discountName;
     this.discountRate = discountRate;
   }
 

@@ -56,6 +56,8 @@ public class GetCustomerDetailDto {
     private CourseType courseType;
     @Schema(description = "이용권 금액")
     private int planPrice;
+    @Schema(description = "이용권 할인명")
+    private String discountName;
     @Schema(description = "이용권 할인률")
     private double discountRate;
     @Schema(description = "이용권 할인 금액")

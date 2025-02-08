@@ -1411,6 +1411,7 @@ class CustomerTest extends IntegrationTest {
     assertThat(planPaymentResponse.getPlanType()).isEqualTo(planPayment.getPlan().getPlanType());
     assertThat(planPaymentResponse.getCourseType()).isEqualTo(planPayment.getPlan().getCourseType());
     assertThat(planPaymentResponse.getPlanPrice()).isEqualTo(planPayment.getPlan().getPrice());
+    assertThat(planPaymentResponse.getDiscountName()).isEqualTo(planPayment.getDiscountName());
     assertThat(planPaymentResponse.getDiscountRate()).isEqualTo(planPayment.getDiscountRate());
     assertThat(planPaymentResponse.getDiscountPrice()).isEqualTo(discountPrice);
     assertThat(planPaymentResponse.getPaymentsMethod()).isEqualTo(planPayment.getPaymentsMethod());
