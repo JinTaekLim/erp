@@ -12,7 +12,7 @@ public class PhotoUtil {
   private final S3Manager s3Manager;
 
   public String upload(MultipartFile file) {
-    if (file.isEmpty()) {return null;}
+    if (file == null) {return null;}
     return s3Manager.upload(file);
   }
 }
