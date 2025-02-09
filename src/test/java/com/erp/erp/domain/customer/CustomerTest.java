@@ -42,6 +42,7 @@ import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.common.exception.NotFoundPlanException;
 import com.erp.erp.domain.plan.repository.PlanRepository;
 import com.erp.erp.global.response.ApiResult;
+import com.erp.erp.global.util.ReflectionUtil;
 import com.erp.erp.global.util.generator.AccountGenerator;
 import com.erp.erp.global.util.generator.CustomerGenerator;
 import com.erp.erp.global.util.generator.InstituteGenerator;
@@ -57,6 +58,7 @@ import java.util.Comparator;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -1509,5 +1511,116 @@ class CustomerTest extends IntegrationTest {
     assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
   }
 
+
+  @Test
+  @DisplayName("searchCustomer 성공")
+  void searchCustomer() {
+    //given
+    Institute institutes = createInstitutes();
+    Customer customer = createCustomer(institutes);
+
+    String url = BASE_URL + "/searchCustomer/" + customer.getName();
+
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+        url,
+        String.class
+    );
+
+    ApiResult<List<GetCustomerDto.Response>> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<List<GetCustomerDto.Response>>>() {
+        }.getType()
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+    IntStream.range(apiResponse.getData().size() , 0).forEach(i -> {
+      GetCustomerDto.Response response = apiResponse.getData().get(i);
+
+      assertThat(response.getCustomerId()).isNotNull();
+      assertThat(response.getPhotoUrl()).isEqualTo(customer.getPhotoUrl());
+      assertThat(response.getName()).isEqualTo(customer.getName());
+      assertThat(response.getGender()).isEqualTo(customer.getGender());
+      assertThat(response.getPhone()).isEqualTo(customer.getPhone());
+      assertThat(response.getLicenseType()).isEqualTo(customer.getPlanPayment().getPlan().getLicenseType());
+      assertThat(response.getPlanName()).isEqualTo(customer.getPlanPayment().getPlan().getName());
+      assertThat(response.getCourseType()).isEqualTo(customer.getPlanPayment().getPlan().getCourseType());
+//      assertThat(response.getRemainingTime())
+//      assertThat(response.getRemainingPeriod())
+//      assertThat(response.getUsedTime())
+      assertThat(response.getRegistrationDate()).isEqualTo(customer.getPlanPayment().getRegistrationAt());
+//      assertThat(response.getTardinessCount())
+//      assertThat(response.getAbsenceCount())
+
+      int otherPaymentPrice = customer.getOtherPayments().stream()
+          .mapToInt(OtherPayment::getPrice)
+          .sum();
+      assertThat(response.getOtherPaymentPrice()).isEqualTo(otherPaymentPrice);
+    });
+  }
+
+
+
+  @Test
+  @DisplayName("searchCustomer 중복된 이름 성공")
+  void searchCustomer_success_1() {
+    //given
+    Institute institutes = createInstitutes();
+    Plan plan = createPlans();
+    String randomNickname = RandomValue.string(5,10).setLanguages(Language.ENGLISH).setNullable(false).get();
+    int randomInt = RandomValue.getInt(2,20);
+
+    List<Customer> customers = IntStream.range(0, randomInt)
+        .mapToObj(i -> {
+          Customer customer = CustomerGenerator.get(plan, institutes, CustomerStatus.ACTIVE);
+          ReflectionUtil.setFieldValue(customer, "name", randomNickname);
+          return customerRepository.save(customer);
+        }).toList();
+
+    String url = BASE_URL + "/searchCustomer/" + randomNickname;
+
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+        url,
+        String.class
+    );
+
+    ApiResult<List<GetCustomerDto.Response>> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<List<GetCustomerDto.Response>>>() {
+        }.getType()
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(apiResponse.getData().size()).isEqualTo(randomInt);
+
+    IntStream.range(apiResponse.getData().size() , 0).forEach(i -> {
+      GetCustomerDto.Response response = apiResponse.getData().get(i);
+      Customer customer = customers.get(i);
+
+      assertThat(response.getCustomerId()).isNotNull();
+      assertThat(response.getPhotoUrl()).isEqualTo(customer.getPhotoUrl());
+      assertThat(response.getName()).isEqualTo(customer.getName());
+      assertThat(response.getGender()).isEqualTo(customer.getGender());
+      assertThat(response.getPhone()).isEqualTo(customer.getPhone());
+      assertThat(response.getLicenseType()).isEqualTo(customer.getPlanPayment().getPlan().getLicenseType());
+      assertThat(response.getPlanName()).isEqualTo(customer.getPlanPayment().getPlan().getName());
+      assertThat(response.getCourseType()).isEqualTo(customer.getPlanPayment().getPlan().getCourseType());
+//      assertThat(response.getRemainingTime())
+//      assertThat(response.getRemainingPeriod())
+//      assertThat(response.getUsedTime())
+      assertThat(response.getRegistrationDate()).isEqualTo(customer.getPlanPayment().getRegistrationAt());
+//      assertThat(response.getTardinessCount())
+//      assertThat(response.getAbsenceCount())
+
+      int otherPaymentPrice = customer.getOtherPayments().stream()
+          .mapToInt(OtherPayment::getPrice)
+          .sum();
+      assertThat(response.getOtherPaymentPrice()).isEqualTo(otherPaymentPrice);
+    });
+  }
 
 }

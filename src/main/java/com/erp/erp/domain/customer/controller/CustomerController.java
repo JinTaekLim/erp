@@ -100,4 +100,14 @@ public class CustomerController {
     GetCustomerDetailDto.Response response = customerService.getCustomerDetail(customerId);
     return ApiResult.success(response);
   }
+
+  @Operation(summary = "고객 검색 ( 글자 기준, 초성X )")
+  @GetMapping("/searchCustomer/{customerName}")
+  public ApiResult<List<GetCustomerDto.Response>> searchCustomer(
+      @PathVariable("customerName") String customerName
+  ) {
+    List<GetCustomerDto.Response> response = customerService.searchCustomer(customerName);
+    return ApiResult.success(response);
+  }
+
 }
