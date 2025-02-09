@@ -121,4 +121,13 @@ public class CustomerService {
     List<Progress> progress = progressReader.findByCustomerId(customerId);
     return customerMapper.entityToGetCustomerDetailResponse(customer, progress);
   }
+
+  public List<GetCustomerDto.Response> searchCustomer(String customerName) {
+    Institute instituteId = authProvider.getCurrentInstitute();
+    List<Customer> customers = customerReader.findByInstitutesIdAndNameStartingWithAndStatusIn(
+        instituteId,
+        customerName
+    );
+    return customerMapper.entityToGetCustomerResponse(customers);
+  }
 }
