@@ -69,8 +69,8 @@ public class CustomerService {
   @Transactional
   public UpdateCustomerDto.Response updateCustomer(UpdateCustomerDto.Request req, MultipartFile file) {
     Institute institute = authProvider.getCurrentInstitute();
-    Customer customer = customerReader.findByIdAndInstituteId(institute.getId(),
-        req.getCustomerId());
+    Customer customer = customerReader.findByIdAndInstituteId(req.getCustomerId(),
+        institute.getId());
     String photoUrl = customer.getPhotoUrl();
     if (file != null) photoUrl = photoUtil.upload(file);
 

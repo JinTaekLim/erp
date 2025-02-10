@@ -20,8 +20,8 @@ public class CustomerReader {
 
   private final CustomerRepository customerRepository;
 
-  public Customer findByIdAndInstituteId(Long customersId, Long instituteId) {
-    return customerRepository.findByIdAndInstituteId(customersId, instituteId)
+  public Customer findByIdAndInstituteId(Long customerId, Long instituteId) {
+    return customerRepository.findByIdAndInstituteId(customerId, instituteId)
         .orElseThrow(NotFoundCustomerException::new);
   }
 
