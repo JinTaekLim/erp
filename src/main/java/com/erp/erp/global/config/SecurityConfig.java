@@ -23,7 +23,6 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
-
         .csrf(AbstractHttpConfigurer::disable) // csrf 비활성화
         .cors(Customizer.withDefaults()) // cors 비활성화
         .httpBasic(AbstractHttpConfigurer::disable) // 기본 인증 로그인 비활성화
@@ -34,7 +33,6 @@ public class SecurityConfig {
                 HeadersConfigurer.FrameOptionsConfig::sameOrigin)) // X-Frame-Options sameOrigin 제한
         .sessionManagement(c -> c
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 비활성화
-
         // 로깅 필터 추가
         .addFilterBefore(new LogFilter(), SecurityContextHolderFilter.class)
     ;

@@ -42,6 +42,7 @@ import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.common.exception.NotFoundPlanException;
 import com.erp.erp.domain.plan.repository.PlanRepository;
 import com.erp.erp.global.response.ApiResult;
+import com.erp.erp.global.util.HttpEntityUtil;
 import com.erp.erp.global.util.ReflectionUtil;
 import com.erp.erp.global.util.generator.AccountGenerator;
 import com.erp.erp.global.util.generator.CustomerGenerator;
@@ -58,7 +59,6 @@ import java.util.Comparator;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -159,6 +159,10 @@ class CustomerTest extends IntegrationTest {
   @DisplayName("addCustomer 성공")
   void addCustomer() {
     //given
+    Institute institute = createInstitutes();
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+
     Plan plan = createPlans();
     AddCustomerDto.Request request = fixtureMonkey.giveMeBuilder(AddCustomerDto.Request.class)
         .set("planId", plan.getId())
@@ -172,11 +176,9 @@ class CustomerTest extends IntegrationTest {
 
     String photoUrl = RandomValue.string(5,30).setNullable(false).get();
 
-    HttpHeaders partHeaders = new HttpHeaders();
-    partHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-    HttpHeaders requestHeaders = new HttpHeaders();
-    requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+    HttpHeaders partHeaders = HttpEntityUtil.createHttpHeaders(MediaType.APPLICATION_JSON);
+    HttpHeaders requestHeaders = HttpEntityUtil.createHttpHeaders(MediaType.MULTIPART_FORM_DATA);
+    requestHeaders.setBearerAuth(tokenDto.getAccessToken());
 
     MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
     body.add("req", new HttpEntity<>(gson.toJson(request), partHeaders));
@@ -219,17 +221,18 @@ class CustomerTest extends IntegrationTest {
   @DisplayName("addCustomer 필수 값 미전달")
   void addCustomer_fail_1() {
     //given
+    Institute institute = createInstitutes();
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+
     AddCustomerDto.Request request = AddCustomerDto.Request.builder().build();
 
-    HttpHeaders partHeaders = new HttpHeaders();
-    partHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-    HttpHeaders requestHeaders = new HttpHeaders();
-    requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+    HttpHeaders partHeaders = HttpEntityUtil.createHttpHeaders(MediaType.APPLICATION_JSON);
+    HttpHeaders requestHeaders = HttpEntityUtil.createHttpHeaders(MediaType.MULTIPART_FORM_DATA);
+    requestHeaders.setBearerAuth(tokenDto.getAccessToken());
 
     MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
     body.add("req", new HttpEntity<>(gson.toJson(request), partHeaders));
-
 
     HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(body, requestHeaders);
 
@@ -256,13 +259,15 @@ class CustomerTest extends IntegrationTest {
   @DisplayName("addCustomer 존재하지 않는 이용권 전달")
   void addCustomer_fail_2() {
     //given
+    Institute institute = createInstitutes();
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+
     AddCustomerDto.Request request = fixtureMonkey.giveMeOne(AddCustomerDto.Request.class);
 
-    HttpHeaders partHeaders = new HttpHeaders();
-    partHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-    HttpHeaders requestHeaders = new HttpHeaders();
-    requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+    HttpHeaders partHeaders = HttpEntityUtil.createHttpHeaders(MediaType.APPLICATION_JSON);
+    HttpHeaders requestHeaders = HttpEntityUtil.createHttpHeaders(MediaType.MULTIPART_FORM_DATA);
+    requestHeaders.setBearerAuth(tokenDto.getAccessToken());
 
     MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
     body.add("req", new HttpEntity<>(gson.toJson(request), partHeaders));
@@ -298,7 +303,10 @@ class CustomerTest extends IntegrationTest {
   @DisplayName("updateCustomer 성공")
   void updateCustomer() {
     // given
-    Customer customer = createCustomer();
+    Institute institute = createInstitutes();
+    Customer customer = createCustomer(institute);
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
 
     ProgressDto.Request progressRequest = ProgressDto.Request.builder()
         .addProgresses(new ArrayList<>())
@@ -319,11 +327,9 @@ class CustomerTest extends IntegrationTest {
 
     String photoUrl = RandomValue.string(5,30).setNullable(false).get();
 
-    HttpHeaders partHeaders = new HttpHeaders();
-    partHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-    HttpHeaders requestHeaders = new HttpHeaders();
-    requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+    HttpHeaders partHeaders = HttpEntityUtil.createHttpHeaders(MediaType.APPLICATION_JSON);
+    HttpHeaders requestHeaders = HttpEntityUtil.createHttpHeaders(MediaType.MULTIPART_FORM_DATA);
+    requestHeaders.setBearerAuth(tokenDto.getAccessToken());
 
     MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
     body.add("req", new HttpEntity<>(gson.toJson(request), partHeaders));
@@ -374,7 +380,11 @@ class CustomerTest extends IntegrationTest {
   @DisplayName("updateCustomer 진도표 추가 성공")
   void updateCustomer_success_1() {
     // given
-    Customer customer = createCustomer();
+    Institute institute = createInstitutes();
+    Customer customer = createCustomer(institute);
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+
     int progressSize = RandomValue.getInt(1,5);
     List<Progress> progresses = createProgressList(customer, progressSize);
 
@@ -400,11 +410,9 @@ class CustomerTest extends IntegrationTest {
 
     String photoUrl = RandomValue.string(5,30).setNullable(false).get();
 
-    HttpHeaders partHeaders = new HttpHeaders();
-    partHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-    HttpHeaders requestHeaders = new HttpHeaders();
-    requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+    HttpHeaders partHeaders = HttpEntityUtil.createHttpHeaders(MediaType.APPLICATION_JSON);
+    HttpHeaders requestHeaders = HttpEntityUtil.createHttpHeaders(MediaType.MULTIPART_FORM_DATA);
+    requestHeaders.setBearerAuth(tokenDto.getAccessToken());
 
     MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
     body.add("req", new HttpEntity<>(gson.toJson(request), partHeaders));
@@ -469,7 +477,11 @@ class CustomerTest extends IntegrationTest {
   @DisplayName("updateCustomer 진도표 수정 성공")
   void updateCustomer_success_2() {
     // given
-    Customer customer = createCustomer();
+    Institute institute = createInstitutes();
+    Customer customer = createCustomer(institute);
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+
     int progressSize = RandomValue.getInt(1,5);
     List<Progress> progressList = createProgressList(customer, progressSize);
     List<Long> progressIds = new ArrayList<>(progressList.stream().map(Progress::getId).toList());
@@ -503,11 +515,9 @@ class CustomerTest extends IntegrationTest {
 
     String photoUrl = RandomValue.string(5,30).setNullable(false).get();
 
-    HttpHeaders partHeaders = new HttpHeaders();
-    partHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-    HttpHeaders requestHeaders = new HttpHeaders();
-    requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+    HttpHeaders partHeaders = HttpEntityUtil.createHttpHeaders(MediaType.APPLICATION_JSON);
+    HttpHeaders requestHeaders = HttpEntityUtil.createHttpHeaders(MediaType.MULTIPART_FORM_DATA);
+    requestHeaders.setBearerAuth(tokenDto.getAccessToken());
 
     MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
     body.add("req", new HttpEntity<>(gson.toJson(request), partHeaders));
@@ -572,7 +582,11 @@ class CustomerTest extends IntegrationTest {
   @DisplayName("updateCustomer 진도표 삭제 성공")
   void updateCustomer_success_3() {
     // given
-    Customer customer = createCustomer();
+    Institute institute = createInstitutes();
+    Customer customer = createCustomer(institute);
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+
     int progressSize = RandomValue.getInt(1,5);
     List<Progress> progressList = createProgressList(customer, progressSize);
     List<Long> progressIds = new ArrayList<>(progressList.stream().map(Progress::getId).toList());
@@ -605,11 +619,9 @@ class CustomerTest extends IntegrationTest {
 
     String photoUrl = RandomValue.string(5,30).setNullable(false).get();
 
-    HttpHeaders partHeaders = new HttpHeaders();
-    partHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-    HttpHeaders requestHeaders = new HttpHeaders();
-    requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+    HttpHeaders partHeaders = HttpEntityUtil.createHttpHeaders(MediaType.APPLICATION_JSON);
+    HttpHeaders requestHeaders = HttpEntityUtil.createHttpHeaders(MediaType.MULTIPART_FORM_DATA);
+    requestHeaders.setBearerAuth(tokenDto.getAccessToken());
 
     MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
     body.add("req", new HttpEntity<>(gson.toJson(request), partHeaders));
@@ -671,13 +683,15 @@ class CustomerTest extends IntegrationTest {
   @DisplayName("updateCustomer 필수 값 미입력")
   void updateCustomer_fail_1() {
     // given
+    Institute institute = createInstitutes();
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+
     UpdateCustomerDto.Request request = UpdateCustomerDto.Request.builder().build();
 
-    HttpHeaders partHeaders = new HttpHeaders();
-    partHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-    HttpHeaders requestHeaders = new HttpHeaders();
-    requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+    HttpHeaders partHeaders = HttpEntityUtil.createHttpHeaders(MediaType.APPLICATION_JSON);
+    HttpHeaders requestHeaders = HttpEntityUtil.createHttpHeaders(MediaType.MULTIPART_FORM_DATA);
+    requestHeaders.setBearerAuth(tokenDto.getAccessToken());
 
     MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
     body.add("req", new HttpEntity<>(gson.toJson(request), partHeaders));
@@ -708,13 +722,15 @@ class CustomerTest extends IntegrationTest {
   @DisplayName("updateCustomer 존재하지 않는 Customer 입력")
   void updateCustomer_fail_2() {
     // given
+    Institute institute = createInstitutes();
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+
     UpdateCustomerDto.Request request = fixtureMonkey.giveMeOne(UpdateCustomerDto.Request.class);
 
-    HttpHeaders partHeaders = new HttpHeaders();
-    partHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-    HttpHeaders requestHeaders = new HttpHeaders();
-    requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+    HttpHeaders partHeaders = HttpEntityUtil.createHttpHeaders(MediaType.APPLICATION_JSON);
+    HttpHeaders requestHeaders = HttpEntityUtil.createHttpHeaders(MediaType.MULTIPART_FORM_DATA);
+    requestHeaders.setBearerAuth(tokenDto.getAccessToken());
 
     MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
     body.add("req", new HttpEntity<>(gson.toJson(request), partHeaders));
@@ -759,12 +775,9 @@ class CustomerTest extends IntegrationTest {
         .set("customerId", customer.getId())
         .sample();
 
-    HttpHeaders partHeaders = new HttpHeaders();
-    partHeaders.setContentType(MediaType.APPLICATION_JSON);
-    partHeaders.setBearerAuth(tokenDto.getAccessToken());
-
-    HttpHeaders requestHeaders = new HttpHeaders();
-    requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+    HttpHeaders partHeaders = HttpEntityUtil.createHttpHeaders(MediaType.APPLICATION_JSON);
+    HttpHeaders requestHeaders = HttpEntityUtil.createHttpHeaders(MediaType.MULTIPART_FORM_DATA);
+    requestHeaders.setBearerAuth(tokenDto.getAccessToken());
 
     MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
     body.add("req", new HttpEntity<>(gson.toJson(request), partHeaders));
@@ -799,7 +812,11 @@ class CustomerTest extends IntegrationTest {
   @DisplayName("updateCustomer 진도표 수정 잘못된 ID값 입력")
   void updateCustomer_fail_4() {
     // given
-    Customer customer = createCustomer();
+    Institute institute = createInstitutes();
+    Customer customer = createCustomer(institute);
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+
     int progressSize = RandomValue.getInt(0,2);
     List<Long> progressIds = createProgressList(customer, progressSize).stream()
         .map(Progress::getId)
@@ -834,11 +851,9 @@ class CustomerTest extends IntegrationTest {
 
     NotFoundProgressException exception = new NotFoundProgressException();
 
-    HttpHeaders partHeaders = new HttpHeaders();
-    partHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-    HttpHeaders requestHeaders = new HttpHeaders();
-    requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+    HttpHeaders partHeaders = HttpEntityUtil.createHttpHeaders(MediaType.APPLICATION_JSON);
+    HttpHeaders requestHeaders = HttpEntityUtil.createHttpHeaders(MediaType.MULTIPART_FORM_DATA);
+    requestHeaders.setBearerAuth(tokenDto.getAccessToken());
 
     MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
     body.add("req", new HttpEntity<>(gson.toJson(request), partHeaders));
@@ -871,7 +886,11 @@ class CustomerTest extends IntegrationTest {
   @DisplayName("updateCustomer 진도표 삭제 잘못된 ID값 입력")
   void updateCustomer_fail_5() {
     // given
-    Customer customer = createCustomer();
+    Institute institute = createInstitutes();
+    Customer customer = createCustomer(institute);
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+
     int progressSize = RandomValue.getInt(0,2);
     List<Long> progressIds = createProgressList(customer, progressSize).stream()
         .map(Progress::getId)
@@ -904,11 +923,9 @@ class CustomerTest extends IntegrationTest {
 
     NotFoundProgressException exception = new NotFoundProgressException();
 
-    HttpHeaders partHeaders = new HttpHeaders();
-    partHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-    HttpHeaders requestHeaders = new HttpHeaders();
-    requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+    HttpHeaders partHeaders = HttpEntityUtil.createHttpHeaders(MediaType.APPLICATION_JSON);
+    HttpHeaders requestHeaders = HttpEntityUtil.createHttpHeaders(MediaType.MULTIPART_FORM_DATA);
+    requestHeaders.setBearerAuth(tokenDto.getAccessToken());
 
     MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
     body.add("req", new HttpEntity<>(gson.toJson(request), partHeaders));
@@ -942,17 +959,23 @@ class CustomerTest extends IntegrationTest {
     //given
     Plan plan = createPlans();
     Institute institute = createInstitutes();
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
     Customer customer = createCustomer(plan, institute);
 
     CustomerStatus status = RandomValue.getRandomEnum(CustomerStatus.class);
 
-    UpdateStatusDto.Request request = UpdateStatusDto.Request.builder()
+    UpdateStatusDto.Request req = UpdateStatusDto.Request.builder()
         .customerId(customer.getId())
         .status(status)
         .build();
 
     String url = BASE_URL + "/updateStatus";
-    HttpEntity<UpdateStatusDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
+
+    HttpEntity<UpdateStatusDto.Request> httpRequest = HttpEntityUtil.setToken(
+        req,
+        tokenDto.getAccessToken()
+    );
 
     //when
     ResponseEntity<String> responseEntity = restTemplate.exchange(
@@ -979,14 +1002,19 @@ class CustomerTest extends IntegrationTest {
     //given
     Plan plan = createPlans();
     Institute institute = createInstitutes();
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
     Customer customer = createCustomer(plan, institute);
 
-    UpdateStatusDto.Request request = UpdateStatusDto.Request.builder()
+    UpdateStatusDto.Request req = UpdateStatusDto.Request.builder()
         .customerId(customer.getId())
         .build();
 
     String url = BASE_URL + "/updateStatus";
-    HttpEntity<UpdateStatusDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
+    HttpEntity<UpdateStatusDto.Request> httpRequest = HttpEntityUtil.setToken(
+        req,
+        tokenDto.getAccessToken()
+    );
 
     //when
     ResponseEntity<String> responseEntity = restTemplate.exchange(
@@ -1010,14 +1038,22 @@ class CustomerTest extends IntegrationTest {
   @DisplayName("updateStatus customerId 미전달")
   void updateStatus_fail_2() {
     //given
+    Institute institute = createInstitutes();
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+
     CustomerStatus status = RandomValue.getRandomEnum(CustomerStatus.class);
 
-    UpdateStatusDto.Request request = UpdateStatusDto.Request.builder()
+    UpdateStatusDto.Request req = UpdateStatusDto.Request.builder()
         .status(status)
         .build();
 
     String url = BASE_URL + "/updateStatus";
-    HttpEntity<UpdateStatusDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
+
+    HttpEntity<UpdateStatusDto.Request> httpRequest = HttpEntityUtil.setToken(
+        req,
+        tokenDto.getAccessToken()
+    );
 
     //when
     ResponseEntity<String> responseEntity = restTemplate.exchange(
@@ -1041,15 +1077,24 @@ class CustomerTest extends IntegrationTest {
   @DisplayName("updateStatus 잘못된 customerId 전달")
   void updateStatus_fail_3() {
     //given
+    Institute institute = createInstitutes();
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+
     CustomerStatus status = RandomValue.getRandomEnum(CustomerStatus.class);
 
-    UpdateStatusDto.Request request = UpdateStatusDto.Request.builder()
+    UpdateStatusDto.Request req = UpdateStatusDto.Request.builder()
         .customerId(RandomValue.getRandomLong(99999))
         .status(status)
         .build();
 
     String url = BASE_URL + "/updateStatus";
-    HttpEntity<UpdateStatusDto.Request> httpRequest = new HttpEntity<>(request, new HttpHeaders());
+
+    HttpEntity<UpdateStatusDto.Request> httpRequest = HttpEntityUtil.setToken(
+        req,
+        tokenDto.getAccessToken()
+    );
+
     NotFoundCustomerException exception = new NotFoundCustomerException();
 
     //when
@@ -1121,7 +1166,9 @@ class CustomerTest extends IntegrationTest {
   @DisplayName("getCurrentCustomers 성공")
   void getCurrentCustomers() {
     //given
-    Institute institutes = createInstitutes();
+    Institute institute = createInstitutes();
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
     Plan plan = createPlans();
 
     int randomInt = RandomValue.getInt(0,20);
@@ -1129,14 +1176,18 @@ class CustomerTest extends IntegrationTest {
 
     List<Customer> customers = IntStream.range(0, randomInt)
         .mapToObj(i -> {
-      return createCustomer(plan, institutes, CustomerStatus.ACTIVE);
+          return createCustomer(plan, institute, CustomerStatus.ACTIVE);
         }).toList();
 
     String url = BASE_URL + "/currentCustomers/" + page;
 
+    HttpEntity<Void> httpRequest = HttpEntityUtil.setToken(null, tokenDto.getAccessToken());
+
     // when
-    ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
+        HttpMethod.GET,
+        httpRequest,
         String.class
     );
 
@@ -1183,6 +1234,8 @@ class CustomerTest extends IntegrationTest {
   void getExpiredCustomers() {
     //given
     Institute institutes = createInstitutes();
+    Account account = createAccount(institutes);
+    TokenDto tokenDto = tokenManager.createToken(account);
     Plan plan = createPlans();
 
     int randomInt = RandomValue.getInt(0,20);
@@ -1195,9 +1248,12 @@ class CustomerTest extends IntegrationTest {
 
     String url = BASE_URL + "/expiredCustomer/" + page;
 
+    HttpEntity<Void> httpRequest = HttpEntityUtil.setToken(null, tokenDto.getAccessToken());
     // when
-    ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
+        HttpMethod.GET,
+        httpRequest,
         String.class
     );
 
@@ -1243,6 +1299,8 @@ class CustomerTest extends IntegrationTest {
   void getAvailableCustomerNames() {
     // given
     Institute institutes = createInstitutes();
+    Account account = createAccount(institutes);
+    TokenDto tokenDto = tokenManager.createToken(account);
     Plan plan = createPlans();
 
     int customerCount = RandomValue.getInt(0,5);
@@ -1262,9 +1320,13 @@ class CustomerTest extends IntegrationTest {
 
     String url = BASE_URL + "/getAvailableCustomerNames";
 
+    HttpEntity<Void> httpRequest = HttpEntityUtil.setToken(null, tokenDto.getAccessToken());
+
     // when
-    ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
+        HttpMethod.GET,
+        httpRequest,
         String.class
     );
 
@@ -1288,6 +1350,9 @@ class CustomerTest extends IntegrationTest {
     //given
     Plan plan = createPlans();
     Institute institute = createInstitutes();
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+
     CustomerStatus status = ( RandomValue.getInt(0,2) == 0 ) ? CustomerStatus.INACTIVE : CustomerStatus.ACTIVE;
     String name = RandomValue.string(10,20).setNullable(false).setLanguages(Language.ENGLISH).get();
     Customer customer = createCustomer(institute, plan, status, name);
@@ -1295,13 +1360,16 @@ class CustomerTest extends IntegrationTest {
 
     String url = BASE_URL + "/searchCustomerName/" + keyword;
 
-    //when
+    HttpEntity<Void> httpRequest = HttpEntityUtil.setToken(null, tokenDto.getAccessToken());
+
+    // when
     ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
         HttpMethod.GET,
-        null,
+        httpRequest,
         String.class
     );
+
     ApiResult<List<SearchCustomerNameDto.Response>> apiResponse = gson.fromJson(
         responseEntity.getBody(),
         new TypeToken<ApiResult<List<SearchCustomerNameDto.Response>>>(){}
@@ -1517,13 +1585,19 @@ class CustomerTest extends IntegrationTest {
   void searchCustomer() {
     //given
     Institute institutes = createInstitutes();
+    Account account = createAccount(institutes);
+    TokenDto tokenDto = tokenManager.createToken(account);
     Customer customer = createCustomer(institutes);
+
+    HttpEntity<Void> httpRequest = HttpEntityUtil.setToken(null, tokenDto.getAccessToken());
 
     String url = BASE_URL + "/searchCustomer/" + customer.getName();
 
     // when
-    ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
+        HttpMethod.GET,
+        httpRequest,
         String.class
     );
 
@@ -1567,23 +1641,30 @@ class CustomerTest extends IntegrationTest {
   @DisplayName("searchCustomer 중복된 이름 성공")
   void searchCustomer_success_1() {
     //given
-    Institute institutes = createInstitutes();
+    Institute institute = createInstitutes();
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
     Plan plan = createPlans();
+
     String randomNickname = RandomValue.string(5,10).setLanguages(Language.ENGLISH).setNullable(false).get();
     int randomInt = RandomValue.getInt(2,20);
 
     List<Customer> customers = IntStream.range(0, randomInt)
         .mapToObj(i -> {
-          Customer customer = CustomerGenerator.get(plan, institutes, CustomerStatus.ACTIVE);
+          Customer customer = CustomerGenerator.get(plan, institute, CustomerStatus.ACTIVE);
           ReflectionUtil.setFieldValue(customer, "name", randomNickname);
           return customerRepository.save(customer);
         }).toList();
 
     String url = BASE_URL + "/searchCustomer/" + randomNickname;
 
+    HttpEntity<Void> httpRequest = HttpEntityUtil.setToken(null, tokenDto.getAccessToken());
+
     // when
-    ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
+        HttpMethod.GET,
+        httpRequest,
         String.class
     );
 

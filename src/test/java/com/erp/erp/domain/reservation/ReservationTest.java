@@ -29,6 +29,7 @@ import com.erp.erp.domain.reservation.common.dto.AddReservationDto;
 import com.erp.erp.domain.reservation.common.dto.GetDailyReservationDto;
 import com.erp.erp.domain.reservation.common.dto.GetReservationCustomerDetailsDto;
 import com.erp.erp.domain.reservation.common.dto.UpdatedReservationDto;
+import com.erp.erp.domain.reservation.common.dto.UpdatedReservationDto.Request;
 import com.erp.erp.domain.reservation.common.dto.UpdatedSeatNumberDto;
 import com.erp.erp.domain.reservation.common.entity.AttendanceStatus;
 import com.erp.erp.domain.reservation.common.entity.Reservation;
@@ -38,6 +39,7 @@ import com.erp.erp.domain.reservation.common.exception.NoAvailableSeatException;
 import com.erp.erp.domain.reservation.common.exception.NotFoundReservationException;
 import com.erp.erp.domain.reservation.repository.ReservationRepository;
 import com.erp.erp.global.response.ApiResult;
+import com.erp.erp.global.util.HttpEntityUtil;
 import com.erp.erp.global.util.generator.AccountGenerator;
 import com.erp.erp.global.util.generator.CustomerGenerator;
 import com.erp.erp.global.util.generator.InstituteGenerator;
@@ -137,6 +139,9 @@ class ReservationTest extends IntegrationTest {
     // given
     Institute institute = createInstitutes();
     Customer customer = createCustomers(institute);
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+
     LocalDateTime now = LocalDateTime.now();
     LocalDateTime startTime =
         (RandomValue.getInt(0, 2) == 0) ? now.withMinute(0) : now.withMinute(30);
@@ -144,7 +149,7 @@ class ReservationTest extends IntegrationTest {
     LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
 
     int seatNumber = RandomValue.getInt(1, institute.getTotalSeat());
-    AddReservationDto.Request request = AddReservationDto.Request.builder()
+    AddReservationDto.Request req = AddReservationDto.Request.builder()
         .customerId(customer.getId())
         .startTime(startTime)
         .endTime(endTime)
@@ -154,10 +159,15 @@ class ReservationTest extends IntegrationTest {
 
     String url = BASE_URL + "/addReservation";
 
+    HttpEntity<AddReservationDto.Request> httpRequest = HttpEntityUtil.setToken(
+        req,
+        tokenDto.getAccessToken()
+    );
+
     //when
     ResponseEntity<String> responseEntity = restTemplate.postForEntity(
         url,
-        request,
+        httpRequest,
         String.class
     );
 
@@ -172,11 +182,11 @@ class ReservationTest extends IntegrationTest {
     assertNotNull(apiResponse.getData());
     assertThat(apiResponse.getData().getReservationId()).isNotNull();
     assertThat(apiResponse.getData().getStartTime()).isEqualTo(
-        request.getStartTime().withSecond(0).withNano(0));
+        req.getStartTime().withSecond(0).withNano(0));
     assertThat(apiResponse.getData().getEndTime()).isEqualTo(
-        request.getEndTime().withSecond(0).withNano(0));
-    assertThat(apiResponse.getData().getSeatNumber()).isEqualTo(request.getSeatNumber());
-    assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
+        req.getEndTime().withSecond(0).withNano(0));
+    assertThat(apiResponse.getData().getSeatNumber()).isEqualTo(req.getSeatNumber());
+    assertThat(apiResponse.getData().getMemo()).isEqualTo(req.getMemo());
   }
 
   @Test
@@ -228,13 +238,16 @@ class ReservationTest extends IntegrationTest {
     // given
     Institute institute = createInstitutes();
     Customer customer = createCustomers(institute);
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+
     LocalDateTime now = LocalDateTime.now();
     LocalDateTime startTime =
         (RandomValue.getInt(0, 2) == 0) ? now.withMinute(0) : now.withMinute(30);
 
     LocalDateTime endTime = startTime.minusMinutes(30 * RandomValue.getInt(1, 10));
 
-    AddReservationDto.Request request = AddReservationDto.Request.builder()
+    AddReservationDto.Request req = AddReservationDto.Request.builder()
         .customerId(customer.getId())
         .startTime(startTime)
         .endTime(endTime)
@@ -245,10 +258,15 @@ class ReservationTest extends IntegrationTest {
 
     String url = BASE_URL + "/addReservation";
 
+    HttpEntity<AddReservationDto.Request> httpRequest = HttpEntityUtil.setToken(
+        req,
+        tokenDto.getAccessToken()
+    );
+
     //when
     ResponseEntity<String> responseEntity = restTemplate.postForEntity(
         url,
-        request,
+        httpRequest,
         String.class
     );
 
@@ -272,6 +290,8 @@ class ReservationTest extends IntegrationTest {
     int totalSeat = RandomValue.getInt(1,5);
     Institute institute = createInstitutes(totalSeat);
     Customer customer = createCustomers(institute);
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
 
     LocalDateTime now = LocalDateTime.now();
     LocalDateTime startTime =
@@ -280,7 +300,7 @@ class ReservationTest extends IntegrationTest {
     IntStream.range(0, institute.getTotalSeat())
         .forEach(i -> createReservation(customer, institute, startTime, endTime));
 
-    AddReservationDto.Request request = AddReservationDto.Request.builder()
+    AddReservationDto.Request req = AddReservationDto.Request.builder()
         .customerId(customer.getId())
         .startTime(startTime)
         .endTime(endTime)
@@ -291,10 +311,15 @@ class ReservationTest extends IntegrationTest {
 
     String url = BASE_URL + "/addReservation";
 
+    HttpEntity<AddReservationDto.Request> httpRequest = HttpEntityUtil.setToken(
+        req,
+        tokenDto.getAccessToken()
+    );
+
     //when
     ResponseEntity<String> responseEntity = restTemplate.postForEntity(
         url,
-        request,
+        httpRequest,
         String.class
     );
 
@@ -720,7 +745,7 @@ class ReservationTest extends IntegrationTest {
     LocalDateTime updateStartTime = RandomValue.getRandomLocalDateTime().withMinute(minute).withSecond(0);
     LocalDateTime updateEndTime = updateStartTime.plusMinutes(30 * RandomValue.getInt(1, 10));
 
-    UpdatedReservationDto.Request request = UpdatedReservationDto.Request.builder()
+    UpdatedReservationDto.Request request = Request.builder()
         .reservationId(reservation.getId())
         .startTime(updateStartTime)
         .endTime(updateEndTime)
