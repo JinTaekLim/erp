@@ -2,6 +2,7 @@ package com.erp.erp.domain.auth.interceptor;
 
 import com.erp.erp.domain.auth.business.TokenExtractor;
 import com.erp.erp.domain.auth.common.exception.AuthenticationRequiredException;
+import com.erp.erp.global.annotation.authentication.Admin;
 import com.erp.erp.global.annotation.authentication.PermitAll;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,6 +28,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     if (isViewRequest(handler) || swagger(request)) {return true; }
     if (hasAnnotation(handler, PermitAll.class)) return true;
+    if (hasAnnotation(handler, Admin.class)) return true;
 
     String accessToken = tokenExtractor.getTokenFromAuthorizationHeader(request);
 
