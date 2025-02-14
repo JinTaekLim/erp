@@ -45,8 +45,8 @@ public class ReservationService {
 
   public AddReservationDto.Response addReservations(AddReservationDto.Request req) {
     Institute institute = authProvider.getCurrentInstitute();
-    Customer customer = customerReader.findByIdAndInstituteId(institute.getId(),
-        req.getCustomerId());
+    Customer customer = customerReader.findByIdAndInstituteId(req.getCustomerId(),
+        institute.getId());
 
     instituteValidator.isValidSeatNumber(institute, req.getSeatNumber());
 
