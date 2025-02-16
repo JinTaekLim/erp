@@ -82,8 +82,10 @@ public class CustomerService {
     return customerMapper.entityToUpdateCustomerResponse(updateCustomer, progresses);
   }
 
-  public List<GetCustomerDto.Response> getCurrentCustomers(Long lastId) {
+  public List<GetCustomerDto.Response> getCurrentCustomers(GetCustomerDto.Request req) {
     Institute institute = authProvider.getCurrentInstitute();
+    Long lastId = req.getLastId();
+
     if (lastId == null) {
       lastId = customerReader.findTopIdByInstituteId(institute.getId());
       // lastId 도 조회 결과에 포함 시키기 위해 +1

@@ -6,17 +6,31 @@ import com.erp.erp.domain.plan.common.entity.LicenseType;
 import com.erp.erp.domain.plan.common.entity.PlanType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 public class GetCustomerDto {
+
+  @Schema(name = "GetCustomerDto_Request" , description = "회원 정보 반환")
+  @Getter
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class Request{
+
+    @Schema(description = "최초 조회시 NULL 전달")
+    private Long lastId;
+
+  }
 
   @Schema(name = "GetCustomerDto_Response" , description = "회원 정보 반환")
   @Getter
   @Builder
   public static class Response{
 
-    @Schema
+    @Schema(description = "고객 ID")
     private Long customerId;
     @Schema(description = "프로필 URL")
     private String photoUrl;

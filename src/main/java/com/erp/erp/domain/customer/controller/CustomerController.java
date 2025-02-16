@@ -67,9 +67,9 @@ public class CustomerController {
   @Operation(summary = "이용 중 고객 조회")
   @GetMapping("currentCustomers")
   public ApiResult<List<GetCustomerDto.Response>> getCurrentCustomers(
-      @RequestParam(required = false) Long lastId
+      @RequestBody @Valid GetCustomerDto.Request req
   ) {
-    List<GetCustomerDto.Response> response = customerService.getCurrentCustomers(lastId);
+    List<GetCustomerDto.Response> response = customerService.getCurrentCustomers(req);
     return ApiResult.success(response);
   }
 

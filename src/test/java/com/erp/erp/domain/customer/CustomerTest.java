@@ -1175,16 +1175,21 @@ class CustomerTest extends IntegrationTest {
     int lastId = RandomValue.getInt(0, Math.max(0, customerSize - 1));
     int resultSize = Math.min(lastId, PAGE_SIZE);
 
-
-
     List<Customer> customers = IntStream.range(0, customerSize)
         .mapToObj(i -> {
           return createCustomer(plan, institute, CustomerStatus.ACTIVE);
         }).toList();
 
-    String url = BASE_URL + "/currentCustomers?lastId=" + customers.get(lastId).getId();
+    GetCustomerDto.Request req = GetCustomerDto.Request.builder()
+        .lastId(customers.get(lastId).getId())
+        .build();
 
-    HttpEntity<Void> httpRequest = HttpEntityUtil.setToken(null, tokenDto.getAccessToken());
+    String url = BASE_URL + "/currentCustomers";
+
+    HttpEntity<GetCustomerDto.Request> httpRequest = HttpEntityUtil.setToken(
+        req,
+        tokenDto.getAccessToken()
+    );
 
     // when
     ResponseEntity<String> responseEntity = restTemplate.exchange(
@@ -1196,7 +1201,7 @@ class CustomerTest extends IntegrationTest {
 
     ApiResult<List<GetCustomerDto.Response>> apiResponse = gson.fromJson(
         responseEntity.getBody(),
-        new TypeToken<ApiResult<List<GetCustomerDto.Response>>>(){}.getType()
+        new TypeToken<ApiResult<List<GetCustomerDto.Response>>>(){}
     );
 
     // then
@@ -1246,9 +1251,14 @@ class CustomerTest extends IntegrationTest {
           return createCustomer(plan, institute, CustomerStatus.ACTIVE);
         }).toList();
 
+    GetCustomerDto.Request req = GetCustomerDto.Request.builder().build();
+
     String url = BASE_URL + "/currentCustomers";
 
-    HttpEntity<Void> httpRequest = HttpEntityUtil.setToken(null, tokenDto.getAccessToken());
+    HttpEntity<GetCustomerDto.Request> httpRequest = HttpEntityUtil.setToken(
+        req,
+        tokenDto.getAccessToken()
+    );
 
     // when
     ResponseEntity<String> responseEntity = restTemplate.exchange(
