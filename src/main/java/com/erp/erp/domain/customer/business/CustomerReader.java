@@ -41,4 +41,13 @@ public class CustomerReader {
   public Page<Customer> findByInstitutesIdAndStatusInactive(Institute institute, Pageable page) {
     return customerRepository.findByInstituteIdAndStatus(institute.getId(), CustomerStatus.INACTIVE, page);
   }
+
+  public Long findTopIdByInstituteId(Long instituteId) {
+    return customerRepository.findTopIdByInstituteId(instituteId)
+        .orElse(0L);
+  }
+
+  public List<Customer> findAllAfterLastId(Long instituteId, Long lastId, int size) {
+    return customerRepository.findAllAfterLastId(instituteId, lastId, size);
+  }
 }

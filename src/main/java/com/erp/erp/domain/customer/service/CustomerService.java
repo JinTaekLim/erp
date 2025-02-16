@@ -38,6 +38,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 public class CustomerService {
 
+  int PAGE_SIZE = 20;
+
   private final AuthProvider authProvider;
   private final CustomerCreator customerCreator;
   private final CustomerReader customerReader;
@@ -80,14 +82,21 @@ public class CustomerService {
     return customerMapper.entityToUpdateCustomerResponse(updateCustomer, progresses);
   }
 
-  public List<GetCustomerDto.Response> getCurrentCustomers(int page) {
+  public List<GetCustomerDto.Response> getCurrentCustomers(Long lastId) {
     Institute institute = authProvider.getCurrentInstitute();
-    Pageable pageable = PageRequest.of(page, 20, Sort.by(Sort.Order.desc("id")));
-    Page<Customer> customersPage = customerReader.findByInstitutesIdAndStatusActive(
-        institute,
-        pageable
+    if (lastId == null) {
+      lastId = customerReader.findTopIdByInstituteId(institute.getId());
+      // lastId 도 조회 결과에 포함 시키기 위해 +1
+      lastId ++;
+    }
+
+    List<Customer> customers = customerReader.findAllAfterLastId(
+        institute.getId(),
+        lastId,
+        PAGE_SIZE
     );
-    return customerMapper.entityToGetCustomerResponse(customersPage.getContent());
+
+    return customerMapper.entityToGetCustomerResponse(customers);
   }
 
   public List<GetCustomerDto.Response> getExpiredCustomers(int page) {
