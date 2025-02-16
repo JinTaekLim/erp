@@ -4,6 +4,7 @@ import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import com.erp.erp.domain.customer.common.entity.QCustomer;
 import org.springframework.data.repository.query.Param;
@@ -45,4 +46,31 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
         .execute();
   }
 
+  @Override
+  public Optional<Long> findTopIdByInstituteId(Long instituteId) {
+    QCustomer qCustomer = QCustomer.customer;
+
+    return Optional.ofNullable(
+        queryFactory
+        .select(qCustomer.id)
+        .from(qCustomer)
+        .where(qCustomer.institute.id.eq(instituteId))
+        .orderBy(qCustomer.id.desc())
+        .fetchFirst()
+    );
+  }
+
+
+  @Override
+  public List<Customer> findAllAfterLastId(Long instituteId, Long lastId, int size) {
+    QCustomer qCustomer = QCustomer.customer;
+
+    return queryFactory
+        .selectFrom(qCustomer)
+        .where(qCustomer.id.lt(lastId))
+        .where(qCustomer.institute.id.eq(instituteId))
+        .orderBy(qCustomer.id.desc())
+        .limit(size)
+        .fetch();
+  }
 }

@@ -78,7 +78,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 class CustomerTest extends IntegrationTest {
 
-  int PAGE_LIMIT = 20;
+  int PAGE_SIZE = 20;
 
   private String BASE_URL;
 
@@ -1163,25 +1163,102 @@ class CustomerTest extends IntegrationTest {
 
 
   @Test
-  @DisplayName("getCurrentCustomers 성공")
-  void getCurrentCustomers() {
+  @DisplayName("getCurrentCustomers lastId 전달 성공")
+  void getCurrentCustomers_success() {
     //given
     Institute institute = createInstitutes();
     Account account = createAccount(institute);
     TokenDto tokenDto = tokenManager.createToken(account);
     Plan plan = createPlans();
 
-    int randomInt = RandomValue.getInt(0,20);
-    int page = randomInt / PAGE_LIMIT;
+    int customerSize = RandomValue.getInt(0,25);
+    int lastId = RandomValue.getInt(0, Math.max(0, customerSize - 1));
+    int resultSize = Math.min(lastId, PAGE_SIZE);
 
-    List<Customer> customers = IntStream.range(0, randomInt)
+    List<Customer> customers = IntStream.range(0, customerSize)
         .mapToObj(i -> {
           return createCustomer(plan, institute, CustomerStatus.ACTIVE);
         }).toList();
 
-    String url = BASE_URL + "/currentCustomers/" + page;
+    GetCustomerDto.Request req = GetCustomerDto.Request.builder()
+        .lastId(customers.get(lastId).getId())
+        .build();
 
-    HttpEntity<Void> httpRequest = HttpEntityUtil.setToken(null, tokenDto.getAccessToken());
+    String url = BASE_URL + "/currentCustomers";
+
+    HttpEntity<GetCustomerDto.Request> httpRequest = HttpEntityUtil.setToken(
+        req,
+        tokenDto.getAccessToken()
+    );
+
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
+        url,
+        HttpMethod.GET,
+        httpRequest,
+        String.class
+    );
+
+    ApiResult<List<GetCustomerDto.Response>> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<List<GetCustomerDto.Response>>>(){}
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+    assertThat(apiResponse.getData().size()).isEqualTo(resultSize);
+
+    IntStream.range(lastId , Math.max(0, resultSize)).forEach(i -> {
+      GetCustomerDto.Response response = apiResponse.getData().get(i);
+      Customer customer = customers.get(i);
+
+      assertThat(response.getCustomerId()).isNotNull();
+      assertThat(response.getPhotoUrl()).isEqualTo(customer.getPhotoUrl());
+      assertThat(response.getName()).isEqualTo(customer.getName());
+      assertThat(response.getGender()).isEqualTo(customer.getGender());
+      assertThat(response.getPhone()).isEqualTo(customer.getPhone());
+      assertThat(response.getLicenseType()).isEqualTo(customer.getPlanPayment().getPlan().getLicenseType());
+      assertThat(response.getPlanName()).isEqualTo(customer.getPlanPayment().getPlan().getName());
+      assertThat(response.getCourseType()).isEqualTo(customer.getPlanPayment().getPlan().getCourseType());
+//      assertThat(response.getRemainingTime())
+//      assertThat(response.getRemainingPeriod())
+//      assertThat(response.getUsedTime())
+      assertThat(response.getRegistrationDate()).isEqualTo(customer.getPlanPayment().getRegistrationAt());
+//      assertThat(response.getTardinessCount())
+//      assertThat(response.getAbsenceCount())
+
+      int otherPaymentPrice = customer.getOtherPayments().stream()
+          .mapToInt(OtherPayment::getPrice)
+          .sum();
+      assertThat(response.getOtherPaymentPrice()).isEqualTo(otherPaymentPrice);
+    });
+  }
+
+  @Test
+  @DisplayName("getCurrentCustomers lastId 미전달 성공")
+  void getCurrentCustomers_success_2() {
+    //given
+    Institute institute = createInstitutes();
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+    Plan plan = createPlans();
+
+    int customerSize = RandomValue.getInt(0,25);
+
+        List<Customer> customers = IntStream.range(0, customerSize)
+        .mapToObj(i -> {
+          return createCustomer(plan, institute, CustomerStatus.ACTIVE);
+        }).toList();
+
+    GetCustomerDto.Request req = GetCustomerDto.Request.builder().build();
+
+    String url = BASE_URL + "/currentCustomers";
+
+    HttpEntity<GetCustomerDto.Request> httpRequest = HttpEntityUtil.setToken(
+        req,
+        tokenDto.getAccessToken()
+    );
 
     // when
     ResponseEntity<String> responseEntity = restTemplate.exchange(
@@ -1199,13 +1276,11 @@ class CustomerTest extends IntegrationTest {
     // then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-    int dataSize = randomInt - (page * PAGE_LIMIT);
-    assertThat(apiResponse.getData().size()).isEqualTo(dataSize);
+    assertThat(apiResponse.getData().size()).isEqualTo(Math.min(customerSize, PAGE_SIZE));
 
-    IntStream.range(dataSize , 0).forEach(i -> {
+    IntStream.range(customerSize , customerSize-PAGE_SIZE).forEach(i -> {
       GetCustomerDto.Response response = apiResponse.getData().get(i);
-      int index = randomInt - dataSize + i;
-      Customer customer = customers.get(index);
+      Customer customer = customers.get(i);
 
       assertThat(response.getCustomerId()).isNotNull();
       assertThat(response.getPhotoUrl()).isEqualTo(customer.getPhotoUrl());
@@ -1239,7 +1314,7 @@ class CustomerTest extends IntegrationTest {
     Plan plan = createPlans();
 
     int randomInt = RandomValue.getInt(0,20);
-    int page = randomInt / PAGE_LIMIT;
+    int page = randomInt / PAGE_SIZE;
 
     List<Customer> customers = IntStream.range(0, randomInt)
         .mapToObj(i -> {
@@ -1265,7 +1340,7 @@ class CustomerTest extends IntegrationTest {
     // then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-    int dataSize = randomInt - (page * PAGE_LIMIT);
+    int dataSize = randomInt - (page * PAGE_SIZE);
     assertThat(apiResponse.getData().size()).isEqualTo(dataSize);
 
     IntStream.range(dataSize , 0).forEach(i -> {

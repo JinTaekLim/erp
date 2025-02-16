@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -64,9 +65,11 @@ public class CustomerController {
   }
 
   @Operation(summary = "이용 중 고객 조회")
-  @GetMapping("currentCustomers/{page}")
-  public ApiResult<List<GetCustomerDto.Response>> getCurrentCustomers(@PathVariable("page") int page) {
-    List<GetCustomerDto.Response> response = customerService.getCurrentCustomers(page);
+  @GetMapping("currentCustomers")
+  public ApiResult<List<GetCustomerDto.Response>> getCurrentCustomers(
+      @RequestBody @Valid GetCustomerDto.Request req
+  ) {
+    List<GetCustomerDto.Response> response = customerService.getCurrentCustomers(req);
     return ApiResult.success(response);
   }
 
