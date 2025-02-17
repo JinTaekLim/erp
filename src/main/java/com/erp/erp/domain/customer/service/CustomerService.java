@@ -82,7 +82,7 @@ public class CustomerService {
     return customerMapper.entityToUpdateCustomerResponse(updateCustomer, progresses);
   }
 
-  public List<GetCustomerDto.Response> getCurrentCustomers(GetCustomerDto.Request req) {
+  public List<GetCustomerDto.Response> getCustomers(GetCustomerDto.Request req) {
     Institute institute = authProvider.getCurrentInstitute();
     Long lastId = req.getLastId();
 
@@ -95,20 +95,11 @@ public class CustomerService {
     List<Customer> customers = customerReader.findAllAfterLastId(
         institute.getId(),
         lastId,
+        req.getStatus(),
         PAGE_SIZE
     );
 
     return customerMapper.entityToGetCustomerResponse(customers);
-  }
-
-  public List<GetCustomerDto.Response> getExpiredCustomers(int page) {
-    Institute institute = authProvider.getCurrentInstitute();
-    Pageable pageable = PageRequest.of(page, 20, Sort.by(Sort.Order.desc("id")));
-    Page<Customer> customersPage = customerReader.findByInstitutesIdAndStatusInactive(
-        institute,
-        pageable
-    );
-    return customerMapper.entityToGetCustomerResponse(customersPage.getContent());
   }
 
   public List<GetAvailableCustomerNamesDto.Response> getCurrentCustomers() {

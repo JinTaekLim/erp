@@ -1174,17 +1174,19 @@ class CustomerTest extends IntegrationTest {
     int customerSize = RandomValue.getInt(0,25);
     int lastId = RandomValue.getInt(0, Math.max(0, customerSize - 1));
     int resultSize = Math.min(lastId, PAGE_SIZE);
+    CustomerStatus status = RandomValue.getRandomEnum(CustomerStatus.class);
 
     List<Customer> customers = IntStream.range(0, customerSize)
         .mapToObj(i -> {
-          return createCustomer(plan, institute, CustomerStatus.ACTIVE);
+          return createCustomer(plan, institute, status);
         }).toList();
 
     GetCustomerDto.Request req = GetCustomerDto.Request.builder()
         .lastId(customers.get(lastId).getId())
+        .status(status)
         .build();
 
-    String url = BASE_URL + "/currentCustomers";
+    String url = BASE_URL + "/getCustomers";
 
     HttpEntity<GetCustomerDto.Request> httpRequest = HttpEntityUtil.setToken(
         req,
@@ -1245,15 +1247,18 @@ class CustomerTest extends IntegrationTest {
     Plan plan = createPlans();
 
     int customerSize = RandomValue.getInt(0,25);
+    CustomerStatus status = RandomValue.getRandomEnum(CustomerStatus.class);
 
         List<Customer> customers = IntStream.range(0, customerSize)
         .mapToObj(i -> {
-          return createCustomer(plan, institute, CustomerStatus.ACTIVE);
+          return createCustomer(plan, institute, status);
         }).toList();
 
-    GetCustomerDto.Request req = GetCustomerDto.Request.builder().build();
+    GetCustomerDto.Request req = GetCustomerDto.Request.builder()
+        .status(status)
+        .build();
 
-    String url = BASE_URL + "/currentCustomers";
+    String url = BASE_URL + "/getCustomers";
 
     HttpEntity<GetCustomerDto.Request> httpRequest = HttpEntityUtil.setToken(
         req,
@@ -1297,71 +1302,6 @@ class CustomerTest extends IntegrationTest {
 //      assertThat(response.getTardinessCount())
 //      assertThat(response.getAbsenceCount())
 
-      int otherPaymentPrice = customer.getOtherPayments().stream()
-          .mapToInt(OtherPayment::getPrice)
-          .sum();
-      assertThat(response.getOtherPaymentPrice()).isEqualTo(otherPaymentPrice);
-    });
-  }
-
-  @Test
-  @DisplayName("getExpiredCustomers 성공")
-  void getExpiredCustomers() {
-    //given
-    Institute institutes = createInstitutes();
-    Account account = createAccount(institutes);
-    TokenDto tokenDto = tokenManager.createToken(account);
-    Plan plan = createPlans();
-
-    int randomInt = RandomValue.getInt(0,20);
-    int page = randomInt / PAGE_SIZE;
-
-    List<Customer> customers = IntStream.range(0, randomInt)
-        .mapToObj(i -> {
-          return createCustomer(plan, institutes, CustomerStatus.INACTIVE);
-        }).toList();
-
-    String url = BASE_URL + "/expiredCustomer/" + page;
-
-    HttpEntity<Void> httpRequest = HttpEntityUtil.setToken(null, tokenDto.getAccessToken());
-    // when
-    ResponseEntity<String> responseEntity = restTemplate.exchange(
-        url,
-        HttpMethod.GET,
-        httpRequest,
-        String.class
-    );
-
-    ApiResult<List<GetCustomerDto.Response>> apiResponse = gson.fromJson(
-        responseEntity.getBody(),
-        new TypeToken<ApiResult<List<GetCustomerDto.Response>>>(){}.getType()
-    );
-
-    // then
-    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-    int dataSize = randomInt - (page * PAGE_SIZE);
-    assertThat(apiResponse.getData().size()).isEqualTo(dataSize);
-
-    IntStream.range(dataSize , 0).forEach(i -> {
-      GetCustomerDto.Response response = apiResponse.getData().get(i);
-      int index = randomInt - dataSize + i;
-      Customer customer = customers.get(index);
-
-      assertThat(response.getCustomerId()).isNotNull();
-      assertThat(response.getPhotoUrl()).isEqualTo(customer.getPhotoUrl());
-      assertThat(response.getName()).isEqualTo(customer.getName());
-      assertThat(response.getGender()).isEqualTo(customer.getGender());
-      assertThat(response.getPhone()).isEqualTo(customer.getPhone());
-      assertThat(response.getLicenseType()).isEqualTo(customer.getPlanPayment().getPlan().getLicenseType());
-      assertThat(response.getPlanName()).isEqualTo(customer.getPlanPayment().getPlan().getName());
-      assertThat(response.getCourseType()).isEqualTo(customer.getPlanPayment().getPlan().getCourseType());
-//      assertThat(response.getRemainingTime())
-//      assertThat(response.getRemainingPeriod())
-//      assertThat(response.getUsedTime())
-      assertThat(response.getRegistrationDate()).isEqualTo(customer.getPlanPayment().getRegistrationAt());
-//      assertThat(response.getTardinessCount())
-//      assertThat(response.getAbsenceCount())
       int otherPaymentPrice = customer.getOtherPayments().stream()
           .mapToInt(OtherPayment::getPrice)
           .sum();

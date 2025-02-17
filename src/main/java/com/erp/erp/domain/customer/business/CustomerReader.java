@@ -9,8 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -25,10 +23,6 @@ public class CustomerReader {
         .orElseThrow(NotFoundCustomerException::new);
   }
 
-  public Page<Customer> findByInstitutesIdAndStatusActive(Institute institute, Pageable page) {
-    return customerRepository.findByInstituteIdAndStatus(institute.getId(), CustomerStatus.ACTIVE, page);
-  }
-
   public List<Customer> findByInstitutesIdAndStatusActive(Institute institute) {
     return customerRepository.findByInstituteIdAndStatus(institute.getId(), CustomerStatus.ACTIVE);
   }
@@ -38,16 +32,12 @@ public class CustomerReader {
     return customerRepository.findByInstituteIdAndNameStartingWithAndStatusIn(institute.getId(), name, status);
   }
 
-  public Page<Customer> findByInstitutesIdAndStatusInactive(Institute institute, Pageable page) {
-    return customerRepository.findByInstituteIdAndStatus(institute.getId(), CustomerStatus.INACTIVE, page);
-  }
-
   public Long findTopIdByInstituteId(Long instituteId) {
     return customerRepository.findTopIdByInstituteId(instituteId)
         .orElse(0L);
   }
 
-  public List<Customer> findAllAfterLastId(Long instituteId, Long lastId, int size) {
-    return customerRepository.findAllAfterLastId(instituteId, lastId, size);
+  public List<Customer> findAllAfterLastId(Long instituteId, Long lastId, CustomerStatus status, int size) {
+    return customerRepository.findAllByInstituteBeforeIdAndStatus(instituteId, lastId, status, size);
   }
 }

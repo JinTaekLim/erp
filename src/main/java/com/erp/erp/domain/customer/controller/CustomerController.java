@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -64,20 +63,12 @@ public class CustomerController {
     return ApiResult.success(status);
   }
 
-  @Operation(summary = "이용 중 고객 조회")
-  @GetMapping("currentCustomers")
-  public ApiResult<List<GetCustomerDto.Response>> getCurrentCustomers(
+  @Operation(summary = "매장에 등록된 고객 목록 조회")
+  @GetMapping("/getCustomers")
+  public ApiResult<List<GetCustomerDto.Response>> getCustomers(
       @RequestBody @Valid GetCustomerDto.Request req
   ) {
-    List<GetCustomerDto.Response> response = customerService.getCurrentCustomers(req);
-    return ApiResult.success(response);
-  }
-
-
-  @Operation(summary = "만료된 고객 조회")
-  @GetMapping("expiredCustomer/{page}")
-  public ApiResult<List<GetCustomerDto.Response>> getExpiredCustomers(@PathVariable("page") int page) {
-    List<GetCustomerDto.Response> response = customerService.getExpiredCustomers(page);
+    List<GetCustomerDto.Response> response = customerService.getCustomers(req);
     return ApiResult.success(response);
   }
 
