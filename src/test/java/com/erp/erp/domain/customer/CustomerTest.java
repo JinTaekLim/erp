@@ -1186,7 +1186,7 @@ class CustomerTest extends IntegrationTest {
         .status(status)
         .build();
 
-    String url = BASE_URL + "/currentCustomers";
+    String url = BASE_URL + "/getCustomers";
 
     HttpEntity<GetCustomerDto.Request> httpRequest = HttpEntityUtil.setToken(
         req,
@@ -1258,7 +1258,7 @@ class CustomerTest extends IntegrationTest {
         .status(status)
         .build();
 
-    String url = BASE_URL + "/currentCustomers";
+    String url = BASE_URL + "/getCustomers";
 
     HttpEntity<GetCustomerDto.Request> httpRequest = HttpEntityUtil.setToken(
         req,
