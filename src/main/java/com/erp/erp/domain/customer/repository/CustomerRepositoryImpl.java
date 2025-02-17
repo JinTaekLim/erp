@@ -62,13 +62,16 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
 
 
   @Override
-  public List<Customer> findAllAfterLastId(Long instituteId, Long lastId, int size) {
+  public List<Customer> findAllByInstituteBeforeIdAndStatus(
+      Long instituteId, Long lastId, CustomerStatus status, int size
+  ) {
     QCustomer qCustomer = QCustomer.customer;
 
     return queryFactory
         .selectFrom(qCustomer)
         .where(qCustomer.id.lt(lastId))
         .where(qCustomer.institute.id.eq(instituteId))
+        .where(qCustomer.status.eq(status))
         .orderBy(qCustomer.id.desc())
         .limit(size)
         .fetch();

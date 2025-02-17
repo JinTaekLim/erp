@@ -14,6 +14,8 @@ public interface CustomerRepositoryCustom {
 
   Optional<Long> findTopIdByInstituteId(Long instituteId);
 
-  List<Customer> findAllAfterLastId(Long instituteId, Long lastId, int size);
+  List<Customer> findAllByInstituteBeforeIdAndStatus(
+      Long instituteId, Long lastId, CustomerStatus status, int size
+  );
 
 }

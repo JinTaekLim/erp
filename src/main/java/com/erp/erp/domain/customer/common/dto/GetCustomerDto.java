@@ -1,5 +1,6 @@
 package com.erp.erp.domain.customer.common.dto;
 
+import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import com.erp.erp.domain.customer.common.entity.Gender;
 import com.erp.erp.domain.plan.common.entity.CourseType;
 import com.erp.erp.domain.plan.common.entity.LicenseType;
@@ -22,6 +23,9 @@ public class GetCustomerDto {
 
     @Schema(description = "최초 조회시 NULL 전달")
     private Long lastId;
+
+    @Schema(description = "상태 ( ACTIVE, INACTIVE, DELETED )")
+    private CustomerStatus status;
 
   }
 
