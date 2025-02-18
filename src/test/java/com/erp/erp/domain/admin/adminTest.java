@@ -149,6 +149,9 @@ class adminTest extends IntegrationTest {
   @DisplayName("성공")
   void addInstitute() {
     // given
+    Admin admin = createAdmin();
+    setSession(admin);
+
     AddInstituteDto.Request req = fixtureMonkey.giveMeOne(AddInstituteDto.Request.class);
 
     String url = BASE_URL + "/addInstitute";

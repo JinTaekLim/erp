@@ -1,5 +1,6 @@
 package com.erp.erp.domain.institute.service;
 
+import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.auth.business.AuthProvider;
 import com.erp.erp.domain.institute.business.InstituteUpdater;
 import com.erp.erp.domain.institute.common.dto.GetInstituteInfoDto;
@@ -20,8 +21,13 @@ public class InstituteService {
   private final InstituteMapper instituteMapper;
 
   public UpdateTotalSeatDto.Response updateTotalSpots(UpdateTotalSeatDto.Request req) {
-    Institute institute = authProvider.getCurrentInstitute();
-    instituteUpdater.updateSpotsNumber(institute, req.getTotalSeat());
+    Account account = authProvider.getCurrentAccount();
+    Institute institute = account.getInstitute();
+
+    instituteUpdater.updateSpotsNumber(
+        institute, req.getTotalSeat(), String.valueOf(account.getId())
+    );
+
     return instituteMapper.entityToUpdateTotalSeatResponse(institute);
   }
 

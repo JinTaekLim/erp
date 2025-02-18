@@ -56,7 +56,8 @@ public class AdminService {
   }
 
   public AddInstituteDto.Response addInstitute(AddInstituteDto.Request req) {
-    Institute institute = instituteMapper.dtoToEntity(req);
+    Admin admin = adminAuthProvider.getAdmin();
+    Institute institute = instituteMapper.dtoToEntity(req, String.valueOf(admin.getId()));
     instituteCreator.save(institute);
     return instituteMapper.entityToAddInstituteResponse(institute);
   }

@@ -11,7 +11,7 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface InstituteMapper {
 
-  Institute dtoToEntity(AddInstituteDto.Request req);
+  Institute dtoToEntity(AddInstituteDto.Request req, String createdId);
 
   AddInstituteDto.Response entityToAddInstituteResponse(Institute institute);
 
