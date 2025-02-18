@@ -26,7 +26,7 @@ public interface CustomerMapper {
   @Mapping(target = "photoUrl", source = "photoUrl")
   @Mapping(target = "planPayment", expression = "java(planPaymentResponseToPlanPayment(req, plan))")
   @Mapping(target = "otherPayments", source = "req.otherPayment")
-  Customer dtoToEntity(AddCustomerDto.Request req, Institute institute, Plan plan, String photoUrl);
+  Customer dtoToEntity(AddCustomerDto.Request req, Institute institute, Plan plan, String photoUrl, String createdId);
 
   @Mapping(target = "plan", source = "plan")
   @Mapping(target = "status", source = "req.planPayment.status")

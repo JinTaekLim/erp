@@ -19,11 +19,11 @@ public class CustomerUpdater {
   private final CustomerRepository customerRepository;
 
 
-  public void updateStatus(Long customersId, CustomerStatus status) {
-    customerRepository.updateStatusById(customersId, status);
+  public void updateStatus(Long customersId, CustomerStatus status, String updatedId) {
+    customerRepository.updateStatusById(customersId, status, updatedId);
   }
 
-  public Customer updateCustomer(UpdateCustomerDto.Request req, String photoUrl, Customer customer) {
+  public Customer updateCustomer(UpdateCustomerDto.Request req, String photoUrl, Customer customer, String updatedId) {
     customer.update(
         req.getName(),
         req.getGender(),
@@ -34,7 +34,8 @@ public class CustomerUpdater {
         req.getMemo(),
         req.getBirthDate(),
         req.isPlanPaymentStatus(),
-        toOtherPaymentsList(req.getOtherPayment())
+        toOtherPaymentsList(req.getOtherPayment()),
+        updatedId
     );
 
     return customerRepository.save(customer);

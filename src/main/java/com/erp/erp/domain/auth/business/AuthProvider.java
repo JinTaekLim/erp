@@ -1,6 +1,7 @@
 package com.erp.erp.domain.auth.business;
 
 import com.erp.erp.domain.account.business.AccountReader;
+import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.auth.common.exception.AuthenticationNameNullException;
 import com.erp.erp.domain.auth.common.exception.AuthenticationNullException;
 import com.erp.erp.domain.auth.common.exception.NotParsedValueException;
@@ -45,6 +46,11 @@ public class AuthProvider {
   public Institute getCurrentInstitute() {
     Long accountId = getCurrentAccountId();
     return accountReader.findInstitutesByAccountId(accountId);
+  }
+
+  public Account getCurrentAccount() {
+    Long accountId = getCurrentAccountId();
+    return accountReader.findById(accountId);
   }
 
 }

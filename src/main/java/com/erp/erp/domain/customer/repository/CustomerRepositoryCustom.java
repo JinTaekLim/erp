@@ -10,7 +10,7 @@ public interface CustomerRepositoryCustom {
   List<Customer> findByInstituteIdAndNameStartingWithAndStatusIn(
       Long instituteId, String name, List<CustomerStatus> statuses);
 
-  void updateStatusById(Long customerId, CustomerStatus newStatus);
+  void updateStatusById(Long customerId, CustomerStatus newStatus, String updatedId);
 
   Optional<Long> findTopIdByInstituteId(Long instituteId);
 

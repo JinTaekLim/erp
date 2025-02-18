@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
@@ -20,7 +21,7 @@ import lombok.NoArgsConstructor;
 public class Customer {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -59,10 +60,19 @@ public class Customer {
   @Valid
   private List<OtherPayment> otherPayments;
 
+  private String createdId;
+
+  private LocalDateTime createdAt;
+
+  private String updatedId;
+
+  private LocalDateTime updatedAt;
+
 
   @Builder
   public Customer(Institute institute, String name, Gender gender, String phone, String address, String visitPath,
-      String photoUrl, String memo, LocalDate birthDate, PlanPayment planPayment, List<OtherPayment> otherPayments) {
+      String photoUrl, String memo, LocalDate birthDate, PlanPayment planPayment, List<OtherPayment> otherPayments,
+      String createdId) {
     this.institute = institute;
     this.name = name;
     this.gender = gender;
@@ -75,11 +85,13 @@ public class Customer {
     this.status = CustomerStatus.ACTIVE;
     this.planPayment = planPayment;
     this.otherPayments = otherPayments;
+    this.createdId = createdId;
+    this.createdAt = LocalDateTime.now();
   }
 
 
   public Customer update(String name, Gender gender, String phone, String address, String visitPath, String photoUrl, String memo,
-                          LocalDate birthDate, boolean planPaymentStatus, List<OtherPayment> otherPayments) {
+                          LocalDate birthDate, boolean planPaymentStatus, List<OtherPayment> otherPayments, String updatedId) {
     this.name = name;
     this.gender = gender;
     this.phone = phone;
@@ -89,6 +101,8 @@ public class Customer {
     this.memo = memo;
     this.birthDate = birthDate;
     this.planPayment.updateStatus(planPaymentStatus);
+    this.updatedId = updatedId;
+    this.updatedAt = LocalDateTime.now();
 
     this.otherPayments.clear();
     if (otherPayments != null) { this.otherPayments.addAll(new ArrayList<>(otherPayments)); }
