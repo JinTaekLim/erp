@@ -11,15 +11,16 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 public class AccountUpdater {
+
   private final AccountRepository accountRepository;
 
-  public Account update(Account account, UpdateAccountDto.Request req) {
-    account.updateIdentifierAndPassword(req.getIdentifier(), req.getPassword());
+  public Account update(Account account, UpdateAccountDto.Request req, String updatedId) {
+    account.updateIdentifierAndPassword(req.getIdentifier(), req.getPassword(), updatedId);
     return accountRepository.save(account);
   }
 
-  public void lockAccount(Account account) {
-    account.updateLocked(true);
+  public void lockAccount(Account account, String updatedId) {
+    account.updateLocked(true, updatedId);
     accountRepository.save(account);
   }
 }

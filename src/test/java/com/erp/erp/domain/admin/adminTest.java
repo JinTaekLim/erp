@@ -416,6 +416,9 @@ class adminTest extends IntegrationTest {
   @Test
   void updateAccount() {
     // given
+    Admin admin = createAdmin();
+    setSession(admin);
+
     Institute institute = createInstitute();
     Account account = createAccount(institute);
 
@@ -449,6 +452,9 @@ class adminTest extends IntegrationTest {
   @DisplayName("잘못된 accountId")
   void updateAccount_fail() {
     // given
+    Admin admin = createAdmin();
+    setSession(admin);
+
     UpdateAccountDto.Request req = fixtureMonkey.giveMeBuilder(UpdateAccountDto.Request.class)
         .set("accountId", RandomValue.getRandomLong(0,9999))
         .sample();
@@ -480,6 +486,9 @@ class adminTest extends IntegrationTest {
   @Test
   void lockAccount() {
     // given
+    Admin admin = createAdmin();
+    setSession(admin);
+
     Institute institute = createInstitute();
     Account account = createAccount(institute);
 

@@ -67,14 +67,16 @@ public class AdminService {
   }
 
   public UpdateAccountDto.Response updateAccount(UpdateAccountDto.Request req) {
+    Admin admin = adminAuthProvider.getAdmin();
     Account account = accountReader.findById(req.getAccountId());
-    accountUpdater.update(account, req);
+    accountUpdater.update(account, req, String.valueOf(admin.getId()));
     return accountMapper.entityToUpdateAccountDto(account);
   }
 
   public void lockAccount(Long accountId) {
+    Admin admin = adminAuthProvider.getAdmin();
     Account account = accountReader.findById(accountId);
-    accountUpdater.lockAccount(account);
+    accountUpdater.lockAccount(account, String.valueOf(admin.getId()));
   }
 
   public void login(LoginDto.Request req) {

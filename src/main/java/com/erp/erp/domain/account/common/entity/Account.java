@@ -42,6 +42,10 @@ public class Account {
 
   private LocalDateTime createdAt;
 
+  private String updatedId;
+
+  private LocalDateTime updatedAt;
+
 
   @Builder
   public Account(Institute institute, String identifier, String password, String createdId) {
@@ -52,13 +56,17 @@ public class Account {
     this.createdAt = LocalDateTime.now();
   }
 
-  public Account updateIdentifierAndPassword(String identifier, String password) {
+  public Account updateIdentifierAndPassword(String identifier, String password, String updatedId) {
     this.identifier = identifier;
     this.password = password;
+    this.updatedId = updatedId;
+    this.updatedAt = LocalDateTime.now();
     return this;
   }
 
-  public void updateLocked(boolean locked) {
+  public void updateLocked(boolean locked, String updatedId) {
     this.locked = locked;
+    this.updatedId = updatedId;
+    this.updatedAt = LocalDateTime.now();
   }
 }
