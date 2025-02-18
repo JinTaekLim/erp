@@ -1,5 +1,6 @@
 package com.erp.erp.domain.reservation.service;
 
+import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.auth.business.AuthProvider;
 import com.erp.erp.domain.customer.business.CustomerReader;
 import com.erp.erp.domain.customer.business.ProgressManger;
@@ -79,14 +80,17 @@ public class ReservationService {
   // note. 전달받은 시간 값 검증, 예약 가능 좌석인지 검증 필요
   @Transactional
   public UpdatedReservationDto.Response updateReservation(UpdatedReservationDto.Request req) {
+    Account account = authProvider.getCurrentAccount();
+    Institute institute = account.getInstitute();
 
-    Institute institute = authProvider.getCurrentInstitute();
     Reservation reservation = reservationReader.findByIdAndInstituteId(req.getReservationId(),
         institute.getId());
 
     instituteValidator.isValidSeatNumber(institute, req.getSeatNumber());
     reservationUpdater.updatedReservations(reservation, req);
-    List<Progress> progressList = progressManger.add(reservation.getCustomer(), req.getProgressList());
+    List<Progress> progressList = progressManger.add(
+        reservation.getCustomer(), req.getProgressList(), String.valueOf(account.getId())
+    );
 
     return reservationMapper.entityToUpdatedReservationDtoResponse(reservation, progressList);
   }
