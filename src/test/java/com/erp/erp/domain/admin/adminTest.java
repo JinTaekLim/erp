@@ -91,6 +91,9 @@ class adminTest extends IntegrationTest {
   @DisplayName("addPlans 성공")
   void addPlans() {
     //given
+    Admin admin = createAdmin();
+    setSession(admin);
+
     AddPlanDto.Request request = fixtureMonkey.giveMeBuilder(AddPlanDto.Request.class)
         .set("licenseType", RandomValue.getRandomEnum(LicenseType.class))
         .sample();

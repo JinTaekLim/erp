@@ -10,8 +10,8 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface PlanMapper {
 
-  @Mapping(target = "name", source = "planName")
-  Plan dtoToEntity(AddPlanDto.Request req);
+  @Mapping(target = "name", source = "req.planName")
+  Plan dtoToEntity(AddPlanDto.Request req, String createdId);
 
   @Mapping(target = "planName", source = "name")
   AddPlanDto.Response entityToAddPlanResponse(Plan plan);

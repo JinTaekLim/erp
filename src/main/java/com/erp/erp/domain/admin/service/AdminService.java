@@ -50,7 +50,8 @@ public class AdminService {
   }
 
   public AddPlanDto.Response addPlans(AddPlanDto.Request req) {
-    Plan plan = planMapper.dtoToEntity(req);
+    Admin admin = adminAuthProvider.getAdmin();
+    Plan plan = planMapper.dtoToEntity(req, String.valueOf(admin.getId()));
     planCreator.save(plan);
     return planMapper.entityToAddPlanResponse(plan);
   }
