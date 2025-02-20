@@ -45,7 +45,9 @@ public class ReservationService {
 
 
   public AddReservationDto.Response addReservations(AddReservationDto.Request req) {
-    Institute institute = authProvider.getCurrentInstitute();
+    Account account = authProvider.getCurrentAccount();
+    Institute institute = account.getInstitute();
+
     Customer customer = customerReader.findByIdAndInstituteId(req.getCustomerId(),
         institute.getId());
 
@@ -55,7 +57,10 @@ public class ReservationService {
     LocalDateTime endTime = reservationValidator.validateReservationTime(req.getEndTime());
     reservationValidator.isTimeSlotAvailable(institute, startTime, endTime);
 
-    Reservation reservation = reservationMapper.dtoToEntity(req, institute, customer);
+    Reservation reservation = reservationMapper.dtoToEntity(
+        req, institute, customer, String.valueOf(account.getId())
+    );
+
     reservationCreator.save(reservation);
     return reservationMapper.entityToAddReservaionResponse(reservation);
   }
@@ -87,7 +92,8 @@ public class ReservationService {
         institute.getId());
 
     instituteValidator.isValidSeatNumber(institute, req.getSeatNumber());
-    reservationUpdater.updatedReservations(reservation, req);
+    reservationUpdater.updatedReservations(reservation, req, String.valueOf(account.getId()));
+
     List<Progress> progressList = progressManger.add(
         reservation.getCustomer(), req.getProgressList(), String.valueOf(account.getId())
     );
@@ -97,11 +103,16 @@ public class ReservationService {
 
   // note. 변경된 좌석에 예약이 존재하는지 검증 필요
   public UpdatedSeatNumberDto.Response updatedSeatNumber(UpdatedSeatNumberDto.Request req) {
-    Institute institute = authProvider.getCurrentInstitute();
+    Account account = authProvider.getCurrentAccount();
+    Institute institute = account.getInstitute();
+
     instituteValidator.isValidSeatNumber(institute, req.getSeatNumber());
     Reservation reservation = reservationReader.findByIdAndInstituteId(req.getReservationId(),
         institute.getId());
-    reservationUpdater.updateSeatNumber(reservation, req.getSeatNumber());
+    reservationUpdater.updateSeatNumber(
+        reservation, req.getSeatNumber(), String.valueOf(account.getId())
+    );
+
     return reservationMapper.entityToUpdatedSeatNumberDtoResponse(reservation);
   }
 
