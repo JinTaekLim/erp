@@ -21,14 +21,14 @@ public class ProgressManger {
   private final ProgressDeleter progressDeleter;
   private final ProgressMapper progressMapper;
 
-  public List<Progress> add(Customer customer, ProgressDto.Request req) {
+  public List<Progress> add(Customer customer, ProgressDto.Request req, String accountId) {
     List<Progress> customerProgress = progressReader.findByCustomerId(customer.getId());
     if (req == null) { return customerProgress; }
     deleteProgress(customerProgress, req.getDeleteProgresses());
     List<Progress> addProgresses = progressMapper.addProgressToEntityList(req.getAddProgresses(),
-        customer);
+        customer, accountId);
     List<Progress> updateProgresses = validateAndFilterProgresses(req.getUpdateProgresses(),
-        customerProgress);
+        customerProgress, accountId);
     List<Progress> progresses = mergeProgresses(addProgresses, updateProgresses);
     progressCreator.saveAll(progresses);
     return mergeUniqueProgresses(customerProgress, progresses);
@@ -66,7 +66,8 @@ public class ProgressManger {
 
   private List<Progress> validateAndFilterProgresses(
       List<ProgressDto.UpdateProgress> updateProgresses,
-      List<Progress> customerProgress
+      List<Progress> customerProgress,
+      String updatedId
   ) {
     if (updateProgresses.isEmpty()) {
       return new ArrayList<>();
@@ -81,7 +82,7 @@ public class ProgressManger {
               .findFirst()
               .orElseThrow(NotFoundProgressException::new);
 
-          return customer.update(matchingUpdate.getDate(), matchingUpdate.getContent());
+          return customer.update(matchingUpdate.getDate(), matchingUpdate.getContent(), updatedId);
         })
         .toList();
   }

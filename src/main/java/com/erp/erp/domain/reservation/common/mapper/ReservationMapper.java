@@ -21,7 +21,8 @@ public interface ReservationMapper {
 
   @Mapping(target = "memo", source = "req.memo")
   @Mapping(target = "customer", source = "customer")
-  Reservation dtoToEntity(AddReservationDto.Request req, Institute institute, Customer customer);
+  @Mapping(target = "createdId", source = "createdId")
+  Reservation dtoToEntity(AddReservationDto.Request req, Institute institute, Customer customer, String createdId);
 
   @Mapping(target = "reservationId", source = "reservation.id")
   AddReservationDto.Response entityToAddReservaionResponse(Reservation reservation);

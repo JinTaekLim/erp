@@ -1,5 +1,6 @@
 package com.erp.erp.domain.reservation.service;
 
+import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.auth.business.AuthProvider;
 import com.erp.erp.domain.customer.business.CustomerReader;
 import com.erp.erp.domain.customer.business.ProgressManger;
@@ -44,7 +45,9 @@ public class ReservationService {
 
 
   public AddReservationDto.Response addReservations(AddReservationDto.Request req) {
-    Institute institute = authProvider.getCurrentInstitute();
+    Account account = authProvider.getCurrentAccount();
+    Institute institute = account.getInstitute();
+
     Customer customer = customerReader.findByIdAndInstituteId(req.getCustomerId(),
         institute.getId());
 
@@ -54,7 +57,10 @@ public class ReservationService {
     LocalDateTime endTime = reservationValidator.validateReservationTime(req.getEndTime());
     reservationValidator.isTimeSlotAvailable(institute, startTime, endTime);
 
-    Reservation reservation = reservationMapper.dtoToEntity(req, institute, customer);
+    Reservation reservation = reservationMapper.dtoToEntity(
+        req, institute, customer, String.valueOf(account.getId())
+    );
+
     reservationCreator.save(reservation);
     return reservationMapper.entityToAddReservaionResponse(reservation);
   }
@@ -79,25 +85,34 @@ public class ReservationService {
   // note. 전달받은 시간 값 검증, 예약 가능 좌석인지 검증 필요
   @Transactional
   public UpdatedReservationDto.Response updateReservation(UpdatedReservationDto.Request req) {
+    Account account = authProvider.getCurrentAccount();
+    Institute institute = account.getInstitute();
 
-    Institute institute = authProvider.getCurrentInstitute();
     Reservation reservation = reservationReader.findByIdAndInstituteId(req.getReservationId(),
         institute.getId());
 
     instituteValidator.isValidSeatNumber(institute, req.getSeatNumber());
-    reservationUpdater.updatedReservations(reservation, req);
-    List<Progress> progressList = progressManger.add(reservation.getCustomer(), req.getProgressList());
+    reservationUpdater.updatedReservations(reservation, req, String.valueOf(account.getId()));
+
+    List<Progress> progressList = progressManger.add(
+        reservation.getCustomer(), req.getProgressList(), String.valueOf(account.getId())
+    );
 
     return reservationMapper.entityToUpdatedReservationDtoResponse(reservation, progressList);
   }
 
   // note. 변경된 좌석에 예약이 존재하는지 검증 필요
   public UpdatedSeatNumberDto.Response updatedSeatNumber(UpdatedSeatNumberDto.Request req) {
-    Institute institute = authProvider.getCurrentInstitute();
+    Account account = authProvider.getCurrentAccount();
+    Institute institute = account.getInstitute();
+
     instituteValidator.isValidSeatNumber(institute, req.getSeatNumber());
     Reservation reservation = reservationReader.findByIdAndInstituteId(req.getReservationId(),
         institute.getId());
-    reservationUpdater.updateSeatNumber(reservation, req.getSeatNumber());
+    reservationUpdater.updateSeatNumber(
+        reservation, req.getSeatNumber(), String.valueOf(account.getId())
+    );
+
     return reservationMapper.entityToUpdatedSeatNumberDtoResponse(reservation);
   }
 

@@ -43,7 +43,6 @@ class CustomerRepositoryTest extends JpaTest {
     return customerRepository.save(customer);
   }
 
-
   @Test
   void findAll() {
     // given
@@ -78,17 +77,19 @@ class CustomerRepositoryTest extends JpaTest {
   @Test
   void updateStatusById() {
     // given
+    String updatedId = String.valueOf(RandomValue.getInt(0, 10));
     Customer customer = createCustomers();
     CustomerStatus status = RandomValue.getRandomEnum(CustomerStatus.class);
 
     // when
-    customerRepository.updateStatusById(customer.getId() , status);
+    customerRepository.updateStatusById(customer.getId() , status, updatedId);
     entityManager.clear();
     Customer testCustomer = customerRepository.findById(customer.getId())
         .orElseThrow(AssertionError::new);
 
     // then
     assertThat(testCustomer.getStatus()).isEqualTo(status);
+    assertThat(testCustomer.getUpdatedId()).isEqualTo(updatedId);
   }
 
   @Test

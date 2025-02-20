@@ -50,13 +50,15 @@ public class AdminService {
   }
 
   public AddPlanDto.Response addPlans(AddPlanDto.Request req) {
-    Plan plan = planMapper.dtoToEntity(req);
+    Admin admin = adminAuthProvider.getAdmin();
+    Plan plan = planMapper.dtoToEntity(req, String.valueOf(admin.getId()));
     planCreator.save(plan);
     return planMapper.entityToAddPlanResponse(plan);
   }
 
   public AddInstituteDto.Response addInstitute(AddInstituteDto.Request req) {
-    Institute institute = instituteMapper.dtoToEntity(req);
+    Admin admin = adminAuthProvider.getAdmin();
+    Institute institute = instituteMapper.dtoToEntity(req, String.valueOf(admin.getId()));
     instituteCreator.save(institute);
     return instituteMapper.entityToAddInstituteResponse(institute);
   }
@@ -67,14 +69,16 @@ public class AdminService {
   }
 
   public UpdateAccountDto.Response updateAccount(UpdateAccountDto.Request req) {
+    Admin admin = adminAuthProvider.getAdmin();
     Account account = accountReader.findById(req.getAccountId());
-    accountUpdater.update(account, req);
+    accountUpdater.update(account, req, String.valueOf(admin.getId()));
     return accountMapper.entityToUpdateAccountDto(account);
   }
 
   public void lockAccount(Long accountId) {
+    Admin admin = adminAuthProvider.getAdmin();
     Account account = accountReader.findById(accountId);
-    accountUpdater.lockAccount(account);
+    accountUpdater.lockAccount(account, String.valueOf(admin.getId()));
   }
 
   public void login(LoginDto.Request req) {

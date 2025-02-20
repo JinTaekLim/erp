@@ -16,16 +16,17 @@ public class ReservationUpdater {
 
   public Reservation updatedReservations(
       Reservation reservation,
-      UpdatedReservationDto.Request req
+      UpdatedReservationDto.Request req,
+      String updatedId
   ) {
     reservation.updatedReservations(
         req.getStartTime(), req.getEndTime(), req.getMemo(), req.getSeatNumber(),
-        req.getAttendanceStatus());
+        req.getAttendanceStatus(), updatedId);
     return reservationRepository.save(reservation);
   }
 
-  public Reservation updateSeatNumber(Reservation reservation, int seatNumber) {
-    reservation.updatedSeat(seatNumber);
+  public Reservation updateSeatNumber(Reservation reservation, int seatNumber, String updatedId) {
+    reservation.updatedSeat(seatNumber, updatedId);
     return reservation;
   }
 }

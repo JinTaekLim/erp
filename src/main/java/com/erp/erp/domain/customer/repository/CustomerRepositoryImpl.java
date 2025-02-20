@@ -3,6 +3,7 @@ package com.erp.erp.domain.customer.repository;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -37,11 +38,13 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
   @Override
   @Transactional
   public void updateStatusById(@Param("customerId") Long customerId,
-      @Param("newStatus") CustomerStatus newStatus) {
+      @Param("newStatus") CustomerStatus newStatus, String updatedId) {
     QCustomer customer = QCustomer.customer;
 
     queryFactory.update(customer)
         .set(customer.status, newStatus)
+        .set(customer.updatedId, updatedId)
+        .set(customer.updatedAt, LocalDateTime.now())
         .where(customer.id.eq(customerId))
         .execute();
   }

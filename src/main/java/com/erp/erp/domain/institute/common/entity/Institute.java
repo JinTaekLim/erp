@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,17 +33,28 @@ public class Institute {
 
   private LocalTime closeTime;
 
+  private String createdId;
+
+  private LocalDateTime createdAt;
+
+  private String updatedId;
+
+  private LocalDateTime updatedAt;
 
 
-  public void changeTotalSpots(int totalSeat) {
+  public void changeTotalSpots(int totalSeat, String updatedId) {
     this.totalSeat = totalSeat;
+    this.updatedId = updatedId;
+    this.updatedAt = LocalDateTime.now();
   }
 
   @Builder
-  public Institute(String name, int totalSeat, LocalTime openTime, LocalTime closeTime) {
+  public Institute(String name, int totalSeat, LocalTime openTime, LocalTime closeTime, String createdId) {
     this.name = name;
     this.totalSeat = totalSeat;
     this.openTime = openTime;
     this.closeTime = closeTime;
+    this.createdId = createdId;
+    this.createdAt = LocalDateTime.now();
   }
 }

@@ -1,6 +1,7 @@
 package com.erp.erp.domain.customer.service;
 
 import com.erp.erp.domain.account.business.PhotoUtil;
+import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.auth.business.AuthProvider;
 import com.erp.erp.domain.customer.business.CustomerCreator;
 import com.erp.erp.domain.customer.business.CustomerReader;
@@ -52,32 +53,41 @@ public class CustomerService {
 
   @Transactional
   public AddCustomerDto.Response addCustomer(AddCustomerDto.Request req, MultipartFile file) {
-    Institute institute = authProvider.getCurrentInstitute();
+    Account account = authProvider.getCurrentAccount();
+    Institute institute = account.getInstitute();
     Plan plan = planReader.findById(req.getPlanId());
     String photoUrl = photoUtil.upload(file);
 
-    Customer customer = customerMapper.dtoToEntity(req, institute, plan, photoUrl);
+    Customer customer = customerMapper.dtoToEntity(
+        req, institute, plan, photoUrl, String.valueOf(account.getId())
+    );
     customerCreator.save(customer);
     return customerMapper.entityToAddCustomerResponse(customer);
   }
 
   public CustomerStatus updateStatus(UpdateStatusDto.Request req) {
-    Institute institute = authProvider.getCurrentInstitute();
+    Account account = authProvider.getCurrentAccount();
+    Institute institute = account.getInstitute();
     Long customersId = req.getCustomerId();
-    customerUpdater.updateStatus(customersId, req.getStatus());
+    customerUpdater.updateStatus(customersId, req.getStatus(), String.valueOf(account.getId()));
     return customerReader.findByIdAndInstituteId(customersId, institute.getId()).getStatus();
   }
 
   @Transactional
   public UpdateCustomerDto.Response updateCustomer(UpdateCustomerDto.Request req, MultipartFile file) {
-    Institute institute = authProvider.getCurrentInstitute();
+    Account account = authProvider.getCurrentAccount();
+    Institute institute = account.getInstitute();
     Customer customer = customerReader.findByIdAndInstituteId(req.getCustomerId(),
         institute.getId());
     String photoUrl = customer.getPhotoUrl();
     if (file != null) photoUrl = photoUtil.upload(file);
 
-    Customer updateCustomer = customerUpdater.updateCustomer(req, photoUrl, customer);
-    List<Progress> progresses = progressManger.add(customer, req.getProgressList());
+    Customer updateCustomer = customerUpdater.updateCustomer(
+        req, photoUrl, customer, String.valueOf(account.getId())
+    );
+    List<Progress> progresses = progressManger.add(
+        customer, req.getProgressList(), String.valueOf(account.getId())
+    );
 
     return customerMapper.entityToUpdateCustomerResponse(updateCustomer, progresses);
   }

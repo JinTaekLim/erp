@@ -35,9 +35,17 @@ public class Reservation {
 
   private AttendanceStatus attendanceStatus;
 
+  private String createdId;
+
+  private LocalDateTime createdAt;
+
+  private String updatedId;
+
+  private LocalDateTime updatedAt;
+
   @Builder
   public Reservation(Institute institute, Customer customer, LocalDateTime startTime,
-      LocalDateTime endTime, String memo, int seatNumber) {
+      LocalDateTime endTime, String memo, int seatNumber, String createdId) {
     this.institute = institute;
     this.customer = customer;
     this.startTime = startTime;
@@ -45,6 +53,8 @@ public class Reservation {
     this.memo = memo;
     this.seatNumber = seatNumber;
     attendanceStatus = AttendanceStatus.NORMAL;
+    this.createdId = createdId;
+    this.createdAt = LocalDateTime.now();
   }
 
   @PrePersist
@@ -60,16 +70,20 @@ public class Reservation {
 
 
   public void updatedReservations(LocalDateTime startTime, LocalDateTime endTime, String memo,
-      int seatNumber, AttendanceStatus attendanceStatus) {
+      int seatNumber, AttendanceStatus attendanceStatus, String updatedId) {
     this.startTime = startTime;
     this.endTime = endTime;
     this.memo = memo;
     this.seatNumber = seatNumber;
     this.attendanceStatus = attendanceStatus;
+    this.updatedId = updatedId;
+    this.updatedAt = LocalDateTime.now();
   }
 
-  public void updatedSeat(int seatNumber) {
+  public void updatedSeat(int seatNumber, String updatedId) {
     this.seatNumber = seatNumber;
+    this.updatedId = updatedId;
+    this.updatedAt = LocalDateTime.now();
   }
 
 }

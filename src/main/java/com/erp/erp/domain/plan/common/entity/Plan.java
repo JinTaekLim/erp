@@ -3,6 +3,7 @@ package com.erp.erp.domain.plan.common.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,9 +40,17 @@ public class Plan {
   @PositiveOrZero
   private int availablePeriod;
 
+  private String createdId;
+
+  private LocalDateTime createdAt;
+
+  private String updatedId;
+
+  private LocalDateTime updatedAt;
+
   @Builder
   public Plan(PlanType planType, LicenseType licenseType, CourseType courseType, String name,
-      int price, int availableTime, int availablePeriod) {
+      int price, int availableTime, int availablePeriod, String createdId) {
     this.planType = planType;
     this.licenseType = licenseType;
     this.courseType = courseType;
@@ -49,5 +58,7 @@ public class Plan {
     this.price = price;
     this.availableTime = availableTime;
     this.availablePeriod = availablePeriod;
+    this.createdId = createdId;
+    this.createdAt = LocalDateTime.now();
   }
 }
