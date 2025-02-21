@@ -36,6 +36,8 @@ public class GetCustomerDto {
 
     @Schema(description = "고객 ID")
     private Long customerId;
+    @Schema(description = "상태 값 ( ACTIVE, INACTIVE, DELETED )")
+    private CustomerStatus status;
     @Schema(description = "프로필 URL")
     private String photoUrl;
     @Schema(description = "이름")
