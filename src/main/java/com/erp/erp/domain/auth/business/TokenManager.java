@@ -2,7 +2,6 @@ package com.erp.erp.domain.auth.business;
 
 import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
-import com.erp.erp.domain.auth.common.entity.Token;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,12 +16,12 @@ public class TokenManager {
 
   public TokenDto createToken(Account account) {
     TokenDto tokenDto = tokenGenerator.getToken(account);
-    tokenCreator.saveRefreshToken(tokenDto.getRefreshToken());
+    tokenCreator.saveRefreshToken(tokenDto.getRefreshToken(), account.getId());
     return tokenDto;
   }
 
   public TokenDto reissueToken(Account account, String refreshToken) {
-    Token token = tokenReader.findByRefreshToken(refreshToken);
+    String token = tokenReader.findByRefreshToken(refreshToken);
     tokenDeleter.deleteToken(token);
     return createToken(account);
   }
