@@ -92,9 +92,8 @@ public class CustomerService {
     return customerMapper.entityToUpdateCustomerResponse(updateCustomer, progresses);
   }
 
-  public List<GetCustomerDto.Response> getCustomers(GetCustomerDto.Request req) {
+  public List<GetCustomerDto.Response> getCustomers(Long lastId, CustomerStatus status) {
     Institute institute = authProvider.getCurrentInstitute();
-    Long lastId = req.getLastId();
 
     if (lastId == null) {
       lastId = customerReader.findTopIdByInstituteId(institute.getId());
@@ -105,7 +104,7 @@ public class CustomerService {
     List<Customer> customers = customerReader.findAllAfterLastId(
         institute.getId(),
         lastId,
-        req.getStatus(),
+        status,
         PAGE_SIZE
     );
 

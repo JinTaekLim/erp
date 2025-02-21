@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -66,9 +67,10 @@ public class CustomerController {
   @Operation(summary = "매장에 등록된 고객 목록 조회")
   @GetMapping("/getCustomers")
   public ApiResult<List<GetCustomerDto.Response>> getCustomers(
-      @RequestBody @Valid GetCustomerDto.Request req
+      @RequestParam(required = false) Long lastId,
+      @RequestParam(name = "status") CustomerStatus customerStatus
   ) {
-    List<GetCustomerDto.Response> response = customerService.getCustomers(req);
+    List<GetCustomerDto.Response> response = customerService.getCustomers(lastId, customerStatus);
     return ApiResult.success(response);
   }
 
