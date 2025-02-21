@@ -1171,7 +1171,7 @@ class CustomerTest extends IntegrationTest {
     TokenDto tokenDto = tokenManager.createToken(account);
     Plan plan = createPlans();
 
-    int customerSize = RandomValue.getInt(0,25);
+    int customerSize = RandomValue.getInt(1,25);
     int lastId = RandomValue.getInt(0, Math.max(0, customerSize - 1));
     int resultSize = Math.min(lastId, PAGE_SIZE);
     CustomerStatus status = RandomValue.getRandomEnum(CustomerStatus.class);
@@ -1181,17 +1181,11 @@ class CustomerTest extends IntegrationTest {
           return createCustomer(plan, institute, status);
         }).toList();
 
-    GetCustomerDto.Request req = GetCustomerDto.Request.builder()
-        .lastId(customers.get(lastId).getId())
-        .status(status)
-        .build();
 
-    String url = BASE_URL + "/getCustomers";
+    String url = BASE_URL + "/getCustomers" +
+        "?lastId=" + customers.get(lastId).getId() + "&status=" + status;
 
-    HttpEntity<GetCustomerDto.Request> httpRequest = HttpEntityUtil.setToken(
-        req,
-        tokenDto.getAccessToken()
-    );
+    HttpEntity<Void> httpRequest = HttpEntityUtil.setToken(null, tokenDto.getAccessToken());
 
     // when
     ResponseEntity<String> responseEntity = restTemplate.exchange(
@@ -1216,6 +1210,7 @@ class CustomerTest extends IntegrationTest {
       Customer customer = customers.get(i);
 
       assertThat(response.getCustomerId()).isNotNull();
+      assertThat(response.getStatus()).isEqualTo(customer.getStatus());
       assertThat(response.getPhotoUrl()).isEqualTo(customer.getPhotoUrl());
       assertThat(response.getName()).isEqualTo(customer.getName());
       assertThat(response.getGender()).isEqualTo(customer.getGender());
@@ -1254,14 +1249,10 @@ class CustomerTest extends IntegrationTest {
           return createCustomer(plan, institute, status);
         }).toList();
 
-    GetCustomerDto.Request req = GetCustomerDto.Request.builder()
-        .status(status)
-        .build();
+    String url = BASE_URL + "/getCustomers" + "?status=" + status;
 
-    String url = BASE_URL + "/getCustomers";
-
-    HttpEntity<GetCustomerDto.Request> httpRequest = HttpEntityUtil.setToken(
-        req,
+    HttpEntity<Void> httpRequest = HttpEntityUtil.setToken(
+        null,
         tokenDto.getAccessToken()
     );
 
@@ -1288,6 +1279,7 @@ class CustomerTest extends IntegrationTest {
       Customer customer = customers.get(i);
 
       assertThat(response.getCustomerId()).isNotNull();
+      assertThat(response.getName()).isEqualTo(customer.getName());
       assertThat(response.getPhotoUrl()).isEqualTo(customer.getPhotoUrl());
       assertThat(response.getName()).isEqualTo(customer.getName());
       assertThat(response.getGender()).isEqualTo(customer.getGender());
