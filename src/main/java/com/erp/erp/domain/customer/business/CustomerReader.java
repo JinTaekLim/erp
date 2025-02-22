@@ -6,6 +6,7 @@ import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.exception.NotFoundCustomerException;
 import com.erp.erp.domain.customer.repository.CustomerRepository;
 import com.erp.erp.domain.institute.common.entity.Institute;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,11 @@ public class CustomerReader {
     return customerRepository.findAllByInstituteBeforeIdAndStatus(instituteId, lastId, status, size);
   }
 
-  public List<UpdateCustomerExpiredAtDto> findCustomersCreatedBeforeDays(int beforeDay) {
-    return customerRepository.findCustomersCreatedBeforeDays(beforeDay);
+  public List<UpdateCustomerExpiredAtDto> findCustomersCreatedAtOnDaysAgo(int beforeDay) {
+    return customerRepository.findCustomersCreatedAtOnDaysAgo(beforeDay);
+  }
+
+  public List<Long> findIdsCreatedAtBeforeDaysAgo(LocalDate date) {
+    return customerRepository.findIdsCreatedAtBeforeDaysAgo(date);
   }
 }

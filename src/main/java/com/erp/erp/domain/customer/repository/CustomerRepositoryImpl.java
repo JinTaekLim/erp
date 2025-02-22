@@ -88,7 +88,7 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
   }
 
   @Override
-  public List<UpdateCustomerExpiredAtDto> findCustomersCreatedBeforeDays(int days) {
+  public List<UpdateCustomerExpiredAtDto> findCustomersCreatedAtOnDaysAgo(int days) {
     QCustomer qCustomer = QCustomer.customer;
     QReservation qReservation = QReservation.reservation;
     QPlanPayment qPlanPayment = QPlanPayment.planPayment;
@@ -129,5 +129,18 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
           .where(qCustomer.id.eq(request.getCustomerId()))
           .execute();
     }
+  }
+
+  @Override
+  public List<Long> findIdsCreatedAtBeforeDaysAgo(LocalDate date) {
+    QCustomer qCustomer = QCustomer.customer;
+
+    return queryFactory
+        .select(qCustomer.id)
+        .from(qCustomer)
+        .where(qCustomer.status.eq(CustomerStatus.ACTIVE))
+        .where(qCustomer.expiredAt.lt(date))
+        .fetch();
+
   }
 }
