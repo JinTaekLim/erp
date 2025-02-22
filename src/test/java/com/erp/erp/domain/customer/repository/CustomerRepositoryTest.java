@@ -2,17 +2,24 @@ package com.erp.erp.domain.customer.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.erp.erp.domain.customer.common.dto.UpdateCustomerExpiredAtDto;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.repository.PlanRepository;
+import com.erp.erp.domain.reservation.common.entity.Reservation;
+import com.erp.erp.domain.reservation.repository.ReservationRepository;
+import com.erp.erp.global.util.ReflectionUtil;
 import com.erp.erp.global.util.generator.CustomerGenerator;
 import com.erp.erp.global.util.generator.InstituteGenerator;
 import com.erp.erp.global.util.generator.PlanGenerator;
 import com.erp.erp.global.test.JpaTest;
+import com.erp.erp.global.util.generator.ReservationGenerator;
 import com.erp.erp.global.util.randomValue.RandomValue;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -27,6 +34,8 @@ class CustomerRepositoryTest extends JpaTest {
   private InstituteRepository instituteRepository;
   @Autowired
   private PlanRepository planRepository;
+  @Autowired
+  private ReservationRepository reservationRepository;
 
   private Institute createInstitutes() {
     return instituteRepository.save(InstituteGenerator.get());
@@ -41,6 +50,18 @@ class CustomerRepositoryTest extends JpaTest {
     Plan plan = createPlans();
     Customer customer = CustomerGenerator.get(plan, institute);
     return customerRepository.save(customer);
+  }
+
+  private Customer createCustomers(Institute institute) {
+    Plan plan = createPlans();
+    Customer customer = CustomerGenerator.get(plan, institute);
+    return customerRepository.save(customer);
+  }
+
+  private Reservation createReservations(Customer customer, Institute institute,
+      LocalDateTime startTime, LocalDateTime endTime) {
+    Reservation reservation = ReservationGenerator.get(customer, institute, startTime, endTime);
+    return reservationRepository.save(reservation);
   }
 
   @Test
@@ -133,5 +154,73 @@ class CustomerRepositoryTest extends JpaTest {
     } else {
       assertThat(customers).isEmpty();
     }
+  }
+
+  @Test
+  void findIdsCreatedAtBefore() {
+    // given
+    int size = RandomValue.getInt(0, 10);
+
+    int day = RandomValue.getInt(1, 100);
+    LocalDateTime createdAt = LocalDateTime.now().minusDays(day);
+
+    LocalDateTime startDate = RandomValue.getRandomLocalDateTime().withSecond(0);
+
+    Institute institute = createInstitutes();
+    List<Customer> customers = IntStream.range(0, size).mapToObj(i -> {
+      Customer customer = createCustomers(institute);
+      ReflectionUtil.setFieldValue(customer, "createdAt", createdAt);
+      return customer;
+    }).toList();
+
+    for(Customer customer : customers) {
+      createReservations(customer, institute, startDate, startDate.plusMinutes(30));
+      createReservations(customer, institute, LocalDateTime.now(), LocalDateTime.now());
+    }
+
+    // when
+    List<UpdateCustomerExpiredAtDto> dtoList = customerRepository.findCustomersCreatedBeforeDays(day);
+
+    // then
+    assertThat(dtoList).hasSize(size);
+
+    IntStream.range(0, size).forEach(i -> {
+      assertThat(dtoList.get(i).getId()).isEqualTo(customers.get(i).getId());
+      assertThat(dtoList.get(i).getFirstReservationDate()).isEqualTo(startDate);
+      assertThat(dtoList.get(i).getAvailablePeriod()).isEqualTo(customers.get(i).getPlanPayment().getPlan().getAvailablePeriod());
+    });
+  }
+
+  @Test
+  void updateExpiredAt() {
+    // given
+    int size = RandomValue.getInt(0, 10);
+    Institute institute = createInstitutes();
+    LocalDate expiredAt = RandomValue.getRandomLocalDate();
+
+    List<UpdateCustomerExpiredAtDto.Request> req = new ArrayList<>();
+    List<Customer> customers = IntStream.range(0, size).mapToObj(i -> {
+      Customer customer = createCustomers(institute);
+
+      UpdateCustomerExpiredAtDto.Request update = UpdateCustomerExpiredAtDto.Request.builder()
+          .customerId(customer.getId())
+          .expiredAt(expiredAt)
+          .build();
+      req.add(update);
+
+      return customer;
+    }).toList();
+
+    // when
+    customerRepository.updateExpiredAt(req);
+    entityManager.clear();
+    List<Customer> customerList = customerRepository.findAll();
+
+    // then
+    IntStream.range(0, size).forEach(i -> {
+      assertThat(customerList.get(i).getId()).isEqualTo(customers.get(i).getId());
+      assertThat(customerList.get(i).getExpiredAt()).isEqualTo(expiredAt);
+      assertThat(customerList.get(i).getUpdatedId()).isEqualTo("SERVER");
+    });
   }
 }

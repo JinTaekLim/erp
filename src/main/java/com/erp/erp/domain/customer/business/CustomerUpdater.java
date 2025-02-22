@@ -2,6 +2,7 @@ package com.erp.erp.domain.customer.business;
 
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto.OtherPaymentResponse;
+import com.erp.erp.domain.customer.common.dto.UpdateCustomerExpiredAtDto;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import com.erp.erp.domain.customer.repository.CustomerRepository;
@@ -52,5 +53,9 @@ public class CustomerUpdater {
             .price(otherPayment.getPrice())
             .build())
         .toList();
+  }
+
+  public void updateExpiredAt(List<UpdateCustomerExpiredAtDto.Request> requests) {
+    customerRepository.updateExpiredAt(requests);
   }
 }

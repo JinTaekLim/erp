@@ -1,8 +1,15 @@
 package com.erp.erp.domain.customer.repository;
 
+import com.erp.erp.domain.customer.common.dto.UpdateCustomerExpiredAtDto;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
+import com.erp.erp.domain.payment.common.entity.QPlanPayment;
+import com.erp.erp.domain.plan.common.entity.QPlan;
+import com.erp.erp.domain.reservation.common.entity.QReservation;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -78,5 +85,49 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
         .orderBy(qCustomer.id.desc())
         .limit(size)
         .fetch();
+  }
+
+  @Override
+  public List<UpdateCustomerExpiredAtDto> findCustomersCreatedBeforeDays(int days) {
+    QCustomer qCustomer = QCustomer.customer;
+    QReservation qReservation = QReservation.reservation;
+    QPlanPayment qPlanPayment = QPlanPayment.planPayment;
+    QPlan qPlan = QPlan.plan;
+
+    LocalDate dateBefore = LocalDateTime.now().minusDays(days).toLocalDate();
+
+    LocalDateTime startOfDay = dateBefore.atStartOfDay();
+    LocalDateTime endOfDay = dateBefore.atTime(23, 59, 59, 999999999);
+
+    return queryFactory
+        .select(
+            Projections.constructor(UpdateCustomerExpiredAtDto.class,
+                qCustomer.id,
+                JPAExpressions.select(qReservation.startTime.min())
+                    .from(qReservation)
+                    .where(qReservation.customer.id.eq(qCustomer.id)),
+                qPlan.availablePeriod
+            )
+        )
+        .from(qCustomer)
+        .leftJoin(qCustomer.planPayment, qPlanPayment)
+        .leftJoin(qPlanPayment.plan, qPlan)
+        .where(qCustomer.createdAt.goe(startOfDay)
+            .and(qCustomer.createdAt.loe(endOfDay)))
+        .fetch();
+  }
+
+
+  public void updateExpiredAt(List<UpdateCustomerExpiredAtDto.Request> requests) {
+    QCustomer qCustomer = QCustomer.customer;
+
+    for (UpdateCustomerExpiredAtDto.Request request : requests) {
+      queryFactory.update(qCustomer)
+          .set(qCustomer.updatedAt, LocalDateTime.now())
+          .set(qCustomer.updatedId, "SERVER")
+          .set(qCustomer.expiredAt, request.getExpiredAt())
+          .where(qCustomer.id.eq(request.getCustomerId()))
+          .execute();
+    }
   }
 }
