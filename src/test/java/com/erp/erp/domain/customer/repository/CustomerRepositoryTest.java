@@ -58,6 +58,12 @@ class CustomerRepositoryTest extends JpaTest {
     return customerRepository.save(customer);
   }
 
+  private Customer createCustomers(Institute institute, CustomerStatus status) {
+    Plan plan = createPlans();
+    Customer customer = CustomerGenerator.get(plan, institute, status);
+    return customerRepository.save(customer);
+  }
+
   private Reservation createReservations(Customer customer, Institute institute,
       LocalDateTime startTime, LocalDateTime endTime) {
     Reservation reservation = ReservationGenerator.get(customer, institute, startTime, endTime);
@@ -179,7 +185,7 @@ class CustomerRepositoryTest extends JpaTest {
     }
 
     // when
-    List<UpdateCustomerExpiredAtDto> dtoList = customerRepository.findCustomersCreatedBeforeDays(day);
+    List<UpdateCustomerExpiredAtDto> dtoList = customerRepository.findCustomersCreatedAtOnDaysAgo(day);
 
     // then
     assertThat(dtoList).hasSize(size);
@@ -221,6 +227,29 @@ class CustomerRepositoryTest extends JpaTest {
       assertThat(customerList.get(i).getId()).isEqualTo(customers.get(i).getId());
       assertThat(customerList.get(i).getExpiredAt()).isEqualTo(expiredAt);
       assertThat(customerList.get(i).getUpdatedId()).isEqualTo("SERVER");
+    });
+  }
+
+  @Test
+  void findIdsCreatedAtBeforeDaysAgo() {
+    // given
+    int size = RandomValue.getInt(0, 10);
+    Institute institute = createInstitutes();
+    LocalDate expiredAt = RandomValue.getRandomLocalDate();
+
+    List<Customer> customers = IntStream.range(0, size).mapToObj(i -> {
+      Customer customer = createCustomers(institute, CustomerStatus.ACTIVE);
+      ReflectionUtil.setFieldValue(customer, "expiredAt", expiredAt);
+      return customer;
+    }).toList();
+
+    // when
+    List<Long> ids = customerRepository.findIdsCreatedAtBeforeDaysAgo(expiredAt.plusDays(1));
+
+    // then
+    assertThat(ids).hasSize(size);
+    IntStream.range(0, size).forEach(i -> {
+      assertThat(ids.get(i)).isEqualTo(customers.get(i).getId());
     });
   }
 }
