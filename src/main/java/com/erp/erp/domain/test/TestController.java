@@ -1,6 +1,6 @@
 package com.erp.erp.domain.test;
 
-import com.erp.erp.global.error.ApiResult;
+import com.erp.erp.global.response.ApiResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
 
   @GetMapping("/{status}")
-  @Schema(name = "테스트")
+  @Schema(name = "/테스트")
   public ApiResult<String> test(@PathVariable String status) {
     if (status.equals("success")) return ApiResult.success("success");
     return ApiResult.fail("코드","메세지","데이터");

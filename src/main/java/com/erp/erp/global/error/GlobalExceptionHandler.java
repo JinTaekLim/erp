@@ -1,6 +1,11 @@
 package com.erp.erp.global.error;
 
+import com.erp.erp.global.error.exception.UnAuthenticatedException;
+import com.erp.erp.global.error.exception.type.ApiErrorType;
+import com.erp.erp.global.response.ApiResult;
 import java.util.Objects;
+
+import com.erp.erp.global.error.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -15,6 +20,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
   @ExceptionHandler(Exception.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public ApiResult<?> handleException(Exception ex){
     log.error(ex.getMessage());
     log.error("Exception : "+ ex);
@@ -47,5 +53,17 @@ public class GlobalExceptionHandler {
   public ApiResult<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
     log.info(ex.getMessage());
     return ApiResult.fail(ApiErrorType.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(BusinessException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ApiResult<?> handler(BusinessException e) {
+    return ApiResult.fail(e.getCode(), e.getMessage());
+  }
+
+  @ExceptionHandler(UnAuthenticatedException.class)
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  public ApiResult<?> handler(UnAuthenticatedException e) {
+    return ApiResult.fail(e.getCode(), e.getMessage());
   }
 }

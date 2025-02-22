@@ -34,6 +34,32 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok:1.18.34'
 	annotationProcessor 'org.projectlombok:lombok:1.18.34'
 
+	// Token
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+
+	// Spring Security
+	implementation 'org.springframework.boot:spring-boot-starter-security:3.4.0'
+
+	// QueryDSL
+	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+	implementation 'com.querydsl:querydsl-core:5.0.0'
+	annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
+	// MapStruct
+	implementation 'org.mapstruct:mapstruct:1.6.3'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+
+	// S3
+	implementation 'io.awspring.cloud:spring-cloud-aws-dependencies:3.3.0'
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.3.0'
+
+	// Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis:3.4.3'
+
 	// test
 	testRuntimeOnly 'com.h2database:h2:2.2.224'
 	testCompileOnly 'org.projectlombok:lombok:1.18.34'
@@ -43,8 +69,24 @@ dependencies {
 	testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.0.24")
 	testImplementation 'com.google.code.gson:gson:2.11.0'
 	testImplementation 'net.datafaker:datafaker:2.4.0'
+	testImplementation group: 'org.apache.httpcomponents.client5', name: 'httpclient5', version: '5.3.1'
+	testImplementation 'com.github.codemonstur:embedded-redis:1.4.3'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+def querydslDir = "build/generated/sources/annotationProcessor/java/main"
+
+
+sourceSets {
+	main.java.srcDirs += querydslDir
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+	querydsl.extendsFrom compileClasspath
 }

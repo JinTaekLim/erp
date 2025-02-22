@@ -25,6 +25,7 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+.idea/**
 
 ### NetBeans ###
 /nbproject/private/
@@ -38,7 +39,3 @@ out/
 
 ### .secret
 application-secret.yml
-
-### docker
-docker-compose.yml
-Dockerfile
