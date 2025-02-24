@@ -3,6 +3,7 @@ package com.erp.erp.domain.customer.repository;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerExpiredAtDto;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +20,10 @@ public interface CustomerRepositoryCustom {
       Long instituteId, Long lastId, CustomerStatus status, int size
   );
 
-  List<UpdateCustomerExpiredAtDto> findCustomersCreatedBeforeDays(int days);
+  List<UpdateCustomerExpiredAtDto> findCustomersCreatedAtOnDaysAgo(int days);
 
   void updateExpiredAt(List<UpdateCustomerExpiredAtDto.Request> req);
+
+  List<Long> findIdsCreatedAtBeforeDaysAgo(LocalDate date);
+
 }
