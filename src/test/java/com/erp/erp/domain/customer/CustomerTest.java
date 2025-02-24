@@ -1500,6 +1500,7 @@ class CustomerTest extends IntegrationTest {
     for (int i=0; i<apiResponse.getData().getOtherPayment().size(); i++) {
       GetCustomerDetailDto.OtherPaymentResponse response = apiResponse.getData().getOtherPayment().get(i);
       OtherPayment otherPayment = customer.getOtherPayments().get(i);
+      assertThat(response.getPaymentsMethod()).isEqualTo(otherPayment.getPaymentsMethod());
       assertThat(response.getRegistrationAt()).isEqualTo(otherPayment.getRegistrationAt());
       assertThat(response.getContent()).isEqualTo(otherPayment.getContent());
       assertThat(response.getPrice()).isEqualTo(otherPayment.getPrice());
