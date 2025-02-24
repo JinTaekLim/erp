@@ -1,4 +1,4 @@
-package com.erp.erp.domain.customer.service;
+package com.erp.erp.domain.customer.scheduler;
 
 import com.erp.erp.domain.customer.business.CustomerReader;
 import com.erp.erp.domain.customer.business.CustomerUpdater;
