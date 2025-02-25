@@ -1163,8 +1163,8 @@ class CustomerTest extends IntegrationTest {
 
 
   @Test
-  @DisplayName("getCurrentCustomers lastId 전달 성공")
-  void getCurrentCustomers_success() {
+  @DisplayName("getCustomers lastId 전달 성공")
+  void getCustomers_success() {
     //given
     Institute institute = createInstitutes();
     Account account = createAccount(institute);
@@ -1233,8 +1233,8 @@ class CustomerTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("getCurrentCustomers lastId 미전달 성공")
-  void getCurrentCustomers_success_2() {
+  @DisplayName("getCustomers lastId 미전달 성공")
+  void getCustomers_success_2() {
     //given
     Institute institute = createInstitutes();
     Account account = createAccount(institute);
@@ -1501,6 +1501,7 @@ class CustomerTest extends IntegrationTest {
       GetCustomerDetailDto.OtherPaymentResponse response = apiResponse.getData().getOtherPayment().get(i);
       OtherPayment otherPayment = customer.getOtherPayments().get(i);
       assertThat(response.getPaymentsMethod()).isEqualTo(otherPayment.getPaymentsMethod());
+      assertThat(response.getOtherPaymentMethod()).isEqualTo(otherPayment.getOtherPaymentMethod());
       assertThat(response.getRegistrationAt()).isEqualTo(otherPayment.getRegistrationAt());
       assertThat(response.getContent()).isEqualTo(otherPayment.getContent());
       assertThat(response.getPrice()).isEqualTo(otherPayment.getPrice());
