@@ -1,23 +1,21 @@
-# ERP
+# ERP 란?
 
-## 커밋 컨벤션
+> 운전 면허 매장 회원/예약 관리 WEB 사이트 
 
-| 태그       | 설명               |
-|------------|------------------|
-| **Feat**   | 새로운 기능 추가        |
-| **Fix**    | 버그 수정            |
-| **HOTFIX** | 치명적 버그 수정        |
-| **Comment**| 주석 수정            |
-| **Docs**   | 문서 수정            |
-| **Style**  | 사소한 코드 변경        |
-| **BREAKING**| 커다란 API 변경       |
-| **Refactor**| 리팩토링             |
-| **Depend** | 의존성 추가/삭제        |
-| **Test**   | 테스트 작업           |
-| **Rename** | 파일, 폴더명 수정       |
-| **Move**   | 파일, 폴더 경로 변경     |
-| **Remove** | 파일 삭제 |
-| **Chore**  | 기타 사소한 작업        |
-| **Conf**   | 설정 파일 작업         |
-| **DB**     | DB 관련 작업         |
+- 기간 : 2024.10 ~ 2024.12
+- 구성 : FE 2, BE 1, Designer 1
+- [기획/UI](https://www.figma.com/design/kplN35VPPaPC1LSfMvOAtA/%5B-ERP-%5D?node-id=0-1&t=GvDgwRCKznwXJCly-1)
 
+## 기술 스택
+- Backend
+    - Java, Spring Boot, Jpa, Spring Security, JWT, Swagger
+- DB
+    - MySQL, Redis
+- DevOps / Infra
+    - AWS EC2, Docker, GitHub Actions, Nginx
+
+## 아키텍처
+![ERP-Architecture drawio](https://github.com/user-attachments/assets/53eb3aea-797f-4c04-8fa0-0916023991a6)
+
+
+## 트러블슈팅
