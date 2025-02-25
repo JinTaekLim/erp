@@ -1,23 +1,17 @@
 package com.erp.erp.domain.customer.business;
 
-import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.CustomerPhoto;
 import com.erp.erp.domain.customer.repository.CustomerPhotoRepository;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class CustomerPhotoReader {
+public class CustomerPhotoDeleter {
 
   private final CustomerPhotoRepository customerPhotoRepository;
 
-  public CustomerPhoto findByCustomer(Customer customer) {
-    return customerPhotoRepository.findByCustomer(customer).orElse(null);
-  }
-
-  public List<CustomerPhoto> findAll() {
-    return customerPhotoRepository.findAll();
+  public void delete(CustomerPhoto customerPhoto) {
+    customerPhotoRepository.delete(customerPhoto);
   }
 }
