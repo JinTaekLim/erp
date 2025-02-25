@@ -19,7 +19,11 @@ public class CustomerPhotoManger {
   private final CustomerPhotoReader customerPhotoReader;
 
   public String upload(MultipartFile file) {
-    return s3Manager.upload(file);
+    try {
+      return s3Manager.upload(file);
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   public void saveTempImage(Customer customer, MultipartFile file) {
@@ -44,11 +48,17 @@ public class CustomerPhotoManger {
   }
 
   public String update(Customer customer, MultipartFile file, String oldFile) {
-    if (oldFile != null) {
-      s3Manager.deleteFromUrl(oldFile);
-      return s3Manager.upload(file);
+    if (oldFile == null) {
+      saveTempImage(customer, file);
+      return null;
     }
-    saveTempImage(customer, file);
-    return null;
+
+    try {
+      String url = s3Manager.upload(file);
+      s3Manager.deleteFromUrl(oldFile);
+      return url;
+    } catch (Exception e) {
+      return null;
+    }
   }
 }
