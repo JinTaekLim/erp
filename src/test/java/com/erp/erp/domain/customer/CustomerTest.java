@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import com.erp.erp.domain.account.business.PhotoUtil;
+import com.erp.erp.domain.customer.business.CustomerPhotoManger;
 import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.account.repository.AccountRepository;
 import com.erp.erp.domain.auth.business.TokenManager;
@@ -106,7 +106,7 @@ class CustomerTest extends IntegrationTest {
   private TokenManager tokenManager;
 
   @MockBean
-  private PhotoUtil photoUtil;
+  private CustomerPhotoManger customerPhotoManger;
 
 
   private Account createAccount(Institute institute) {
@@ -190,7 +190,7 @@ class CustomerTest extends IntegrationTest {
     String url = BASE_URL + "/addCustomer";
 
     //when
-    when(photoUtil.upload(any(MultipartFile.class))).thenReturn(photoUrl);
+    when(customerPhotoManger.upload(any(MultipartFile.class))).thenReturn(photoUrl);
 
     ResponseEntity<String> responseEntity = restTemplate.postForEntity(
         url,
@@ -340,7 +340,7 @@ class CustomerTest extends IntegrationTest {
     String url = BASE_URL + "/updateCustomer";
 
     // then
-    when(photoUtil.upload(any(MultipartFile.class))).thenReturn(photoUrl);
+    when(customerPhotoManger.update(any(), any(MultipartFile.class), any())).thenReturn(photoUrl);
 
     ResponseEntity<String> responseEntity = restTemplate.exchange(
             url,
@@ -423,7 +423,7 @@ class CustomerTest extends IntegrationTest {
     String url = BASE_URL + "/updateCustomer";
 
     // then
-    when(photoUtil.upload(any(MultipartFile.class))).thenReturn(photoUrl);
+    when(customerPhotoManger.update(any(), any(MultipartFile.class), any())).thenReturn(photoUrl);
 
     ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
@@ -528,7 +528,7 @@ class CustomerTest extends IntegrationTest {
     String url = BASE_URL + "/updateCustomer";
 
     // then
-    when(photoUtil.upload(any(MultipartFile.class))).thenReturn(photoUrl);
+    when(customerPhotoManger.update(any(), any(MultipartFile.class), any())).thenReturn(photoUrl);
 
     ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,
@@ -632,7 +632,7 @@ class CustomerTest extends IntegrationTest {
     String url = BASE_URL + "/updateCustomer";
 
     // then
-    when(photoUtil.upload(any(MultipartFile.class))).thenReturn(photoUrl);
+    when(customerPhotoManger.update(any(), any(MultipartFile.class), any())).thenReturn(photoUrl);
 
     ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,

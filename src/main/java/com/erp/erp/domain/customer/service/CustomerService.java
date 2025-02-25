@@ -1,6 +1,6 @@
 package com.erp.erp.domain.customer.service;
 
-import com.erp.erp.domain.account.business.PhotoUtil;
+import com.erp.erp.domain.customer.business.CustomerPhotoManger;
 import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.auth.business.AuthProvider;
 import com.erp.erp.domain.customer.business.CustomerCreator;
@@ -25,10 +25,6 @@ import com.erp.erp.domain.plan.common.entity.Plan;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,7 +42,7 @@ public class CustomerService {
   private final CustomerReader customerReader;
   private final CustomerUpdater customerUpdater;
   private final PlanReader planReader;
-  private final PhotoUtil photoUtil;
+  private final CustomerPhotoManger customerPhotoManger;
   private final ProgressReader progressReader;
   private final CustomerMapper customerMapper;
   private final ProgressManger progressManger;
@@ -56,12 +52,18 @@ public class CustomerService {
     Account account = authProvider.getCurrentAccount();
     Institute institute = account.getInstitute();
     Plan plan = planReader.findById(req.getPlanId());
-    String photoUrl = photoUtil.upload(file);
 
+    String photoUrl = file == null ? null : customerPhotoManger.upload(file);
     Customer customer = customerMapper.dtoToEntity(
         req, institute, plan, photoUrl, String.valueOf(account.getId())
     );
     customerCreator.save(customer);
+
+    // 사진을 전달 받았지만 S3에 정상적으로 저장하지 못 한 경우 DB에 데이터 임시 저장
+    if (photoUrl == null && file != null) {
+      customerPhotoManger.saveTempImage(customer, file);
+    }
+
     return customerMapper.entityToAddCustomerResponse(customer);
   }
 
@@ -80,7 +82,7 @@ public class CustomerService {
     Customer customer = customerReader.findByIdAndInstituteId(req.getCustomerId(),
         institute.getId());
     String photoUrl = customer.getPhotoUrl();
-    if (file != null) photoUrl = photoUtil.upload(file);
+    if (file != null) photoUrl = customerPhotoManger.update(customer, file, customer.getPhotoUrl());
 
     Customer updateCustomer = customerUpdater.updateCustomer(
         req, photoUrl, customer, String.valueOf(account.getId())
