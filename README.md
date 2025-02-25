@@ -17,6 +17,7 @@
 ## 아키텍처
 ![ERP-Architecture drawio](https://github.com/user-attachments/assets/53eb3aea-797f-4c04-8fa0-0916023991a6)
 
+![ERP-Layered](https://github.com/user-attachments/assets/ca5637f7-86bb-46ea-8ffd-8822dd33c4b8)
 
 ## 트러블슈팅
 
@@ -35,7 +36,7 @@
 - 기존 서버 저장 방식 → Shell Script와 Docker Volume을 활용해 Github 저장으로 변경
 - 서버 부담 감소 및 데이터의 접근 용이성 확보
 
-4. **S3 업로드 실패 시 데이터 보관**
+4. **S3 업로드 실패 시 데이터 유실되는 문제 발생**
 
-- 외부 저장소 장애 시 이미지를 DB에 임시 저장하고, 정상 작동 시 스케줄러로 자동 업로드
+- 외부 저장소 장애 시 이미지를 DB에 임시 저장하고, 정상 작동 확인 후 스케줄러로 자동 업로드
 - 외부 저장소의 상태 여부와 관련 없이 데이터를 안전하게 보관, 안정성 확보
