@@ -77,6 +77,8 @@ public class GetCustomerDetailDto {
   public static class OtherPaymentResponse {
     @Schema(description = "이용권 결제 방법")
     private PaymentsMethod paymentsMethod;
+    @Schema(description = "기타 결제 방법")
+    private String otherPaymentMethod;
     @Schema(description = "결제일")
     private LocalDateTime registrationAt;
     @Schema(description = "할인 내용")
