@@ -5,6 +5,7 @@ import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.auth.business.AuthProvider;
 import com.erp.erp.domain.customer.business.CustomerCreator;
 import com.erp.erp.domain.customer.business.CustomerReader;
+import com.erp.erp.domain.customer.business.CustomerSender;
 import com.erp.erp.domain.customer.business.CustomerUpdater;
 import com.erp.erp.domain.customer.business.ProgressManger;
 import com.erp.erp.domain.customer.business.ProgressReader;
@@ -46,13 +47,17 @@ public class CustomerService {
   private final ProgressReader progressReader;
   private final CustomerMapper customerMapper;
   private final ProgressManger progressManger;
+  private final CustomerSender customerSender;
+
+  public void sendAddCustomerRequest(AddCustomerDto.Request req, MultipartFile file) {
+    Account account = authProvider.getCurrentAccount();
+    Plan plan = planReader.findById(req.getPlanId());
+    customerSender.sendAddCustomer(account, plan, req, file);
+  }
 
   @Transactional
-  public AddCustomerDto.Response addCustomer(AddCustomerDto.Request req, MultipartFile file) {
-    Account account = authProvider.getCurrentAccount();
+  public void addCustomer(Account account, Plan plan, AddCustomerDto.Request req, byte[] file) {
     Institute institute = account.getInstitute();
-    Plan plan = planReader.findById(req.getPlanId());
-
     String photoUrl = file == null ? null : customerPhotoManger.upload(file);
     Customer customer = customerMapper.dtoToEntity(
         req, institute, plan, photoUrl, String.valueOf(account.getId())
@@ -63,8 +68,6 @@ public class CustomerService {
     if (photoUrl == null && file != null) {
       customerPhotoManger.saveTempImage(customer, file);
     }
-
-    return customerMapper.entityToAddCustomerResponse(customer);
   }
 
   public CustomerStatus updateStatus(UpdateStatusDto.Request req) {

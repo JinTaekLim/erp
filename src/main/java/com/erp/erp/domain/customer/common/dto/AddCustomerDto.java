@@ -112,38 +112,4 @@ public class AddCustomerDto {
       private boolean status;
     }
   }
-
-
-  @Schema(name = "AddCustomerDto_Response" , description = "회원 등록 반환")
-  @Getter
-  @Builder
-  public static class Response {
-
-    @Schema(description = "이용권 이름")
-    private String planName;
-
-    @Schema(description = "이름")
-    private String name;
-
-    @Schema(description = "성별")
-    private Gender gender;
-
-    @Schema(description = "전화번호")
-    private String phone;
-
-    @Schema(description = "주소")
-    private String address;
-
-    @Schema(description = "방문경로")
-    private String visitPath;
-
-    @Schema(description = "메모")
-    private String memo;
-
-    @Schema(description = "프로필 사진")
-    private String photoUrl;
-
-    @Schema(description = "생년월일")
-    private LocalDate birthDate;
-  }
 }

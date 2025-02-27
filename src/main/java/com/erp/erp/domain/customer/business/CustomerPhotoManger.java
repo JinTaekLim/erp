@@ -4,6 +4,8 @@ import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.CustomerPhoto;
 import com.erp.erp.global.error.exception.ServerException;
 import com.erp.erp.global.util.S3Manager;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -18,25 +20,26 @@ public class CustomerPhotoManger {
   private final CustomerPhotoCreator customerPhotoCreator;
   private final CustomerPhotoReader customerPhotoReader;
 
-  public String upload(MultipartFile file) {
+  public String upload(byte[] file) {
     try {
-      return s3Manager.upload(file);
+      InputStream inputStream = new ByteArrayInputStream(file);
+      return s3Manager.upload(inputStream);
     } catch (Exception e) {
       return null;
     }
   }
 
-  public void saveTempImage(Customer customer, MultipartFile file) {
+  public void saveTempImage(Customer customer, byte[] file) {
     try {
       CustomerPhoto customerPhoto = customerPhotoReader.findByCustomer(customer);
 
       if (customerPhoto == null) {
         customerPhoto = CustomerPhoto.builder()
             .customer(customer)
-            .data(file.getBytes())
+            .data(file)
             .build();
       } else {
-        customerPhoto.updateData(file.getBytes());
+        customerPhoto.updateData(file);
       }
 
       customerPhotoCreator.save(customerPhoto);
@@ -48,12 +51,12 @@ public class CustomerPhotoManger {
   }
 
   public String update(Customer customer, MultipartFile file, String oldFile) {
-    if (oldFile == null) {
-      saveTempImage(customer, file);
-      return null;
-    }
-
     try {
+      if (oldFile == null) {
+        saveTempImage(customer, file.getBytes());
+        return null;
+      }
+
       String url = s3Manager.upload(file);
       s3Manager.deleteFromUrl(oldFile);
       return url;
