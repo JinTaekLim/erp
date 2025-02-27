@@ -60,6 +60,9 @@ dependencies {
 	// Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis:3.4.3'
 
+	// RabbitMQ
+	implementation 'org.springframework.boot:spring-boot-starter-amqp:3.4.3'
+
 	// test
 	testRuntimeOnly 'com.h2database:h2:2.2.224'
 	testCompileOnly 'org.projectlombok:lombok:1.18.34'
