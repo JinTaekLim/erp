@@ -1,4 +1,4 @@
-package com.erp.erp.global.config.rabbitMq;
+package com.erp.erp.global.rabbitMq;
 
 import java.util.List;
 import lombok.Getter;
@@ -19,9 +19,5 @@ public class RabbitMqProperties {
     private String name;
     private String exchange;
     private String routingKey;
-  }
-
-  public String getCustomerQueueName() {
-    return queues.get(0).getName();
   }
 }

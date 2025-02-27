@@ -11,6 +11,7 @@ import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.account.repository.AccountRepository;
 import com.erp.erp.domain.auth.business.TokenManager;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
+import com.erp.erp.domain.customer.business.CustomerSender;
 import com.erp.erp.domain.customer.common.dto.AddCustomerDto;
 
 import com.erp.erp.domain.customer.common.dto.GetAvailableCustomerNamesDto;
@@ -108,6 +109,8 @@ class CustomerTest extends IntegrationTest {
   @MockBean
   private CustomerPhotoManger customerPhotoManger;
 
+  @MockBean
+  private CustomerSender customerSender;
 
   private Account createAccount(Institute institute) {
     return accountRepository.save(AccountGenerator.get(institute));
@@ -154,7 +157,6 @@ class CustomerTest extends IntegrationTest {
     return progressList;
   }
 
-
   @Test
   @DisplayName("addCustomer 성공")
   void addCustomer() {
@@ -174,8 +176,6 @@ class CustomerTest extends IntegrationTest {
         "image/jpeg",
         "test-image-content".getBytes());
 
-    String photoUrl = RandomValue.string(5,30).setNullable(false).get();
-
     HttpHeaders partHeaders = HttpEntityUtil.createHttpHeaders(MediaType.APPLICATION_JSON);
     HttpHeaders requestHeaders = HttpEntityUtil.createHttpHeaders(MediaType.MULTIPART_FORM_DATA);
     requestHeaders.setBearerAuth(tokenDto.getAccessToken());
@@ -190,31 +190,20 @@ class CustomerTest extends IntegrationTest {
     String url = BASE_URL + "/addCustomer";
 
     //when
-    when(customerPhotoManger.upload(any(MultipartFile.class))).thenReturn(photoUrl);
-
     ResponseEntity<String> responseEntity = restTemplate.postForEntity(
         url,
         httpEntity,
         String.class
     );
 
-    ApiResult<AddCustomerDto.Response> apiResponse = gson.fromJson(
+    ApiResult<Void> apiResponse = gson.fromJson(
         responseEntity.getBody(),
-        new TypeToken<ApiResult<AddCustomerDto.Response>>(){}
+        new TypeToken<ApiResult<Void>>(){}
     );
 
     //then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertNotNull(apiResponse);
-    assertThat(apiResponse.getData().getPlanName()).isEqualTo(plan.getName());
-    assertThat(apiResponse.getData().getName()).isEqualTo(request.getName());
-    assertThat(apiResponse.getData().getGender()).isEqualTo(request.getGender());
-    assertThat(apiResponse.getData().getPhone()).isEqualTo(request.getPhone());
-    assertThat(apiResponse.getData().getAddress()).isEqualTo(request.getAddress());
-    assertThat(apiResponse.getData().getVisitPath()).isEqualTo(request.getVisitPath());
-    assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
-    assertThat(apiResponse.getData().getPhotoUrl()).isEqualTo(photoUrl);
-    assertThat(apiResponse.getData().getBirthDate()).isEqualTo(request.getBirthDate());
   }
 
   @Test
@@ -245,9 +234,9 @@ class CustomerTest extends IntegrationTest {
         String.class
     );
 
-    ApiResult<AddCustomerDto.Response> apiResponse = gson.fromJson(
+    ApiResult<Void> apiResponse = gson.fromJson(
         responseEntity.getBody(),
-        new TypeToken<ApiResult<AddCustomerDto.Response>>(){}
+        new TypeToken<ApiResult<Void>>(){}
     );
 
     //then
@@ -286,9 +275,9 @@ class CustomerTest extends IntegrationTest {
             String.class
     );
 
-    ApiResult<AddCustomerDto.Response> apiResponse = gson.fromJson(
+    ApiResult<Void> apiResponse = gson.fromJson(
             responseEntity.getBody(),
-            new TypeToken<ApiResult<AddCustomerDto.Response>>(){}
+            new TypeToken<ApiResult<Void>>(){}
     );
 
     //then
@@ -423,7 +412,7 @@ class CustomerTest extends IntegrationTest {
     String url = BASE_URL + "/updateCustomer";
 
     // then
-    when(customerPhotoManger.update(any(), any(MultipartFile.class), any())).thenReturn(photoUrl);
+    when(customerPhotoManger.update(any(), any(), any())).thenReturn(photoUrl);
 
     ResponseEntity<String> responseEntity = restTemplate.exchange(
         url,

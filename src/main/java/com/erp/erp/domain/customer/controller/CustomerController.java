@@ -39,12 +39,12 @@ public class CustomerController {
 
   @Operation(summary = "고객 추가")
   @PostMapping(value = "/addCustomer", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ApiResult<AddCustomerDto.Response> addCustomer(
+  public ApiResult<Void> addCustomer(
       @Valid @RequestPart AddCustomerDto.Request req,
       @RequestPart(value = "file", required = false) MultipartFile file
       ) {
-    AddCustomerDto.Response response = customerService.addCustomer(req, file);
-    return ApiResult.success(response);
+    customerService.sendAddCustomerRequest(req, file);
+    return ApiResult.success(null);
   }
 
   @Operation(summary = "고객 정보 수정")

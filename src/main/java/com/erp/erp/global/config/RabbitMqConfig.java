@@ -1,6 +1,6 @@
 package com.erp.erp.global.config;
 
-import com.erp.erp.global.config.rabbitMq.RabbitMqProperties;
+import com.erp.erp.global.rabbitMq.RabbitMqProperties;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.Declarables;
@@ -22,7 +22,6 @@ public class RabbitMqConfig {
     List<Queue> queues = rabbitMqProperties.getQueues().stream()
         .map(q -> new Queue(q.getName(), true))
         .toList();
-
     return new Declarables(queues);
   }
 
