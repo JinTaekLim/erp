@@ -16,13 +16,24 @@ services:
 
   redis:
     container_name: redis-erp
-    image: redis:alpine
+    image: redis:7.4
     hostname: redis
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
 
+  rabbitmq:
+    container_name: rabbitmq-erp
+    image: rabbitmq:4.0.6-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
 volumes:
   mysql_data:
   redis_data:
+  rabbitmq_data:
+
