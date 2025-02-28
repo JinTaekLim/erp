@@ -12,14 +12,20 @@ public class RabbitMqManager {
 
   private final RabbitTemplate rabbitTemplate;
   private final String customerQueueName;
+  private final String reservationQueueName;
 
   public RabbitMqManager(RabbitMqProperties rabbitMqProperties, RabbitTemplate rabbitTemplate) {
     this.rabbitTemplate = rabbitTemplate;
     this.customerQueueName = rabbitMqProperties.getQueues().get(0).getName();
+    this.reservationQueueName = rabbitMqProperties.getQueues().get(1).getName();
   }
 
   public void sendCustomerMessage(Message message) {
     rabbitTemplate.convertAndSend(customerQueueName, message);
+  }
+
+  public void sendReservationMessage(Message message) {
+    rabbitTemplate.convertAndSend(reservationQueueName, message);
   }
 
   public Message getMessage(Object object) {

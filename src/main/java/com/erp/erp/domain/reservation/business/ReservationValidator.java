@@ -79,9 +79,13 @@ public class ReservationValidator {
   }
 
   public long getMinutesBetween(LocalDateTime startTime, LocalDateTime endTime) {
+    isEndTimeAfterStartTime(startTime, endTime);
+    return ChronoUnit.MINUTES.between(startTime, endTime);
+  }
+
+  public void isEndTimeAfterStartTime(LocalDateTime startTime, LocalDateTime endTime) {
     if (!startTime.isBefore(endTime)) {
       throw new InvalidReservationTimeException();
     }
-    return ChronoUnit.MINUTES.between(startTime, endTime);
   }
 }
