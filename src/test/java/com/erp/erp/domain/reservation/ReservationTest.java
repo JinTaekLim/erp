@@ -2,7 +2,7 @@ package com.erp.erp.domain.reservation;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.erp.erp.domain.account.common.entity.Account;
@@ -25,6 +25,7 @@ import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.repository.PlanRepository;
+import com.erp.erp.domain.reservation.business.ReservationSender;
 import com.erp.erp.domain.reservation.common.dto.AddReservationDto;
 import com.erp.erp.domain.reservation.common.dto.GetDailyReservationDto;
 import com.erp.erp.domain.reservation.common.dto.GetReservationCustomerDetailsDto;
@@ -35,7 +36,6 @@ import com.erp.erp.domain.reservation.common.entity.AttendanceStatus;
 import com.erp.erp.domain.reservation.common.entity.Reservation;
 import com.erp.erp.domain.reservation.common.exception.InvalidReservationTimeException;
 import com.erp.erp.domain.reservation.common.exception.InvalidSeatRangeException;
-import com.erp.erp.domain.reservation.common.exception.NoAvailableSeatException;
 import com.erp.erp.domain.reservation.common.exception.NotFoundReservationException;
 import com.erp.erp.domain.reservation.repository.ReservationRepository;
 import com.erp.erp.global.response.ApiResult;
@@ -63,6 +63,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -92,6 +93,8 @@ class ReservationTest extends IntegrationTest {
   private ProgressRepository progressRepository;
   @Autowired
   private TokenManager tokenManager;
+  @MockBean
+  private ReservationSender reservationSender;
 
 
   private Institute createInstitutes() {
@@ -133,7 +136,7 @@ class ReservationTest extends IntegrationTest {
     return progressList;
   }
 
-  @Test
+  @RepeatedTest(100)
   @DisplayName("addReservations 성공")
   void addReservations() {
     // given
@@ -171,22 +174,14 @@ class ReservationTest extends IntegrationTest {
         String.class
     );
 
-    ApiResult<AddReservationDto.Response> apiResponse = gson.fromJson(
+    ApiResult<Void> apiResponse = gson.fromJson(
         responseEntity.getBody(),
-        new TypeToken<ApiResult<AddReservationDto.Response>>() {
-        }.getType()
+        new TypeToken<ApiResult<Void>>(){}
     );
 
     // then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertNotNull(apiResponse.getData());
-    assertThat(apiResponse.getData().getReservationId()).isNotNull();
-    assertThat(apiResponse.getData().getStartTime()).isEqualTo(
-        req.getStartTime().withSecond(0).withNano(0));
-    assertThat(apiResponse.getData().getEndTime()).isEqualTo(
-        req.getEndTime().withSecond(0).withNano(0));
-    assertThat(apiResponse.getData().getSeatNumber()).isEqualTo(req.getSeatNumber());
-    assertThat(apiResponse.getData().getMemo()).isEqualTo(req.getMemo());
+    assertNull(apiResponse.getData());
   }
 
   @Test
@@ -218,10 +213,9 @@ class ReservationTest extends IntegrationTest {
         String.class
     );
 
-    ApiResult<AddReservationDto.Response> apiResponse = gson.fromJson(
+    ApiResult<Void> apiResponse = gson.fromJson(
         responseEntity.getBody(),
-        new TypeToken<ApiResult<AddReservationDto.Response>>() {
-        }.getType()
+        new TypeToken<ApiResult<Void>>(){}
     );
 
     // then
@@ -270,63 +264,9 @@ class ReservationTest extends IntegrationTest {
         String.class
     );
 
-    ApiResult<AddReservationDto.Response> apiResponse = gson.fromJson(
+    ApiResult<Void> apiResponse = gson.fromJson(
         responseEntity.getBody(),
-        new TypeToken<ApiResult<AddReservationDto.Response>>() {
-        }.getType()
-    );
-
-    // then
-    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-    assertThat(apiResponse.getData()).isNull();
-    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
-    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
-  }
-
-  @Test
-  @DisplayName("addReservations 좌석이 없을 경우")
-  void addReservations_fail_3() {
-    // given
-    int totalSeat = RandomValue.getInt(1,5);
-    Institute institute = createInstitutes(totalSeat);
-    Customer customer = createCustomers(institute);
-    Account account = createAccount(institute);
-    TokenDto tokenDto = tokenManager.createToken(account);
-
-    LocalDateTime now = LocalDateTime.now();
-    LocalDateTime startTime =
-        (RandomValue.getInt(0, 2) == 0) ? now.withMinute(0) : now.withMinute(30);
-    LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
-    IntStream.range(0, institute.getTotalSeat())
-        .forEach(i -> createReservation(customer, institute, startTime, endTime));
-
-    AddReservationDto.Request req = AddReservationDto.Request.builder()
-        .customerId(customer.getId())
-        .startTime(startTime)
-        .endTime(endTime)
-        .seatNumber(RandomValue.getInt(1, institute.getTotalSeat()))
-        .build();
-
-    NoAvailableSeatException exception = new NoAvailableSeatException();
-
-    String url = BASE_URL + "/addReservation";
-
-    HttpEntity<AddReservationDto.Request> httpRequest = HttpEntityUtil.setToken(
-        req,
-        tokenDto.getAccessToken()
-    );
-
-    //when
-    ResponseEntity<String> responseEntity = restTemplate.postForEntity(
-        url,
-        httpRequest,
-        String.class
-    );
-
-    ApiResult<AddReservationDto.Response> apiResponse = gson.fromJson(
-        responseEntity.getBody(),
-        new TypeToken<ApiResult<AddReservationDto.Response>>() {
-        }.getType()
+        new TypeToken<ApiResult<Void>>(){}
     );
 
     // then

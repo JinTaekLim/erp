@@ -10,6 +10,7 @@ import com.erp.erp.domain.customer.common.entity.Progress;
 import com.erp.erp.domain.institute.business.InstituteValidator;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.reservation.business.ReservationDelete;
+import com.erp.erp.domain.reservation.business.ReservationSender;
 import com.erp.erp.domain.reservation.business.ReservationValidator;
 import com.erp.erp.domain.reservation.business.ReservationCreator;
 import com.erp.erp.domain.reservation.business.ReservationReader;
@@ -42,12 +43,12 @@ public class ReservationService {
   private final ReservationMapper reservationMapper;
   private final ProgressReader progressReader;
   private final ProgressManger progressManger;
+  private final ReservationSender reservationSender;
 
 
-  public AddReservationDto.Response addReservations(AddReservationDto.Request req) {
+  public void sendAddReservationRequest(AddReservationDto.Request req) {
     Account account = authProvider.getCurrentAccount();
     Institute institute = account.getInstitute();
-
     Customer customer = customerReader.findByIdAndInstituteId(req.getCustomerId(),
         institute.getId());
 
@@ -55,6 +56,15 @@ public class ReservationService {
 
     LocalDateTime startTime = reservationValidator.validateReservationTime(req.getStartTime());
     LocalDateTime endTime = reservationValidator.validateReservationTime(req.getEndTime());
+    reservationValidator.isEndTimeAfterStartTime(startTime, endTime);
+
+    reservationSender.sendAddReservation(account, customer, req, startTime, endTime);
+  }
+
+  public void addReservations(Account account, Customer customer, AddReservationDto.Request req,
+      LocalDateTime startTime, LocalDateTime endTime) {
+    Institute institute = account.getInstitute();
+
     reservationValidator.isTimeSlotAvailable(institute, startTime, endTime);
 
     Reservation reservation = reservationMapper.dtoToEntity(
@@ -62,7 +72,6 @@ public class ReservationService {
     );
 
     reservationCreator.save(reservation);
-    return reservationMapper.entityToAddReservaionResponse(reservation);
   }
 
   public List<GetDailyReservationDto.Response> getDailyReservations(LocalDate date) {

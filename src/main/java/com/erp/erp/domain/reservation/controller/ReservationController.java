@@ -24,10 +24,10 @@ public class ReservationController {
 
   @Operation(summary = "예약 추가")
   @PostMapping("/addReservation")
-  public ApiResult<AddReservationDto.Response> addReservation(
+  public ApiResult<Void> addReservation(
       @Valid @RequestBody AddReservationDto.Request req) {
-    AddReservationDto.Response response = reservationService.addReservations(req);
-    return ApiResult.success(response);
+    reservationService.sendAddReservationRequest(req);
+    return ApiResult.success(null);
   }
 
   @Operation(summary = "하루 예약 조회")
