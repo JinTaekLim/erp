@@ -12,10 +12,10 @@
 - DB
     - MySQL, Redis
 - DevOps / Infra
-    - AWS EC2, Docker, GitHub Actions, Nginx
+    - AWS EC2, Docker, GitHub Actions, Nginx, RabbitMQ
 
 ## 아키텍처
-![ERP-Architecture drawio](https://github.com/user-attachments/assets/53eb3aea-797f-4c04-8fa0-0916023991a6)
+![ERP-Architecture drawio]( https://github.com/user-attachments/assets/15a2f79a-34c9-4fe3-8e56-98d753b5f941)
 
 ![ERP-Layered](https://github.com/user-attachments/assets/ca5637f7-86bb-46ea-8ffd-8822dd33c4b8)
 
