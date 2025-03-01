@@ -13,7 +13,7 @@ import com.erp.erp.domain.admin.common.dto.AddPlanDto;
 import com.erp.erp.domain.admin.common.dto.LoginDto;
 import com.erp.erp.domain.admin.common.dto.UpdateAccountDto;
 import com.erp.erp.domain.admin.common.entity.Admin;
-import com.erp.erp.domain.customer.common.dto.GetInstituteDto;
+import com.erp.erp.domain.admin.common.dto.GetInstituteDto;
 import com.erp.erp.domain.institute.business.InstituteCreator;
 import com.erp.erp.domain.institute.business.InstituteReader;
 import com.erp.erp.domain.institute.common.entity.Institute;

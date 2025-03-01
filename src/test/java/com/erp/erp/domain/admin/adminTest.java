@@ -13,7 +13,7 @@ import com.erp.erp.domain.admin.common.entity.Admin;
 import com.erp.erp.domain.admin.common.exception.NotFoundAdminException;
 import com.erp.erp.domain.admin.common.exception.UnauthorizedAccessException;
 import com.erp.erp.domain.admin.repository.AdminRepository;
-import com.erp.erp.domain.customer.common.dto.GetInstituteDto;
+import com.erp.erp.domain.admin.common.dto.GetInstituteDto;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.common.exception.NotFoundInstituteException;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
@@ -412,6 +412,7 @@ class adminTest extends IntegrationTest {
     assertThat(instituteCount).isEqualTo(apiResponse.getData().size());
     IntStream.range(0,instituteCount).forEach(
         i-> {
+          assertThat(apiResponse.getData().get(i).getId()).isEqualTo(institutes.get(i).getId());
           assertThat(apiResponse.getData().get(i).getName()).isEqualTo(institutes.get(i).getName());
           assertThat(apiResponse.getData().get(i).getOpenTime()).isEqualTo(institutes.get(i).getOpenTime());
           assertThat(apiResponse.getData().get(i).getCloseTime()).isEqualTo(institutes.get(i).getCloseTime());

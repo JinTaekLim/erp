@@ -7,7 +7,7 @@ import com.erp.erp.domain.admin.common.dto.AddPlanDto;
 import com.erp.erp.domain.admin.common.dto.LoginDto;
 import com.erp.erp.domain.admin.common.dto.UpdateAccountDto;
 import com.erp.erp.domain.admin.service.AdminService;
-import com.erp.erp.domain.customer.common.dto.GetInstituteDto;
+import com.erp.erp.domain.admin.common.dto.GetInstituteDto;
 import com.erp.erp.global.annotation.authentication.Admin;
 import com.erp.erp.global.annotation.authentication.PermitAll;
 import com.erp.erp.global.response.ApiResult;
