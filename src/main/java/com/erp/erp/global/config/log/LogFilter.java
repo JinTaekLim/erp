@@ -1,5 +1,7 @@
 package com.erp.erp.global.config.log;
 
+import static org.springframework.web.multipart.support.MultipartResolutionDelegate.isMultipartRequest;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
 
@@ -57,14 +61,17 @@ public class LogFilter extends OncePerRequestFilter {
     isSwaggerRequest(uri);
 
     printRequest(
-            request.getMethod(),
-            queryString == null ? uri : uriPlusQueryString,
-            request.getContentType(),
-            getBody(request.getInputStream()),
-            getClientIp(request)
+        request.getMethod(),
+        queryString == null ? uri : uriPlusQueryString,
+        request.getContentType(),
+        getBody(request.getInputStream()),
+        getClientIp(request)
     );
-  }
 
+    if (isMultipartRequest(request)) {
+      logMultipartRequest(request);
+    }
+  }
 
 
   private void logResponse(ContentCachingResponseWrapper response)
@@ -107,6 +114,21 @@ public class LogFilter extends OncePerRequestFilter {
     isSwagger = Arrays.asList(SWAGGER_URL).contains(uri);
   }
 
+  private void logMultipartRequest(HttpServletRequest request) {
+    StandardServletMultipartResolver multipartResolver = new StandardServletMultipartResolver();
+    MultipartHttpServletRequest multipart = multipartResolver.resolveMultipart(request);
+    multipart.getFileMap().forEach((paramName, file) -> {
+      log.info("File Parameter Name: {}, Original File Name: {}, Size: {} bytes",
+          paramName,
+          file.getOriginalFilename(),
+          file.getSize());
+    });
 
+    multipart.getParameterMap().forEach((paramName, value) -> {
+      log.info("Form Field - Name: {}, Value: {}",
+          paramName,
+          value);
+    });
+  }
 
 }
