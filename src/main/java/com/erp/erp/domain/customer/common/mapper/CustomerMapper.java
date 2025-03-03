@@ -47,9 +47,9 @@ public interface CustomerMapper {
   @Mapping(target = "progressId", source = "id")
   @Mapping(target = "date", source = "date")
   @Mapping(target = "content", source = "content")
-  ProgressDto.ProgressResponse progressToProgressResponse(Progress progress);
+  ProgressDto.Response progressToProgressResponse(Progress progress);
 
-  List<ProgressDto.ProgressResponse> entityToProgressResponse(List<Progress> progress);
+  List<ProgressDto.Response> entityToProgressResponse(List<Progress> progress);
 
   List<GetCustomerDto.Response> entityToGetCustomerResponse(List<Customer> customers);
 

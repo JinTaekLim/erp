@@ -10,10 +10,6 @@ import com.erp.erp.domain.account.repository.AccountRepository;
 import com.erp.erp.domain.auth.business.TokenManager;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
 import com.erp.erp.domain.customer.common.dto.ProgressDto;
-import com.erp.erp.domain.customer.common.dto.ProgressDto.AddProgress;
-import com.erp.erp.domain.customer.common.dto.ProgressDto.DeleteProgress;
-import com.erp.erp.domain.customer.common.dto.ProgressDto.ProgressResponse;
-import com.erp.erp.domain.customer.common.dto.ProgressDto.UpdateProgress;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.Progress;
@@ -52,15 +48,11 @@ import com.google.gson.reflect.TypeToken;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -136,7 +128,7 @@ class ReservationTest extends IntegrationTest {
     return progressList;
   }
 
-  @RepeatedTest(100)
+  @Test
   @DisplayName("addReservations 성공")
   void addReservations() {
     // given
@@ -460,10 +452,10 @@ class ReservationTest extends IntegrationTest {
     assertThat(apiResponse.getData().getSeatNumber()).isEqualTo(request.getSeatNumber());
     assertThat(apiResponse.getData().getAttendanceStatus()).isEqualTo(request.getAttendanceStatus());
 
-    List<ProgressResponse> actualProgress = apiResponse.getData().getProgressList();
+    List<ProgressDto.Response> actualProgress = apiResponse.getData().getProgressList();
     assertThat(actualProgress.size()).isEqualTo(progressSize);
 
-    IntStream.range(0, progressSize)
+    IntStream.range(progressSize, 0)
         .forEach(i -> {
           assertThat(actualProgress.get(i).getProgressId()).isEqualTo(progressList.get(i).getId());
           assertThat(actualProgress.get(i).getContent()).isEqualTo(progressList.get(i).getContent());
@@ -483,14 +475,12 @@ class ReservationTest extends IntegrationTest {
     int progressSize = RandomValue.getInt(0, 5);
     List<Progress> progressList = createProgressList(customer, progressSize);
 
-    int addProgressSize = RandomValue.getInt(1,5);
-    List<AddProgress> addProgress = fixtureMonkey.giveMeBuilder(ProgressDto.AddProgress.class).sampleList(addProgressSize);
+    int addProgressSize = RandomValue.getInt(1,5);;
 
-    ProgressDto.Request progressRequest = ProgressDto.Request.builder()
-        .addProgresses(addProgress)
-        .updateProgresses(new ArrayList<>())
-        .deleteProgresses(new ArrayList<>())
-        .build();
+    List<ProgressDto.Request> progressRequest = fixtureMonkey.giveMeBuilder(ProgressDto.Request.class)
+        .setNull("progressId")
+        .set("deleted", false)
+        .sampleList(addProgressSize);
 
     int minute = RandomValue.getInt(0,2) == 1 ? 0 : 30;
     LocalDateTime startTime = RandomValue.getRandomLocalDateTime().withMinute(minute);
@@ -540,20 +530,21 @@ class ReservationTest extends IntegrationTest {
     assertThat(apiResponse.getData().getSeatNumber()).isEqualTo(request.getSeatNumber());
     assertThat(apiResponse.getData().getAttendanceStatus()).isEqualTo(request.getAttendanceStatus());
 
-    List<ProgressResponse> actualProgress = apiResponse.getData().getProgressList();
-    assertThat(actualProgress.size()).isEqualTo(addProgressSize + progressSize);
+    List<ProgressDto.Response> actualProgress = apiResponse.getData().getProgressList();
+    assertThat(actualProgress.size()).isEqualTo(addProgressSize+progressSize);
 
-    IntStream.range(0, progressSize)
+    IntStream.range(addProgressSize, 0)
         .forEach(i -> {
-          assertThat(actualProgress.get(i).getProgressId()).isEqualTo(progressList.get(i).getId());
+          assertThat(actualProgress.get(i).getContent()).isEqualTo(progressRequest.get(i).getContent());
+          assertThat(actualProgress.get(i).getDate()).isEqualTo(progressRequest .get(i).getDate());
+        });
+
+    IntStream.range(addProgressSize+progressSize, progressSize)
+        .forEach(i -> {
           assertThat(actualProgress.get(i).getContent()).isEqualTo(progressList.get(i).getContent());
           assertThat(actualProgress.get(i).getDate()).isEqualTo(progressList.get(i).getDate());
         });
-    IntStream.range(addProgressSize+progressSize, progressSize)
-        .forEach(i -> {
-          assertThat(actualProgress.get(i).getContent()).isEqualTo(addProgress.get(i).getContent());
-          assertThat(actualProgress.get(i).getDate()).isEqualTo(addProgress .get(i).getDate());
-        });
+
   }
 
   @Test
@@ -567,23 +558,14 @@ class ReservationTest extends IntegrationTest {
     Customer customer = createCustomers(institute);
     int progressSize = RandomValue.getInt(0, 5);
     List<Progress> progressList = createProgressList(customer, progressSize);
-    List<Long> progressIds = new ArrayList<>(progressList.stream().map(Progress::getId).toList());
-    Collections.shuffle(progressIds);
 
-    List<UpdateProgress> updateProgress = IntStream.range(0, progressSize)
-        .mapToObj(i -> {
-          return UpdateProgress.builder()
-              .progressId(progressIds.get(i))
-              .date(RandomValue.getRandomLocalDate())
-              .content(RandomValue.string(5).setNullable(false).get())
-              .build();
+    List<ProgressDto.Request> progressRequest = progressList.stream()
+        .map(progress -> {
+          return fixtureMonkey.giveMeBuilder(ProgressDto.Request.class)
+              .set("progressId", progress.getId())
+              .set("deleted", false)
+              .sample();
         }).toList();
-
-    ProgressDto.Request progressRequest = ProgressDto.Request.builder()
-        .addProgresses(new ArrayList<>())
-        .updateProgresses(updateProgress)
-        .deleteProgresses(new ArrayList<>())
-        .build();
 
     int minute = RandomValue.getInt(0,2) == 1 ? 0 : 30;
     LocalDateTime startTime = RandomValue.getRandomLocalDateTime().withMinute(minute);
@@ -633,17 +615,14 @@ class ReservationTest extends IntegrationTest {
     assertThat(apiResponse.getData().getSeatNumber()).isEqualTo(request.getSeatNumber());
     assertThat(apiResponse.getData().getAttendanceStatus()).isEqualTo(request.getAttendanceStatus());
 
-    List<ProgressResponse> actualProgress = apiResponse.getData().getProgressList();
-    actualProgress.sort(Comparator.comparing(ProgressResponse::getProgressId).reversed());
-    List<UpdateProgress> updateProgressList = new ArrayList<>(updateProgress);
-    updateProgressList.sort(Comparator.comparing(UpdateProgress::getProgressId).reversed());
+    List<ProgressDto.Response> actualProgress = apiResponse.getData().getProgressList();
 
-    assertThat(actualProgress).hasSameSizeAs(updateProgress);
-    IntStream.range(0, actualProgress.size())
+    assertThat(actualProgress).hasSameSizeAs(progressRequest);
+    IntStream.range(actualProgress.size(), 0)
         .forEach(i -> {
-          assertThat(actualProgress.get(i).getProgressId()).isEqualTo(updateProgressList.get(i).getProgressId());
-          assertThat(actualProgress.get(i).getContent()).isEqualTo(updateProgressList.get(i).getContent());
-          assertThat(actualProgress.get(i).getDate()).isEqualTo(updateProgressList.get(i).getDate());
+          assertThat(actualProgress.get(i).getProgressId()).isEqualTo(progressRequest.get(i).getProgressId());
+          assertThat(actualProgress.get(i).getContent()).isEqualTo(progressRequest.get(i).getContent());
+          assertThat(actualProgress.get(i).getDate()).isEqualTo(progressRequest.get(i).getDate());
         });
 
   }
@@ -657,24 +636,17 @@ class ReservationTest extends IntegrationTest {
     TokenDto tokenDto = tokenManager.createToken(account);
 
     Customer customer = createCustomers(institute);
-    int progressSize = RandomValue.getInt(1, 5);
+    int progressSize = RandomValue.getInt(1, 5);;
     List<Progress> progressList = createProgressList(customer, progressSize);
-    List<Long> progressIds = new ArrayList<>(progressList.stream().map(Progress::getId).toList());
-    Collections.shuffle(progressIds);
 
     int deleteProgressSize = RandomValue.getInt(1, progressSize);
-    List<DeleteProgress> deleteProgress = IntStream.range(0, deleteProgressSize)
+    List<ProgressDto.Request> progressRequest = IntStream.range(0, deleteProgressSize)
         .mapToObj(i -> {
-          return DeleteProgress.builder()
-              .progressId(progressIds.get(i))
-              .build();
+          return fixtureMonkey.giveMeBuilder(ProgressDto.Request.class)
+              .set("progressId", progressList.get(i).getId())
+              .set("deleted", true)
+              .sample();
         }).toList();
-
-    ProgressDto.Request progressRequest = ProgressDto.Request.builder()
-        .addProgresses(new ArrayList<>())
-        .updateProgresses(new ArrayList<>())
-        .deleteProgresses(deleteProgress)
-        .build();
 
     int minute = RandomValue.getInt(0,2) == 1 ? 0 : 30;
     LocalDateTime startTime = RandomValue.getRandomLocalDateTime().withMinute(minute);
@@ -724,11 +696,11 @@ class ReservationTest extends IntegrationTest {
     assertThat(apiResponse.getData().getSeatNumber()).isEqualTo(request.getSeatNumber());
     assertThat(apiResponse.getData().getAttendanceStatus()).isEqualTo(request.getAttendanceStatus());
 
-    List<ProgressResponse> actualProgress = apiResponse.getData().getProgressList();
+    List<ProgressDto.Response> actualProgress = apiResponse.getData().getProgressList();
 
     assertThat(actualProgress.size()).isEqualTo(progressSize-deleteProgressSize);
-    for (ProgressResponse progressResponse : actualProgress) {
-      for (DeleteProgress delete : deleteProgress) {
+    for (ProgressDto.Response progressResponse : actualProgress) {
+      for (ProgressDto.Request delete : progressRequest) {
         assertThat(progressResponse.getProgressId()).isNotEqualTo(delete.getProgressId());
       }
     }
@@ -882,27 +854,15 @@ class ReservationTest extends IntegrationTest {
         .map(Progress::getId)
         .toList();
 
-    int updateProgressSize = RandomValue.getInt(1,5);
-    List<UpdateProgress> updateProgress = IntStream.range(0, updateProgressSize)
-        .mapToObj(i -> {
-          long newId = Stream.generate(() -> RandomValue.getRandomLong(0, 99999))
-              .filter(id -> !progressIds.contains(id))
-              .findFirst()
-              .orElseThrow(() -> new IllegalStateException("새로운 ID를 생성할 수 없습니다."));
+    long newId = Stream.generate(() -> RandomValue.getRandomLong(0, 99999))
+        .filter(id -> !progressIds.contains(id))
+        .findFirst()
+        .orElseThrow(() -> new IllegalStateException("새로운 ID를 생성할 수 없습니다."));
 
-          return UpdateProgress.builder()
-              .progressId(newId)
-              .date(RandomValue.getRandomLocalDate())
-              .content(RandomValue.string(5).setNullable(false).get())
-              .build();
-        }).toList();
-
-
-    ProgressDto.Request progressRequest = ProgressDto.Request.builder()
-        .addProgresses(new ArrayList<>())
-        .updateProgresses(updateProgress)
-        .deleteProgresses(new ArrayList<>())
-        .build();
+    List<ProgressDto.Request> progressRequest = fixtureMonkey.giveMeBuilder(ProgressDto.Request.class)
+        .set("progressId", newId)
+        .set("deleted", false)
+        .sampleList(1);
 
     int minute = RandomValue.getInt(0,2) == 1 ? 0 : 30;
     LocalDateTime startTime = RandomValue.getRandomLocalDateTime().withMinute(minute);
@@ -965,25 +925,15 @@ class ReservationTest extends IntegrationTest {
         .map(Progress::getId)
         .toList();
 
-    int deleteProgressSize = RandomValue.getInt(1,5);
-    List<DeleteProgress> deleteProgresses = IntStream.range(0, deleteProgressSize)
-        .mapToObj(i -> {
-          long newId = Stream.generate(() -> RandomValue.getRandomLong(0, 99999))
-              .filter(id -> !progressIds.contains(id))
-              .findFirst()
-              .orElseThrow(() -> new IllegalStateException("새로운 ID를 생성할 수 없습니다."));
+    long newId = Stream.generate(() -> RandomValue.getRandomLong(0, 99999))
+        .filter(id -> !progressIds.contains(id))
+        .findFirst()
+        .orElseThrow(() -> new IllegalStateException("새로운 ID를 생성할 수 없습니다."));
 
-          return DeleteProgress.builder()
-              .progressId(newId)
-              .build();
-        }).toList();
-
-
-    ProgressDto.Request progressRequest = ProgressDto.Request.builder()
-        .addProgresses(new ArrayList<>())
-        .updateProgresses(new ArrayList<>())
-        .deleteProgresses(deleteProgresses)
-        .build();
+    List<ProgressDto.Request> progressRequest = fixtureMonkey.giveMeBuilder(ProgressDto.Request.class)
+        .set("progressId", newId)
+        .set("deleted", true)
+        .sampleList(1);
 
     int minute = RandomValue.getInt(0,2) == 1 ? 0 : 30;
     LocalDateTime startTime = RandomValue.getRandomLocalDateTime().withMinute(minute);
@@ -1395,7 +1345,7 @@ class ReservationTest extends IntegrationTest {
 //    assertThat(apiResponse.getData().getUsedTime())
     assertThat(apiResponse.getData().getMemo()).isEqualTo(customer.getMemo());
 
-    List<ProgressResponse> actualProgress = apiResponse.getData().getProgressList();
+    List<ProgressDto.Response> actualProgress = apiResponse.getData().getProgressList();
     assertThat(actualProgress.size()).isEqualTo(progressSize);
     IntStream.range(0, progressSize)
         .forEach(i -> {

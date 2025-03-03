@@ -1,6 +1,5 @@
 package com.erp.erp.domain.customer.common.dto;
 
-import com.erp.erp.domain.customer.common.dto.ProgressDto.ProgressResponse;
 import com.erp.erp.domain.customer.common.entity.Gender;
 import com.erp.erp.domain.payment.common.entity.PaymentsMethod;
 import com.erp.erp.domain.plan.common.entity.CourseType;
@@ -36,7 +35,7 @@ public class GetCustomerDetailDto {
     @Schema(description = "메모")
     private String memo;
     @Schema(description = "진도표")
-    List<ProgressResponse> progressList;
+    List<ProgressDto.Response> progressList;
     @Schema(description = "이용권 결제")
     private PlanPaymentResponse planPayment;
     @Schema(description = "기타 결제")
