@@ -26,4 +26,5 @@ public interface CustomerRepositoryCustom {
 
   List<Long> findIdsCreatedAtBeforeDaysAgo(LocalDate date);
 
+  void updatePhotoUrl(Customer customer);
 }

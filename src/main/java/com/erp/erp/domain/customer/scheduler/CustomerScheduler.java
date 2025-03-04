@@ -1,20 +1,17 @@
 package com.erp.erp.domain.customer.scheduler;
 
-import com.erp.erp.domain.customer.business.CustomerPhotoDeleter;
-import com.erp.erp.domain.customer.business.CustomerPhotoReader;
+import com.erp.erp.domain.customer.batch.UploadCustomerPhotoBatch;
 import com.erp.erp.domain.customer.business.CustomerReader;
 import com.erp.erp.domain.customer.business.CustomerUpdater;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerExpiredAtDto;
-import com.erp.erp.domain.customer.common.entity.CustomerPhoto;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
-import com.erp.erp.global.error.exception.ServerException;
-import com.erp.erp.global.util.S3Manager;
-import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -24,9 +21,8 @@ public class CustomerScheduler {
 
   private final CustomerReader customerReader;
   private final CustomerUpdater customerUpdater;
-  private final S3Manager s3Manager;
-  private final CustomerPhotoReader customerPhotoReader;
-  private final CustomerPhotoDeleter customerPhotoDeleter;
+  private final UploadCustomerPhotoBatch uploadCustomerPhotoBatch;
+  private final JobLauncher jobLauncher;
 
   private final int BEFORE_DAY = 7;
   private final String UPDATE_ID = "SERVER";
@@ -34,22 +30,8 @@ public class CustomerScheduler {
 
   // 매일 3시 임시 저장된 사진 업로드
   @Scheduled(cron = "0 0 3 * * ?")
-  public void uploadPhoto() {
-    s3Manager.bucketExists();
-    List<CustomerPhoto> customerPhotos = customerPhotoReader.findAll();
-
-    for (CustomerPhoto customerPhoto : customerPhotos) {
-
-      try {
-        ByteArrayInputStream file = new ByteArrayInputStream(customerPhoto.getData());
-        s3Manager.upload(file);
-        customerPhotoDeleter.delete(customerPhoto);
-      } catch (Exception e) {
-        throw new ServerException("업로드 실패 [ID:" + customerPhoto.getId() + "]" + e.getMessage());
-      }
-
-    }
-
+  public void uploadTemporaryPhotoJob() throws Exception {
+    jobLauncher.run(uploadCustomerPhotoBatch.uploadTemporaryPhotoJob(), new JobParameters());
   }
 
   // 매정각 만료일자가 지난 회원의 상태 값을 변경

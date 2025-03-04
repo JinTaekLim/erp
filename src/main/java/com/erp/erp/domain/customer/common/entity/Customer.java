@@ -112,4 +112,10 @@ public class Customer {
     return this;
   }
 
+  public void updatePhotoUrl(String photoUrl, String updatedId) {
+    this.photoUrl = photoUrl;
+    this.updatedId = updatedId;
+    this.updatedAt = LocalDateTime.now();
+  }
+
 }

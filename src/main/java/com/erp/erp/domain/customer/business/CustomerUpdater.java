@@ -58,4 +58,8 @@ public class CustomerUpdater {
   public void updateExpiredAt(List<UpdateCustomerExpiredAtDto.Request> requests) {
     customerRepository.updateExpiredAt(requests);
   }
+
+  public void updatePhotoUrl(Customer customer) {
+    customerRepository.updatePhotoUrl(customer);
+  }
 }
