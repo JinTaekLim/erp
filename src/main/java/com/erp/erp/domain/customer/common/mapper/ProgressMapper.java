@@ -12,10 +12,10 @@ import org.mapstruct.Mapping;
 public interface ProgressMapper {
 
   @Mapping(source = "createdId", target = "createdId")
-  Progress dtoToEntity(ProgressDto.AddProgress progressResponse, Customer customer, String createdId);
+  Progress dtoToEntity(ProgressDto.Request req, Customer customer, String createdId);
 
-  default List<Progress> addProgressToEntityList(List<ProgressDto.AddProgress> progressResponses, Customer customer, String createdId) {
-    return progressResponses.stream()
+  default List<Progress> addProgressToEntityList(List<ProgressDto.Request> req, Customer customer, String createdId) {
+    return req.stream()
         .map(progressResponse -> dtoToEntity(progressResponse, customer, createdId))
         .toList();
   }

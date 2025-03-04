@@ -19,10 +19,6 @@ import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto;
 import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto.PlanPaymentResponse;
 import com.erp.erp.domain.customer.common.dto.GetCustomerDto;
 import com.erp.erp.domain.customer.common.dto.ProgressDto;
-import com.erp.erp.domain.customer.common.dto.ProgressDto.AddProgress;
-import com.erp.erp.domain.customer.common.dto.ProgressDto.DeleteProgress;
-import com.erp.erp.domain.customer.common.dto.ProgressDto.ProgressResponse;
-import com.erp.erp.domain.customer.common.dto.ProgressDto.UpdateProgress;
 import com.erp.erp.domain.customer.common.dto.SearchCustomerNameDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto.OtherPaymentResponse;
@@ -55,8 +51,6 @@ import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -297,15 +291,9 @@ class CustomerTest extends IntegrationTest {
     Account account = createAccount(institute);
     TokenDto tokenDto = tokenManager.createToken(account);
 
-    ProgressDto.Request progressRequest = ProgressDto.Request.builder()
-        .addProgresses(new ArrayList<>())
-        .updateProgresses(new ArrayList<>())
-        .deleteProgresses(new ArrayList<>())
-        .build();
-
     UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
         .set("customerId", customer.getId())
-        .set("progressList", progressRequest)
+        .set("progressList", new ArrayList<>())
         .sample();
 
     MockMultipartFile mockFile = new MockMultipartFile(
@@ -365,7 +353,7 @@ class CustomerTest extends IntegrationTest {
                     .isEqualTo(expectedPayments.get(i)));
   }
 
-  @Test()
+  @Test
   @DisplayName("updateCustomer 진도표 추가 성공")
   void updateCustomer_success_1() {
     // given
@@ -374,17 +362,16 @@ class CustomerTest extends IntegrationTest {
     Account account = createAccount(institute);
     TokenDto tokenDto = tokenManager.createToken(account);
 
-    int progressSize = RandomValue.getInt(1,5);
+    int progressSize = RandomValue.getInt(1,5);;
     List<Progress> progresses = createProgressList(customer, progressSize);
 
-    int addProgressSize = RandomValue.getInt(1,5);
-    List<AddProgress> addProgress = fixtureMonkey.giveMeBuilder(ProgressDto.AddProgress.class).sampleList(addProgressSize);
+    int addProgressSize = RandomValue.getInt(1,5);;
 
-    ProgressDto.Request progressRequest = ProgressDto.Request.builder()
-        .addProgresses(addProgress)
-        .updateProgresses(new ArrayList<>())
-        .deleteProgresses(new ArrayList<>())
-        .build();
+    List<ProgressDto.Request> progressRequest = fixtureMonkey.giveMeBuilder(ProgressDto.Request.class)
+        .setNull("progressId")
+        .set("deleted", false)
+        .sampleList(addProgressSize);
+
 
     UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
         .set("customerId", customer.getId())
@@ -439,19 +426,20 @@ class CustomerTest extends IntegrationTest {
     assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
     assertThat(apiResponse.getData().isPlanPaymentStatus()).isEqualTo(request.isPlanPaymentStatus());
 
-    List<ProgressResponse> actualProgress = apiResponse.getData().getProgressList();
+    List<ProgressDto.Response> actualProgress = apiResponse.getData().getProgressList();
     assertThat(actualProgress.size()).isEqualTo(addProgressSize+progressSize);
 
-    IntStream.range(0, progressSize)
+    IntStream.range(addProgressSize, 0)
+        .forEach(i -> {
+          assertThat(actualProgress.get(i).getContent()).isEqualTo(progressRequest.get(i).getContent());
+          assertThat(actualProgress.get(i).getDate()).isEqualTo(progressRequest .get(i).getDate());
+        });
+
+    IntStream.range(addProgressSize+progressSize, progressSize)
             .forEach(i -> {
               assertThat(actualProgress.get(i).getContent()).isEqualTo(progresses.get(i).getContent());
               assertThat(actualProgress.get(i).getDate()).isEqualTo(progresses.get(i).getDate());
             });
-    IntStream.range(addProgressSize+progressSize, progressSize)
-        .forEach(i -> {
-          assertThat(actualProgress.get(i).getContent()).isEqualTo(addProgress.get(i).getContent());
-          assertThat(actualProgress.get(i).getDate()).isEqualTo(addProgress .get(i).getDate());
-        });
 
     List<OtherPaymentResponse> actualPayments = apiResponse.getData().getOtherPayment();
     List<OtherPaymentResponse> expectedPayments = request.getOtherPayment();
@@ -473,23 +461,15 @@ class CustomerTest extends IntegrationTest {
 
     int progressSize = RandomValue.getInt(1,5);
     List<Progress> progressList = createProgressList(customer, progressSize);
-    List<Long> progressIds = new ArrayList<>(progressList.stream().map(Progress::getId).toList());
-    Collections.shuffle(progressIds);
 
-    List<UpdateProgress> updateProgress = IntStream.range(0, progressSize)
-        .mapToObj(i -> {
-          return UpdateProgress.builder()
-              .progressId(progressIds.get(i))
-              .date(RandomValue.getRandomLocalDate())
-              .content(RandomValue.string(5).setNullable(false).get())
-              .build();
+    List<ProgressDto.Request> progressRequest = progressList.stream()
+        .map(progress -> {
+          return fixtureMonkey.giveMeBuilder(ProgressDto.Request.class)
+              .set("progressId", progress.getId())
+              .set("deleted", false)
+              .sample();
         }).toList();
 
-    ProgressDto.Request progressRequest = ProgressDto.Request.builder()
-        .addProgresses(new ArrayList<>())
-        .updateProgresses(updateProgress)
-        .deleteProgresses(new ArrayList<>())
-        .build();
 
     UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
         .set("customerId", customer.getId())
@@ -544,18 +524,13 @@ class CustomerTest extends IntegrationTest {
     assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
     assertThat(apiResponse.getData().isPlanPaymentStatus()).isEqualTo(request.isPlanPaymentStatus());
 
-    List<ProgressResponse> actualProgress = apiResponse.getData().getProgressList();
-    actualProgress.sort(Comparator.comparing(ProgressResponse::getProgressId).reversed());
-
-    List<UpdateProgress> updateProgressList = new ArrayList<>(updateProgress);
-    updateProgressList.sort(Comparator.comparing(UpdateProgress::getProgressId).reversed());
-
-    assertThat(actualProgress).hasSameSizeAs(updateProgress);
-    IntStream.range(0, actualProgress.size())
+    List<ProgressDto.Response> actualProgress = apiResponse.getData().getProgressList();
+    assertThat(actualProgress).hasSameSizeAs(progressRequest);
+    IntStream.range(actualProgress.size(), 0)
         .forEach(i -> {
-          assertThat(actualProgress.get(i).getProgressId()).isEqualTo(updateProgressList.get(i).getProgressId());
-          assertThat(actualProgress.get(i).getContent()).isEqualTo(updateProgressList.get(i).getContent());
-          assertThat(actualProgress.get(i).getDate()).isEqualTo(updateProgressList.get(i).getDate());
+          assertThat(actualProgress.get(i).getProgressId()).isEqualTo(progressRequest.get(i).getProgressId());
+          assertThat(actualProgress.get(i).getContent()).isEqualTo(progressRequest.get(i).getContent());
+          assertThat(actualProgress.get(i).getDate()).isEqualTo(progressRequest.get(i).getDate());
         });
 
     List<OtherPaymentResponse> actualPayments = apiResponse.getData().getOtherPayment();
@@ -567,7 +542,7 @@ class CustomerTest extends IntegrationTest {
             .isEqualTo(expectedPayments.get(i)));
   }
 
-  @Test()
+  @Test
   @DisplayName("updateCustomer 진도표 삭제 성공")
   void updateCustomer_success_3() {
     // given
@@ -578,22 +553,15 @@ class CustomerTest extends IntegrationTest {
 
     int progressSize = RandomValue.getInt(1,5);
     List<Progress> progressList = createProgressList(customer, progressSize);
-    List<Long> progressIds = new ArrayList<>(progressList.stream().map(Progress::getId).toList());
-    Collections.shuffle(progressIds);
 
     int deleteProgressSize = RandomValue.getInt(1, progressSize);
-    List<DeleteProgress> deleteProgress = IntStream.range(0, deleteProgressSize)
+    List<ProgressDto.Request> progressRequest = IntStream.range(0, deleteProgressSize)
         .mapToObj(i -> {
-          return DeleteProgress.builder()
-              .progressId(progressIds.get(i))
-              .build();
+          return fixtureMonkey.giveMeBuilder(ProgressDto.Request.class)
+              .set("progressId", progressList.get(i).getId())
+              .set("deleted", true)
+              .sample();
         }).toList();
-
-    ProgressDto.Request progressRequest = ProgressDto.Request.builder()
-        .addProgresses(new ArrayList<>())
-        .updateProgresses(new ArrayList<>())
-        .deleteProgresses(deleteProgress)
-        .build();
 
     UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
         .set("customerId", customer.getId())
@@ -648,11 +616,11 @@ class CustomerTest extends IntegrationTest {
     assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
     assertThat(apiResponse.getData().isPlanPaymentStatus()).isEqualTo(request.isPlanPaymentStatus());
 
-    List<ProgressResponse> actualProgress = apiResponse.getData().getProgressList();
+    List<ProgressDto.Response> actualProgress = apiResponse.getData().getProgressList();
 
     assertThat(actualProgress.size()).isEqualTo(progressSize-deleteProgressSize);
-    for (ProgressResponse progressResponse : actualProgress) {
-      for (DeleteProgress delete : deleteProgress) {
+    for (ProgressDto.Response progressResponse : actualProgress) {
+      for (ProgressDto.Request delete : progressRequest) {
         assertThat(progressResponse.getProgressId()).isNotEqualTo(delete.getProgressId());
         }
       }
@@ -797,7 +765,7 @@ class CustomerTest extends IntegrationTest {
     assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
   }
 
-  @Test()
+  @Test
   @DisplayName("updateCustomer 진도표 수정 잘못된 ID값 입력")
   void updateCustomer_fail_4() {
     // given
@@ -806,32 +774,20 @@ class CustomerTest extends IntegrationTest {
     Account account = createAccount(institute);
     TokenDto tokenDto = tokenManager.createToken(account);
 
-    int progressSize = RandomValue.getInt(0,2);
+    int progressSize = RandomValue.getInt(1,5);
     List<Long> progressIds = createProgressList(customer, progressSize).stream()
         .map(Progress::getId)
         .toList();
 
-    int updateProgressSize = RandomValue.getInt(1,5);
-    List<UpdateProgress> updateProgress = IntStream.range(0, updateProgressSize)
-        .mapToObj(i -> {
-          long newId = Stream.generate(() -> RandomValue.getRandomLong(0, 99999))
-              .filter(id -> !progressIds.contains(id))
-              .findFirst()
-              .orElseThrow(() -> new IllegalStateException("새로운 ID를 생성할 수 없습니다."));
+    long newId = Stream.generate(() -> RandomValue.getRandomLong(0, 99999))
+        .filter(id -> !progressIds.contains(id))
+        .findFirst()
+        .orElseThrow(() -> new IllegalStateException("새로운 ID를 생성할 수 없습니다."));
 
-          return UpdateProgress.builder()
-              .progressId(newId)
-              .date(RandomValue.getRandomLocalDate())
-              .content(RandomValue.string(5).setNullable(false).get())
-              .build();
-        }).toList();
-
-
-    ProgressDto.Request progressRequest = ProgressDto.Request.builder()
-        .addProgresses(new ArrayList<>())
-        .updateProgresses(updateProgress)
-        .deleteProgresses(new ArrayList<>())
-        .build();
+    List<ProgressDto.Request> progressRequest = fixtureMonkey.giveMeBuilder(ProgressDto.Request.class)
+        .set("progressId", newId)
+        .set("deleted", false)
+        .sampleList(1);
 
     UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
         .set("customerId", customer.getId())
@@ -871,7 +827,7 @@ class CustomerTest extends IntegrationTest {
   }
 
 
-  @Test()
+  @Test
   @DisplayName("updateCustomer 진도표 삭제 잘못된 ID값 입력")
   void updateCustomer_fail_5() {
     // given
@@ -885,25 +841,15 @@ class CustomerTest extends IntegrationTest {
         .map(Progress::getId)
         .toList();
 
-    int deleteProgressSize = RandomValue.getInt(1,5);
-    List<DeleteProgress> deleteProgresses = IntStream.range(0, deleteProgressSize)
-        .mapToObj(i -> {
-          long newId = Stream.generate(() -> RandomValue.getRandomLong(0, 99999))
-              .filter(id -> !progressIds.contains(id))
-              .findFirst()
-              .orElseThrow(() -> new IllegalStateException("새로운 ID를 생성할 수 없습니다."));
+    long newId = Stream.generate(() -> RandomValue.getRandomLong(0, 99999))
+        .filter(id -> !progressIds.contains(id))
+        .findFirst()
+        .orElseThrow(() -> new IllegalStateException("새로운 ID를 생성할 수 없습니다."));
 
-          return DeleteProgress.builder()
-              .progressId(newId)
-              .build();
-        }).toList();
-
-
-    ProgressDto.Request progressRequest = ProgressDto.Request.builder()
-        .addProgresses(new ArrayList<>())
-        .updateProgresses(new ArrayList<>())
-        .deleteProgresses(deleteProgresses)
-        .build();
+    List<ProgressDto.Request> progressRequest = fixtureMonkey.giveMeBuilder(ProgressDto.Request.class)
+        .set("progressId", newId)
+        .set("deleted", true)
+        .sampleList(1);
 
     UpdateCustomerDto.Request request = fixtureMonkey.giveMeBuilder(UpdateCustomerDto.Request.class)
         .set("customerId", customer.getId())
@@ -1457,7 +1403,7 @@ class CustomerTest extends IntegrationTest {
     assertThat(apiResponse.getData().getVisitPath()).isEqualTo(customer.getVisitPath());
     assertThat(apiResponse.getData().getMemo()).isEqualTo(customer.getMemo());
 
-    List<ProgressResponse> actualProgress = apiResponse.getData().getProgressList();
+    List<ProgressDto.Response> actualProgress = apiResponse.getData().getProgressList();
     assertThat(actualProgress.size()).isEqualTo(progressSize);
 
     IntStream.range(0, progressSize)
