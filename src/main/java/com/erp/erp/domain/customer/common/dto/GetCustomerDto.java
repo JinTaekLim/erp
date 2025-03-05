@@ -1,10 +1,12 @@
 package com.erp.erp.domain.customer.common.dto;
 
+import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import com.erp.erp.domain.customer.common.entity.Gender;
 import com.erp.erp.domain.plan.common.entity.CourseType;
 import com.erp.erp.domain.plan.common.entity.LicenseType;
 import com.erp.erp.domain.plan.common.entity.PlanType;
+import com.erp.erp.domain.reservation.common.entity.AttendanceStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -51,5 +53,17 @@ public class GetCustomerDto {
     private Long absenceCount;
     @Schema(description = "기타 결제 금액")
     private int otherPaymentPrice;
+  }
+
+  @Getter
+  public static class ReservationDto {
+
+    private Customer customer;
+
+    private LocalDateTime startTime;
+
+    private LocalDateTime endTime;
+
+    private AttendanceStatus attendanceStatus;
   }
 }

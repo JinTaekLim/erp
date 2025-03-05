@@ -1,6 +1,7 @@
 package com.erp.erp.domain.customer.repository;
 
 import com.erp.erp.domain.customer.common.dto.GetCustomerDto;
+import com.erp.erp.domain.customer.common.dto.GetCustomerDto.ReservationDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerExpiredAtDto;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
@@ -16,6 +17,7 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -103,40 +105,21 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
           PlanPayment planPayment = c.getPlanPayment();
           Plan plan = planPayment.getPlan();
 
-          JPQLQuery<Double> usedTime = queryFactory
-              .select(Expressions.numberTemplate(Double.class,
-                  "SUM(CASE WHEN {0} IS NOT NULL AND {1} IS NOT NULL THEN " +
-                      "TIMESTAMPDIFF(MINUTE, {0}, {1}) / 60.0 ELSE 0 END)", qReservation.startTime, qReservation.endTime))
+          List<ReservationDto> reservationDtoList = queryFactory
+              .select(Projections.fields(
+                  ReservationDto.class,
+                  qReservation.customer,
+                  qReservation.startTime,
+                  qReservation.endTime,
+                  qReservation.attendanceStatus
+              ))
               .from(qReservation)
-              .where(qReservation.customer.id.eq(c.getId()));
+              .where(qReservation.customer.eq(c))
+              .fetch();
 
-          Double usedTimeValue = usedTime.fetchOne();
-          if (usedTimeValue == null) { usedTimeValue = 0.0; }
-          double remainingTime = plan.getAvailableTime() - usedTimeValue;
+          double usedTime = getUsedTime(reservationDtoList);
+          double remainingTime = plan.getAvailableTime() - usedTime;
 
-          Long lateCount = queryFactory
-              .select(
-                  JPAExpressions
-                      .select(qReservation.count())
-                      .from(qReservation)
-                      .where(qReservation.customer.id.eq(qCustomer.id)
-                          .and(qReservation.attendanceStatus.eq(AttendanceStatus.LATE)))
-              )
-              .from(qCustomer)
-              .where(qCustomer.id.eq(c.getId()))
-              .fetchOne();
-
-          Long absenceCount = queryFactory
-              .select(
-                  JPAExpressions
-                      .select(qReservation.count())
-                      .from(qReservation)
-                      .where(qReservation.customer.id.eq(qCustomer.id)
-                          .and(qReservation.attendanceStatus.eq(AttendanceStatus.ABSENT)))
-              )
-              .from(qCustomer)
-              .where(qCustomer.id.eq(c.getId()))
-              .fetchOne();
 
           return GetCustomerDto.Response.builder()
               .customerId(c.getId())
@@ -151,14 +134,30 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
               .courseType(plan.getCourseType())
               .remainingTime(remainingTime)
               .remainingPeriod(getRemainingPeriod(c))
-              .usedTime(usedTimeValue)
+              .usedTime(usedTime)
               .registrationDate(planPayment.getRegistrationAt())
-              .lateCount(lateCount)
-              .absenceCount(absenceCount)
+              .lateCount(getAttendanceStatusCount(reservationDtoList, AttendanceStatus.LATE))
+              .absenceCount(getAttendanceStatusCount(reservationDtoList, AttendanceStatus.ABSENT))
               .otherPaymentPrice(getOtherPaymentPrice(c.getOtherPayments()))
               .build();
         })
         .toList();
+  }
+
+  private double getUsedTime(List<ReservationDto> reservationDtoList) {
+    return reservationDtoList.stream().mapToDouble(r -> {
+        Duration duration = Duration.between(r.getStartTime(), r.getEndTime());
+        long minutes = duration.toMinutes();
+        return minutes / 60.0;
+      }).sum();
+  }
+
+  private long getAttendanceStatusCount(
+      List<ReservationDto> reservationDtoList, AttendanceStatus attendanceStatus
+  ) {
+    return reservationDtoList.stream()
+        .filter(reservation -> reservation.getAttendanceStatus().equals(
+            attendanceStatus)).count();
   }
 
 
