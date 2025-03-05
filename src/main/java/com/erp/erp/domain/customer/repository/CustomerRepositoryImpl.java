@@ -80,17 +80,22 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
 
   @Override
   public List<GetCustomerDto.Response> findAllByInstituteBeforeIdAndStatus(
-      Long instituteId, Long lastId, CustomerStatus status, int size
-  ) {
-    QCustomer customer = QCustomer.customer;
-    QReservation reservation = QReservation.reservation;
+      Long instituteId, Long lastId, CustomerStatus status, int size) {
+
+    QCustomer qCustomer = QCustomer.customer;
+    QReservation qReservation = QReservation.reservation;
+    QPlanPayment qPlanPayment = QPlanPayment.planPayment;
+    QPlan qPlan = QPlan.plan;
 
     return queryFactory
-        .selectFrom(customer)
-        .where(customer.id.lt(lastId))
-        .where(customer.institute.id.eq(instituteId))
-        .where(customer.status.eq(status))
-        .orderBy(customer.id.desc())
+        .select(qCustomer)
+        .from(qCustomer)
+        .join(qCustomer.planPayment, qPlanPayment).fetchJoin()
+        .join(qPlanPayment.plan, qPlan).fetchJoin()
+        .where(qCustomer.id.lt(lastId))
+        .where(qCustomer.institute.id.eq(instituteId))
+        .where(qCustomer.status.eq(status))
+        .orderBy(qCustomer.id.desc())
         .limit(size)
         .fetch()
         .stream()
@@ -101,36 +106,36 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
           JPQLQuery<Double> usedTime = queryFactory
               .select(Expressions.numberTemplate(Double.class,
                   "SUM(CASE WHEN {0} IS NOT NULL AND {1} IS NOT NULL THEN " +
-                      "TIMESTAMPDIFF(MINUTE, {0}, {1}) / 60.0 ELSE 0 END)", reservation.startTime, reservation.endTime))
-              .from(reservation)
-              .where(reservation.customer.id.eq(c.getId()));
+                      "TIMESTAMPDIFF(MINUTE, {0}, {1}) / 60.0 ELSE 0 END)", qReservation.startTime, qReservation.endTime))
+              .from(qReservation)
+              .where(qReservation.customer.id.eq(c.getId()));
 
           Double usedTimeValue = usedTime.fetchOne();
-          if (usedTimeValue == null) {usedTimeValue = 0.0;}
-          double remainingTime =  plan.getAvailableTime() - usedTimeValue;
+          if (usedTimeValue == null) { usedTimeValue = 0.0; }
+          double remainingTime = plan.getAvailableTime() - usedTimeValue;
 
           Long lateCount = queryFactory
               .select(
                   JPAExpressions
-                      .select(reservation.count())
-                      .from(reservation)
-                      .where(reservation.customer.id.eq(customer.id)
-                          .and(reservation.attendanceStatus.eq(AttendanceStatus.LATE)))
+                      .select(qReservation.count())
+                      .from(qReservation)
+                      .where(qReservation.customer.id.eq(qCustomer.id)
+                          .and(qReservation.attendanceStatus.eq(AttendanceStatus.LATE)))
               )
-              .from(customer)
-              .where(customer.id.eq(c.getId()))
+              .from(qCustomer)
+              .where(qCustomer.id.eq(c.getId()))
               .fetchOne();
 
           Long absenceCount = queryFactory
               .select(
                   JPAExpressions
-                      .select(reservation.count())
-                      .from(reservation)
-                      .where(reservation.customer.id.eq(customer.id)
-                          .and(reservation.attendanceStatus.eq(AttendanceStatus.ABSENT)))
+                      .select(qReservation.count())
+                      .from(qReservation)
+                      .where(qReservation.customer.id.eq(qCustomer.id)
+                          .and(qReservation.attendanceStatus.eq(AttendanceStatus.ABSENT)))
               )
-              .from(customer)
-              .where(customer.id.eq(c.getId()))
+              .from(qCustomer)
+              .where(qCustomer.id.eq(c.getId()))
               .fetchOne();
 
           return GetCustomerDto.Response.builder()
@@ -140,19 +145,14 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
               .name(c.getName())
               .gender(c.getGender())
               .phone(c.getPhone())
-              .licenseType(c.getPlanPayment().getPlan().getLicenseType())
-              .planName(c.getPlanPayment().getPlan().getName())
-              .planType(c.getPlanPayment().getPlan().getPlanType())
-              .courseType(c.getPlanPayment().getPlan().getCourseType())
+              .licenseType(plan.getLicenseType())
+              .planName(plan.getName())
+              .planType(plan.getPlanType())
+              .courseType(plan.getCourseType())
               .remainingTime(remainingTime)
               .remainingPeriod(getRemainingPeriod(c))
-              .usedTime(
-                  Optional.ofNullable(
-                      usedTime
-                          .fetchOne()
-                  ).orElse(0.0)
-              )
-              .registrationDate(c.getPlanPayment().getRegistrationAt())
+              .usedTime(usedTimeValue)
+              .registrationDate(planPayment.getRegistrationAt())
               .lateCount(lateCount)
               .absenceCount(absenceCount)
               .otherPaymentPrice(getOtherPaymentPrice(c.getOtherPayments()))
