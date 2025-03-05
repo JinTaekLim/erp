@@ -62,8 +62,8 @@ public interface CustomerMapper {
   @Mapping(target = "remainingPeriod", expression = "java(0)")
   @Mapping(target = "usedTime", expression = "java(0)")
   @Mapping(target = "registrationDate", source = "customer.planPayment.registrationAt")
-  @Mapping(target = "tardinessCount", expression = "java(0)")
-  @Mapping(target = "absenceCount", expression = "java(0)")
+  @Mapping(target = "lateCount", expression = "java(0L)")
+  @Mapping(target = "absenceCount", expression = "java(0L)")
   @Mapping(target = "otherPaymentPrice", expression = "java(getOtherPaymentPrice(customer.getOtherPayments()))")
   GetCustomerDto.Response entityToGetCustomerResponse(Customer customer);
 

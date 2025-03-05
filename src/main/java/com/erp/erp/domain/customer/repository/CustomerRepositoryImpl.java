@@ -1,16 +1,26 @@
 package com.erp.erp.domain.customer.repository;
 
+import com.erp.erp.domain.customer.common.dto.GetCustomerDto;
+import com.erp.erp.domain.customer.common.dto.GetCustomerDto.ReservationDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerExpiredAtDto;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
+import com.erp.erp.domain.payment.common.entity.OtherPayment;
+import com.erp.erp.domain.payment.common.entity.PlanPayment;
 import com.erp.erp.domain.payment.common.entity.QPlanPayment;
+import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.common.entity.QPlan;
+import com.erp.erp.domain.reservation.common.entity.AttendanceStatus;
 import com.erp.erp.domain.reservation.common.entity.QReservation;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -70,22 +80,102 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
     );
   }
 
-
   @Override
-  public List<Customer> findAllByInstituteBeforeIdAndStatus(
-      Long instituteId, Long lastId, CustomerStatus status, int size
-  ) {
+  public List<GetCustomerDto.Response> findAllByInstituteBeforeIdAndStatus(
+      Long instituteId, Long lastId, CustomerStatus status, int size) {
+
     QCustomer qCustomer = QCustomer.customer;
+    QReservation qReservation = QReservation.reservation;
+    QPlanPayment qPlanPayment = QPlanPayment.planPayment;
+    QPlan qPlan = QPlan.plan;
 
     return queryFactory
-        .selectFrom(qCustomer)
+        .select(qCustomer)
+        .from(qCustomer)
+        .join(qCustomer.planPayment, qPlanPayment).fetchJoin()
+        .join(qPlanPayment.plan, qPlan).fetchJoin()
         .where(qCustomer.id.lt(lastId))
         .where(qCustomer.institute.id.eq(instituteId))
         .where(qCustomer.status.eq(status))
         .orderBy(qCustomer.id.desc())
         .limit(size)
-        .fetch();
+        .fetch()
+        .stream()
+        .map(c -> {
+          PlanPayment planPayment = c.getPlanPayment();
+          Plan plan = planPayment.getPlan();
+
+          List<ReservationDto> reservationDtoList = queryFactory
+              .select(Projections.fields(
+                  ReservationDto.class,
+                  qReservation.customer,
+                  qReservation.startTime,
+                  qReservation.endTime,
+                  qReservation.attendanceStatus
+              ))
+              .from(qReservation)
+              .where(qReservation.customer.eq(c))
+              .fetch();
+
+          double usedTime = getUsedTime(reservationDtoList);
+          double remainingTime = plan.getAvailableTime() - usedTime;
+
+
+          return GetCustomerDto.Response.builder()
+              .customerId(c.getId())
+              .status(c.getStatus())
+              .photoUrl(c.getPhotoUrl())
+              .name(c.getName())
+              .gender(c.getGender())
+              .phone(c.getPhone())
+              .licenseType(plan.getLicenseType())
+              .planName(plan.getName())
+              .planType(plan.getPlanType())
+              .courseType(plan.getCourseType())
+              .remainingTime(remainingTime)
+              .remainingPeriod(getRemainingPeriod(c))
+              .usedTime(usedTime)
+              .registrationDate(planPayment.getRegistrationAt())
+              .lateCount(getAttendanceStatusCount(reservationDtoList, AttendanceStatus.LATE))
+              .absenceCount(getAttendanceStatusCount(reservationDtoList, AttendanceStatus.ABSENT))
+              .otherPaymentPrice(getOtherPaymentPrice(c.getOtherPayments()))
+              .build();
+        })
+        .toList();
   }
+
+  private double getUsedTime(List<ReservationDto> reservationDtoList) {
+    return reservationDtoList.stream().mapToDouble(r -> {
+        Duration duration = Duration.between(r.getStartTime(), r.getEndTime());
+        long minutes = duration.toMinutes();
+        return minutes / 60.0;
+      }).sum();
+  }
+
+  private long getAttendanceStatusCount(
+      List<ReservationDto> reservationDtoList, AttendanceStatus attendanceStatus
+  ) {
+    return reservationDtoList.stream()
+        .filter(reservation -> reservation.getAttendanceStatus().equals(
+            attendanceStatus)).count();
+  }
+
+
+
+  private int getRemainingPeriod(Customer customer) {
+    long remainingPeriod = ( customer.getExpiredAt() != null ) ?
+        ChronoUnit.DAYS.between(customer.getExpiredAt(), LocalDateTime.now()) :
+        ChronoUnit.DAYS.between(customer.getPlanPayment().getRegistrationAt(), LocalDateTime.now());
+    return (int) remainingPeriod;
+  }
+
+  private int getOtherPaymentPrice(List<OtherPayment> otherPayments) {
+    return otherPayments.stream()
+        .mapToInt(OtherPayment::getPrice)
+        .sum();
+  }
+
+
 
   @Override
   public List<UpdateCustomerExpiredAtDto> findCustomersCreatedAtOnDaysAgo(int days) {

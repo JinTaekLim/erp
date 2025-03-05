@@ -1,5 +1,6 @@
 package com.erp.erp.domain.customer.business;
 
+import com.erp.erp.domain.customer.common.dto.GetCustomerDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerExpiredAtDto;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import com.erp.erp.domain.customer.common.entity.Customer;
@@ -39,7 +40,7 @@ public class CustomerReader {
         .orElse(0L);
   }
 
-  public List<Customer> findAllAfterLastId(Long instituteId, Long lastId, CustomerStatus status, int size) {
+  public List<GetCustomerDto.Response> findAllAfterLastId(Long instituteId, Long lastId, CustomerStatus status, int size) {
     return customerRepository.findAllByInstituteBeforeIdAndStatus(instituteId, lastId, status, size);
   }
 

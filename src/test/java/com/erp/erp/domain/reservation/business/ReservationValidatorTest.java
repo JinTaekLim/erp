@@ -165,7 +165,7 @@ class ReservationValidatorTest extends ServiceTest {
     int dayOfMonth = RandomValue.getInt(1,29);
     int hour = RandomValue.getInt(0,24);
     int randomInt = RandomValue.getInt(0,60);
-    int minute = (randomInt % 30 == 0) ? RandomValue.getInt(0, 30) : randomInt;
+    int minute = (randomInt % 30 == 0) ? RandomValue.getInt(1, 29) : randomInt;
     int second = RandomValue.getInt(0,59);
     LocalDateTime time = LocalDateTime.of(year,month,dayOfMonth,hour,minute,second);
 
