@@ -106,14 +106,12 @@ public class CustomerService {
       lastId ++;
     }
 
-    List<Customer> customers = customerReader.findAllAfterLastId(
+    return customerReader.findAllAfterLastId(
         institute.getId(),
         lastId,
         status,
         PAGE_SIZE
     );
-
-    return customerMapper.entityToGetCustomerResponse(customers);
   }
 
   public List<GetAvailableCustomerNamesDto.Response> getCurrentCustomers() {

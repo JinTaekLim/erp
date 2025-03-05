@@ -1,5 +1,6 @@
 package com.erp.erp.domain.customer.repository;
 
+import com.erp.erp.domain.customer.common.dto.GetCustomerDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerExpiredAtDto;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
@@ -16,7 +17,7 @@ public interface CustomerRepositoryCustom {
 
   Optional<Long> findTopIdByInstituteId(Long instituteId);
 
-  List<Customer> findAllByInstituteBeforeIdAndStatus(
+  List<GetCustomerDto.Response> findAllByInstituteBeforeIdAndStatus(
       Long instituteId, Long lastId, CustomerStatus status, int size
   );
 

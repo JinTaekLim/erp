@@ -1,16 +1,24 @@
 package com.erp.erp.domain.customer.repository;
 
+import com.erp.erp.domain.customer.common.dto.GetCustomerDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerExpiredAtDto;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
+import com.erp.erp.domain.payment.common.entity.OtherPayment;
+import com.erp.erp.domain.payment.common.entity.PlanPayment;
 import com.erp.erp.domain.payment.common.entity.QPlanPayment;
+import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.common.entity.QPlan;
+import com.erp.erp.domain.reservation.common.entity.AttendanceStatus;
 import com.erp.erp.domain.reservation.common.entity.QReservation;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -70,22 +78,105 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
     );
   }
 
-
   @Override
-  public List<Customer> findAllByInstituteBeforeIdAndStatus(
+  public List<GetCustomerDto.Response> findAllByInstituteBeforeIdAndStatus(
       Long instituteId, Long lastId, CustomerStatus status, int size
   ) {
-    QCustomer qCustomer = QCustomer.customer;
+    QCustomer customer = QCustomer.customer;
+    QReservation reservation = QReservation.reservation;
 
     return queryFactory
-        .selectFrom(qCustomer)
-        .where(qCustomer.id.lt(lastId))
-        .where(qCustomer.institute.id.eq(instituteId))
-        .where(qCustomer.status.eq(status))
-        .orderBy(qCustomer.id.desc())
+        .selectFrom(customer)
+        .where(customer.id.lt(lastId))
+        .where(customer.institute.id.eq(instituteId))
+        .where(customer.status.eq(status))
+        .orderBy(customer.id.desc())
         .limit(size)
-        .fetch();
+        .fetch()
+        .stream()
+        .map(c -> {
+          PlanPayment planPayment = c.getPlanPayment();
+          Plan plan = planPayment.getPlan();
+
+          JPQLQuery<Double> usedTime = queryFactory
+              .select(Expressions.numberTemplate(Double.class,
+                  "SUM(CASE WHEN {0} IS NOT NULL AND {1} IS NOT NULL THEN " +
+                      "TIMESTAMPDIFF(MINUTE, {0}, {1}) / 60.0 ELSE 0 END)", reservation.startTime, reservation.endTime))
+              .from(reservation)
+              .where(reservation.customer.id.eq(c.getId()));
+
+          Double usedTimeValue = usedTime.fetchOne();
+          if (usedTimeValue == null) {usedTimeValue = 0.0;}
+          double remainingTime =  plan.getAvailableTime() - usedTimeValue;
+
+          Long lateCount = queryFactory
+              .select(
+                  JPAExpressions
+                      .select(reservation.count())
+                      .from(reservation)
+                      .where(reservation.customer.id.eq(customer.id)
+                          .and(reservation.attendanceStatus.eq(AttendanceStatus.LATE)))
+              )
+              .from(customer)
+              .where(customer.id.eq(c.getId()))
+              .fetchOne();
+
+          Long absenceCount = queryFactory
+              .select(
+                  JPAExpressions
+                      .select(reservation.count())
+                      .from(reservation)
+                      .where(reservation.customer.id.eq(customer.id)
+                          .and(reservation.attendanceStatus.eq(AttendanceStatus.ABSENT)))
+              )
+              .from(customer)
+              .where(customer.id.eq(c.getId()))
+              .fetchOne();
+
+          return GetCustomerDto.Response.builder()
+              .customerId(c.getId())
+              .status(c.getStatus())
+              .photoUrl(c.getPhotoUrl())
+              .name(c.getName())
+              .gender(c.getGender())
+              .phone(c.getPhone())
+              .licenseType(c.getPlanPayment().getPlan().getLicenseType())
+              .planName(c.getPlanPayment().getPlan().getName())
+              .planType(c.getPlanPayment().getPlan().getPlanType())
+              .courseType(c.getPlanPayment().getPlan().getCourseType())
+              .remainingTime(remainingTime)
+              .remainingPeriod(getRemainingPeriod(c))
+              .usedTime(
+                  Optional.ofNullable(
+                      usedTime
+                          .fetchOne()
+                  ).orElse(0.0)
+              )
+              .registrationDate(c.getPlanPayment().getRegistrationAt())
+              .lateCount(lateCount)
+              .absenceCount(absenceCount)
+              .otherPaymentPrice(getOtherPaymentPrice(c.getOtherPayments()))
+              .build();
+        })
+        .toList();
   }
+
+
+
+  private int getRemainingPeriod(Customer customer) {
+    long remainingPeriod = ( customer.getExpiredAt() != null ) ?
+        ChronoUnit.DAYS.between(customer.getExpiredAt(), LocalDateTime.now()) :
+        ChronoUnit.DAYS.between(customer.getPlanPayment().getRegistrationAt(), LocalDateTime.now());
+    return (int) remainingPeriod;
+  }
+
+  private int getOtherPaymentPrice(List<OtherPayment> otherPayments) {
+    return otherPayments.stream()
+        .mapToInt(OtherPayment::getPrice)
+        .sum();
+  }
+
+
 
   @Override
   public List<UpdateCustomerExpiredAtDto> findCustomersCreatedAtOnDaysAgo(int days) {
