@@ -3,6 +3,11 @@ spring:
     import: classpath:application-secret.yml
   profiles:
     active: local
+  batch:
+    job:
+      enabled: false
+    jdbc:
+      initialize-schema: never
 
 springdoc:
   swagger-ui:

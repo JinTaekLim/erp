@@ -63,6 +63,9 @@ dependencies {
 	// RabbitMQ
 	implementation 'org.springframework.boot:spring-boot-starter-amqp:3.4.3'
 
+	// Spring Batch
+	implementation 'org.springframework.boot:spring-boot-starter-batch:3.4.3'
+
 	// test
 	testRuntimeOnly 'com.h2database:h2:2.2.224'
 	testCompileOnly 'org.projectlombok:lombok:1.18.34'

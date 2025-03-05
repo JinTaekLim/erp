@@ -141,6 +141,19 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
         .where(qCustomer.status.eq(CustomerStatus.ACTIVE))
         .where(qCustomer.expiredAt.lt(date))
         .fetch();
+  }
+
+  @Override
+  public void updatePhotoUrl(Customer customer) {
+    QCustomer qCustomer = QCustomer.customer;
+
+    queryFactory.update(qCustomer)
+        .set(qCustomer.photoUrl, customer.getPhotoUrl())
+        .set(qCustomer.updatedId, customer.getUpdatedId())
+        .set(qCustomer.updatedAt, customer.getUpdatedAt())
+        .where(qCustomer.id.eq(customer.getId()))
+        .execute();
 
   }
+
 }
