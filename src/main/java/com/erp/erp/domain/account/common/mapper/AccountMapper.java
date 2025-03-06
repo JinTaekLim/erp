@@ -18,6 +18,7 @@ public interface AccountMapper {
   @Mapping(target = "institute", source = "institute")
   @Mapping(target = "createdId", source = "admin.id")
   @Mapping(target = "password", source = "req.password")
+  @Mapping(target = "name", source = "req.name")
   Account dtoToEntity(AddAccountDto.Request req, Institute institute, Admin admin);
 
   @Mapping(target = "instituteId", source = "account.institute.id")

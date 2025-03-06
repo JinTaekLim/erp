@@ -288,6 +288,7 @@ class adminTest extends IntegrationTest {
     assertThat(apiResponse.getData().getInstituteId()).isEqualTo(req.getInstituteId());
     assertThat(apiResponse.getData().getIdentifier()).isEqualTo(req.getIdentifier());
     assertThat(apiResponse.getData().getCreatedId()).isEqualTo(String.valueOf(admin.getId()));
+    assertThat(apiResponse.getData().getName()).isEqualTo(req.getName());
 
   }
 
