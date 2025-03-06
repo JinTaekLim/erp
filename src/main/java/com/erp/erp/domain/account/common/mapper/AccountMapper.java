@@ -2,9 +2,12 @@ package com.erp.erp.domain.account.common.mapper;
 
 import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.admin.common.dto.AddAccountDto;
+import com.erp.erp.domain.admin.common.dto.GetAccountDto;
+import com.erp.erp.domain.admin.common.dto.GetAccountDto.Response;
 import com.erp.erp.domain.admin.common.dto.UpdateAccountDto;
 import com.erp.erp.domain.admin.common.entity.Admin;
 import com.erp.erp.domain.institute.common.entity.Institute;
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -22,4 +25,9 @@ public interface AccountMapper {
 
   @Mapping(target = "accountId", source = "id")
   UpdateAccountDto.Response entityToUpdateAccountDto(Account account);
+
+  List<Response> entityToGetAccountDto(List<Account> accounts);
+
+  @Mapping(target = "accountId", source = "id")
+  GetAccountDto.Response entityToGetAccountDto(Account account);
 }
