@@ -4,6 +4,7 @@ package com.erp.erp.domain.admin.controller;
 import com.erp.erp.domain.admin.common.dto.AddAccountDto;
 import com.erp.erp.domain.admin.common.dto.AddInstituteDto;
 import com.erp.erp.domain.admin.common.dto.AddPlanDto;
+import com.erp.erp.domain.admin.common.dto.GetAccountDto;
 import com.erp.erp.domain.admin.common.dto.LoginDto;
 import com.erp.erp.domain.admin.common.dto.UpdateAccountDto;
 import com.erp.erp.domain.admin.service.AdminService;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -69,6 +71,14 @@ public class AdminController {
   @Admin
   public ApiResult<List<GetInstituteDto.Response>> getInstitutes() {
     List<GetInstituteDto.Response> response = adminService.getInstitutes();
+    return ApiResult.success(response);
+  }
+
+  @Operation(summary = "계정 조회")
+  @GetMapping("/getAccounts")
+  @Admin
+  public ApiResult<List<GetAccountDto.Response>> getAccounts(@RequestParam Long instituteId) {
+    List<GetAccountDto.Response> response = adminService.getAccounts(instituteId);
     return ApiResult.success(response);
   }
 

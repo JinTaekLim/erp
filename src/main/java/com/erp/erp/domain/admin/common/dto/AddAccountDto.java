@@ -24,6 +24,10 @@ public class AddAccountDto {
     @Schema(description = "비밀번호")
     @NotNull
     private String password;
+
+    @Schema(description = "점주명")
+    @NotNull
+    private String name;
   }
 
   @Schema(name = "AddAccountDto_Response" , description = "계정 추가 반환")
@@ -39,6 +43,9 @@ public class AddAccountDto {
 
     @Schema(description = "생성자")
     private String createdId;
+
+    @Schema(description = "점주명")
+    private String name;
   }
 
 

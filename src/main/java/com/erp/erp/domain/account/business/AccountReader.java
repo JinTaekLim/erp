@@ -6,6 +6,7 @@ import com.erp.erp.domain.account.common.exception.InvalidCredentialsException;
 import com.erp.erp.domain.account.common.exception.NotFoundAccountException;
 import com.erp.erp.domain.account.repository.AccountRepository;
 import com.erp.erp.domain.institute.common.entity.Institute;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,5 +36,9 @@ public class AccountReader {
   public Institute findInstitutesByAccountId(Long accountId) {
     return accountRepository.findInstitutesByAccountId(accountId)
         .orElseThrow(AccountInstituteNotFoundException::new);
+  }
+
+  public List<Account> findByInstituteId(Long instituteId) {
+    return accountRepository.findByInstituteId(instituteId);
   }
 }

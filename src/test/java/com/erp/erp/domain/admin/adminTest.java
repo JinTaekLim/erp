@@ -7,6 +7,7 @@ import com.erp.erp.domain.admin.business.HttpSessionManager;
 import com.erp.erp.domain.admin.common.dto.AddAccountDto;
 import com.erp.erp.domain.admin.common.dto.AddInstituteDto;
 import com.erp.erp.domain.admin.common.dto.AddPlanDto;
+import com.erp.erp.domain.admin.common.dto.GetAccountDto;
 import com.erp.erp.domain.admin.common.dto.LoginDto;
 import com.erp.erp.domain.admin.common.dto.UpdateAccountDto;
 import com.erp.erp.domain.admin.common.entity.Admin;
@@ -207,6 +208,54 @@ class adminTest extends IntegrationTest {
     assertNull(apiResponse.getData());
   }
 
+
+  @Test
+  @DisplayName("getAccounts 성공")
+  void getAccounts() {
+    // given
+    Admin admin = createAdmin();
+    setSession(admin);
+
+    Institute otherInstitute = createInstitute();
+    int otherAccountSize = RandomValue.getInt(0,5);
+    IntStream.range(0, otherAccountSize)
+        .mapToObj(i -> {
+          return createAccount(otherInstitute);}).toList();
+
+    Institute institute = createInstitute();
+    int accountSize = RandomValue.getInt(0,5);
+    List<Account> accounts = IntStream.range(0, accountSize)
+        .mapToObj(i -> {
+          return createAccount(institute);
+        }).toList();
+
+    String url = BASE_URL + "/getAccounts?instituteId=" + institute.getId();
+
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+        url,
+        String.class
+    );
+
+    ApiResult<List<GetAccountDto.Response>> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<List<GetAccountDto.Response>>>() {
+        }.getType()
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertNotNull(apiResponse.getData());
+    IntStream.range(0, accountSize).forEach(i -> {
+      GetAccountDto.Response response = apiResponse.getData().get(i);
+      Account account = accounts.get(i);
+
+      assertThat(response.getAccountId()).isEqualTo(account.getId());
+      assertThat(response.getIdentifier()).isEqualTo(account.getIdentifier());
+      assertThat(response.getName()).isEqualTo(account.getName());
+    });
+  }
+
   @Test
   @DisplayName("성공")
   void addAccount() {
@@ -239,6 +288,7 @@ class adminTest extends IntegrationTest {
     assertThat(apiResponse.getData().getInstituteId()).isEqualTo(req.getInstituteId());
     assertThat(apiResponse.getData().getIdentifier()).isEqualTo(req.getIdentifier());
     assertThat(apiResponse.getData().getCreatedId()).isEqualTo(String.valueOf(admin.getId()));
+    assertThat(apiResponse.getData().getName()).isEqualTo(req.getName());
 
   }
 

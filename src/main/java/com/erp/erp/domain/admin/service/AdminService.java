@@ -10,6 +10,7 @@ import com.erp.erp.domain.admin.business.AdminReader;
 import com.erp.erp.domain.admin.common.dto.AddAccountDto;
 import com.erp.erp.domain.admin.common.dto.AddInstituteDto;
 import com.erp.erp.domain.admin.common.dto.AddPlanDto;
+import com.erp.erp.domain.admin.common.dto.GetAccountDto;
 import com.erp.erp.domain.admin.common.dto.LoginDto;
 import com.erp.erp.domain.admin.common.dto.UpdateAccountDto;
 import com.erp.erp.domain.admin.common.entity.Admin;
@@ -66,6 +67,12 @@ public class AdminService {
   public List<GetInstituteDto.Response> getInstitutes() {
     List<Institute> institutes = instituteReader.findAll();
     return instituteMapper.entityToGetInstituteDto(institutes);
+  }
+
+  public List<GetAccountDto.Response> getAccounts(Long instituteId) {
+    Admin admin = adminAuthProvider.getAdmin();
+    List<Account> accounts = accountReader.findByInstituteId(instituteId);
+    return accountMapper.entityToGetAccountDto(accounts);
   }
 
   public UpdateAccountDto.Response updateAccount(UpdateAccountDto.Request req) {

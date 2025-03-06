@@ -36,6 +36,9 @@ public class Account {
   @NotNull
   private String password;
 
+  @NotNull
+  private String name;
+
   private boolean locked;
 
   private String createdId;
@@ -48,10 +51,12 @@ public class Account {
 
 
   @Builder
-  public Account(Institute institute, String identifier, String password, String createdId) {
+  public Account(Institute institute, String identifier,
+      String password, String name, String createdId) {
     this.institute = institute;
     this.identifier = identifier;
     this.password = password;
+    this.name = name;
     this.createdId = createdId;
     this.createdAt = LocalDateTime.now();
   }
