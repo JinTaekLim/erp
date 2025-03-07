@@ -97,7 +97,8 @@ public interface CustomerMapper {
 
   default int calculateDiscountPrice(PlanPayment planPayment) {
     int planPrice = planPayment.getPlan().getPrice();
-    return (int) (planPrice * planPayment.getDiscountRate());
+    double discountRate = planPayment.getDiscountRate() / 100.0;
+    return (int) (planPrice * discountRate);
   }
 
   default int calculatePaymentTotal(PlanPayment planPayment) {
