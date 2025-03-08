@@ -1,8 +1,10 @@
 package com.erp.erp.global.config;
 
 import com.erp.erp.global.config.log.LogFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -18,7 +20,10 @@ import java.util.Arrays;
 import java.util.List;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+  private final UrlProperties urlProperties;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,12 +46,24 @@ public class SecurityConfig {
   }
 
   @Bean
+  @Profile("!prod")
   public CorsConfigurationSource corsConfigurationSource() {
+    for (String url : urlProperties.getDev()) {
+      System.out.println(url);
+    }
+    return corsConfigurationSource(urlProperties.getDev());
+  }
+
+  @Bean
+  @Profile("prod")
+  public CorsConfigurationSource corsProdConfigurationSource() {
+    return corsConfigurationSource(urlProperties.getProd());
+  }
+
+  private CorsConfigurationSource corsConfigurationSource(List<String> url) {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(Arrays.asList(
-        "http://localhost:3000", "https://erp-deploy.netlify.app/",
-        "https://erp-deploy-dev.netlify.app/"
-    ));
+
+    configuration.setAllowedOrigins(url);
     configuration.setAllowedMethods(Arrays.asList(
         "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"
     ));
