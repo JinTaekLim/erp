@@ -1,0 +1,44 @@
+name: Feature Branch Push - Test and Build
+
+# 트리거
+# - feature 로 시작하는 모든 브랜치에 push 할 때 workflow 동작
+on:
+  push:
+    branches:
+      - feature/*
+# jobs
+# - workflow 내 단계적으로 처리할 작업
+jobs:
+  gradle:
+    runs-on: ubuntu-latest # 최신 Ubuntu 러너에 의해 동작
+    environment: develop # develop 환경 변수설정 사용
+    steps:
+      # 레포지토리의 코드를 러너 안에서 체크아웃
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # temurin 배포판을 사용하여 JDK 17 설정
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # src/main/resources에 application-secret.yml 파일 생성
+      - name: Create application-secret.yml
+        run: |
+          mkdir -p src/main/resources
+          echo "${{ secrets.SECRET_YML }}" > src/main/resources/application-secret.yml
+
+      # gradlew 스크립트 실행 권한 부여
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # gradle 빌드 및 테스트
+      - name: Build and test with gradle
+        run: ./gradlew clean build
+
+      # 빌드 실패시 로그 출력
+      - name: Show detailed logs on failure
+        if: failure()
+        run: find build/reports/tests/test/classes/ -name "*.html" -exec cat {} \;

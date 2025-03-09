@@ -1,0 +1,101 @@
+name : Develop PR Merge - CI/CD to Dev Server
+
+# 트리거
+# - develop 브랜치에 PR이 merge 및 close 되었을 때 workflow 동작
+on:
+  pull_request:
+    branches:
+      - develop
+    types:
+      - closed
+
+env:
+  DOCKER_IMAGE_NAME: jintaeklim/erp
+  CONTAINER_NAME: erpBack
+
+# jobs
+# - workflow 내 단계적으로 처리할 작업
+jobs:
+  ci:
+    # PR이 merge 된 경우에만 동작하도록 조건 명시
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest # 최신 Ubuntu 러너에 의해 동작
+    environment: develop # develop 환경 변수설정 사용
+    steps:
+      # 레포지토리의 코드를 러너 안에서 체크아웃
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # temurin 배포판을 사용하여 JDK 17 설정
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # src/main/resources에 application-secret.yml 파일 생성
+      - name: Create application-secret.yml
+        run: |
+          mkdir -p src/main/resources
+          echo "${{secrets.SECRET_YML}}" > src/main/resources/application-secret.yml
+
+      # gradlew 스크립트 실행 권한 부여
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # gradle 빌드 및 테스트
+      - name: Build and test with gradle
+        run: ./gradlew clean build
+
+      # docker build 관련 설정
+      - name: Set up docker buildx
+        uses: docker/setup-buildx-action@v3
+
+      # dockerhub 로그인
+      - name: Login to dockerhub
+        uses: docker/login-action@v3
+        with:
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_TOKEN}}
+
+      # docker 이미지 build 및 push
+      - name: Build and push docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{env.DOCKER_IMAGE_NAME}}
+
+
+  cd:
+    needs: ci
+    runs-on: self-hosted
+    environment: develop
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy application
+        run: |
+          set -e
+          echo "==== 배포를 시작합니다 ===="
+          
+          echo "도커 네트워크 확인"
+          docker network create erp-network || true
+          
+          echo "도커 이미지 pull"
+          docker pull ${{ env.DOCKER_IMAGE_NAME }}
+          
+          echo "기존 컨테이너 중지 및 삭제"
+          docker stop ${{ env.CONTAINER_NAME }} || true
+          docker rm ${{ env.CONTAINER_NAME }} || true
+          
+          echo "새로운 컨테이너 실행"
+          docker run --name ${{ env.CONTAINER_NAME }} -d -p 8080:8080 --network erp-network \
+            --restart always \
+            ${{ env.DOCKER_IMAGE_NAME }}
+          
+          echo "사용하지 않는 이미지 삭제"
+          docker image prune -af
+          
+          echo "==== 배포가 성공적으로 완료되었습니다! ===="
