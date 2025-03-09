@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-  private final UrlConfig urlConfig;
+  private final UrlProperties urlProperties;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -47,8 +47,7 @@ public class SecurityConfig {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-
-    configuration.setAllowedOrigins(urlConfig.getUrl());
+    configuration.setAllowedOrigins(urlProperties.getAllowedOrigins());
     configuration.setAllowedMethods(Arrays.asList(
         "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"
     ));

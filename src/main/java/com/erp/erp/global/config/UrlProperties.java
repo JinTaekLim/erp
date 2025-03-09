@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "url")
 public class UrlProperties {
 
-  private List<String> dev;
-  private List<String> prod;
+  private List<String> allowedOrigins;
 
 }
