@@ -64,9 +64,8 @@ class CustomerRepositoryTest extends JpaTest {
     return customerRepository.save(customer);
   }
 
-  private Reservation createReservations(Customer customer, Institute institute,
-      LocalDateTime startTime, LocalDateTime endTime) {
-    Reservation reservation = ReservationGenerator.get(customer, institute, startTime, endTime);
+  private Reservation createReservations(Customer customer, Institute institute, LocalDate day) {
+    Reservation reservation = ReservationGenerator.get(customer, institute, day);
     return reservationRepository.save(reservation);
   }
 
@@ -170,7 +169,7 @@ class CustomerRepositoryTest extends JpaTest {
     int day = RandomValue.getInt(1, 100);
     LocalDateTime createdAt = LocalDateTime.now().minusDays(day);
 
-    LocalDateTime startDate = RandomValue.getRandomLocalDateTime().withSecond(0);
+    LocalDate date = RandomValue.getRandomLocalDate();
 
     Institute institute = createInstitutes();
     List<Customer> customers = IntStream.range(0, size).mapToObj(i -> {
@@ -180,8 +179,7 @@ class CustomerRepositoryTest extends JpaTest {
     }).toList();
 
     for(Customer customer : customers) {
-      createReservations(customer, institute, startDate, startDate.plusMinutes(30));
-      createReservations(customer, institute, LocalDateTime.now(), LocalDateTime.now());
+      createReservations(customer, institute, date);
     }
 
     // when
@@ -192,7 +190,7 @@ class CustomerRepositoryTest extends JpaTest {
 
     IntStream.range(0, size).forEach(i -> {
       assertThat(dtoList.get(i).getId()).isEqualTo(customers.get(i).getId());
-      assertThat(dtoList.get(i).getFirstReservationDate()).isEqualTo(startDate);
+      assertThat(dtoList.get(i).getFirstReservationDate()).isEqualTo(date);
       assertThat(dtoList.get(i).getAvailablePeriod()).isEqualTo(customers.get(i).getPlanPayment().getPlan().getAvailablePeriod());
     });
   }

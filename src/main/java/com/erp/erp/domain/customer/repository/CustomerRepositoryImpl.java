@@ -13,11 +13,8 @@ import com.erp.erp.domain.plan.common.entity.QPlan;
 import com.erp.erp.domain.reservation.common.entity.AttendanceStatus;
 import com.erp.erp.domain.reservation.common.entity.QReservation;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -109,8 +106,9 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
               .select(Projections.fields(
                   ReservationDto.class,
                   qReservation.customer,
-                  qReservation.startTime,
-                  qReservation.endTime,
+                  qReservation.reservationDate,
+                  qReservation.startIndex,
+                  qReservation.endIndex,
                   qReservation.attendanceStatus
               ))
               .from(qReservation)
@@ -146,9 +144,7 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
 
   private double getUsedTime(List<ReservationDto> reservationDtoList) {
     return reservationDtoList.stream().mapToDouble(r -> {
-        Duration duration = Duration.between(r.getStartTime(), r.getEndTime());
-        long minutes = duration.toMinutes();
-        return minutes / 60.0;
+      return (double) (r.getEndIndex() - r.getStartIndex()) / 2;
       }).sum();
   }
 
@@ -193,7 +189,7 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
         .select(
             Projections.constructor(UpdateCustomerExpiredAtDto.class,
                 qCustomer.id,
-                JPAExpressions.select(qReservation.startTime.min())
+                JPAExpressions.select(qReservation.reservationDate.min())
                     .from(qReservation)
                     .where(qReservation.customer.id.eq(qCustomer.id)),
                 qPlan.availablePeriod

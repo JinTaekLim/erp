@@ -8,6 +8,7 @@ import com.erp.erp.domain.plan.common.entity.LicenseType;
 import com.erp.erp.domain.plan.common.entity.PlanType;
 import com.erp.erp.domain.reservation.common.entity.AttendanceStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -60,9 +61,11 @@ public class GetCustomerDto {
 
     private Customer customer;
 
-    private LocalDateTime startTime;
+    private LocalDate reservationDate;
 
-    private LocalDateTime endTime;
+    private int startIndex;
+
+    private int endIndex;
 
     private AttendanceStatus attendanceStatus;
   }

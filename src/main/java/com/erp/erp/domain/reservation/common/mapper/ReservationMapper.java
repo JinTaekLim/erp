@@ -40,9 +40,9 @@ public interface ReservationMapper {
   @Mapping(target = "name", source = "reservation.customer.name")
   @Mapping(target = "phone", source = "reservation.customer.phone")
   @Mapping(target = "planName", source = "reservation.customer.planPayment.plan.name")
-  @Mapping(target = "endDate", expression = "java(calculateEndDate(reservation))")
-  @Mapping(target = "remainingTime", expression = "java(0)")
-  @Mapping(target = "usedTime", expression = "java(0)")
+  @Mapping(target = "planEndDate", expression = "java(calculatePlanEndDate(reservation))")
+  @Mapping(target = "remainingTime", ignore = true)
+  @Mapping(target = "usedTime", ignore = true)
   @Mapping(target = "memo", source = "reservation.customer.memo")
   @Mapping(target = "progressList", expression = "java(entityToProgressResponse(progressList))")
   GetReservationCustomerDetailsDto.Response entityToGetReservationCustomerDetailsDtoResponse(Reservation reservation, List<Progress> progressList);
@@ -54,7 +54,7 @@ public interface ReservationMapper {
   @Mapping(target = "content", source = "content")
   ProgressDto.Response progressToProgressResponse(Progress progress);
 
-  default LocalDateTime calculateEndDate(Reservation reservation) {
+  default LocalDateTime calculatePlanEndDate(Reservation reservation) {
     Customer customer = reservation.getCustomer();
     Plan plan = customer.getPlanPayment().getPlan();
     LocalDateTime registrationAt = customer.getPlanPayment().getRegistrationAt().withNano(0);

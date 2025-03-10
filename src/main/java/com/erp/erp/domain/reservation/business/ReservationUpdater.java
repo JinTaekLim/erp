@@ -20,7 +20,8 @@ public class ReservationUpdater {
       String updatedId
   ) {
     reservation.updatedReservations(
-        req.getStartTime(), req.getEndTime(), req.getMemo(), req.getSeatNumber(),
+        req.getReservationDate(), req.getStartIndex(), req.getEndIndex(),
+        req.getMemo(), req.getSeatNumber(),
         req.getAttendanceStatus(), updatedId);
     return reservationRepository.save(reservation);
   }

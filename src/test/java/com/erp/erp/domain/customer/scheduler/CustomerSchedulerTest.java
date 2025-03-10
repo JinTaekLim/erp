@@ -27,6 +27,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
+// note. updateStatus / updateExpiredAt 테스트 코드 필요
 public class CustomerSchedulerTest extends IntegrationTest {
 
   @Autowired
