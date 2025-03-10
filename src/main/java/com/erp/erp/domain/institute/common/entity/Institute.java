@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -56,5 +58,16 @@ public class Institute {
     this.closeTime = closeTime;
     this.createdId = createdId;
     this.createdAt = LocalDateTime.now();
+  }
+
+  @PrePersist
+  @PreUpdate
+  private void truncateTimes() {
+    this.openTime = truncateToMinutes(this.openTime);
+    this.closeTime = truncateToMinutes(this.closeTime);
+  }
+
+  private LocalTime truncateToMinutes(LocalTime dateTime) {
+    return dateTime != null ? dateTime.withSecond(0).withNano(0) : null;
   }
 }
