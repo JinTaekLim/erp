@@ -10,6 +10,7 @@ import com.erp.erp.domain.admin.common.dto.AddPlanDto;
 import com.erp.erp.domain.admin.common.dto.GetAccountDto;
 import com.erp.erp.domain.admin.common.dto.LoginDto;
 import com.erp.erp.domain.admin.common.dto.UpdateAccountDto;
+import com.erp.erp.domain.admin.common.dto.UpdateInstituteDto;
 import com.erp.erp.domain.admin.common.entity.Admin;
 import com.erp.erp.domain.admin.common.exception.NotFoundAdminException;
 import com.erp.erp.domain.admin.common.exception.UnauthorizedAccessException;
@@ -614,6 +615,74 @@ class adminTest extends IntegrationTest {
     String url = BASE_URL + "/login";
 
     NotFoundAdminException exception = new NotFoundAdminException();
+
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
+        url,
+        HttpMethod.POST,
+        new HttpEntity<>(req),
+        String.class
+    );
+
+    ApiResult<Boolean> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<Boolean>>() {
+        }
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
+    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
+  }
+
+  @Test
+  @DisplayName("updateInstitute 성공")
+  void updateInstitute() {
+    // given
+    Admin admin = createAdmin();
+    setSession(admin);
+
+    Institute institute = createInstitute();
+
+    UpdateInstituteDto.Request req = UpdateInstituteDto.Request.builder()
+        .instituteId(institute.getId())
+        .name(RandomValue.string(10,30).setNullable(false).get())
+        .build();
+
+    String url = BASE_URL + "/updateInstitute";
+
+    // when
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
+        url,
+        HttpMethod.POST,
+        new HttpEntity<>(req),
+        String.class
+    );
+
+    ApiResult<Boolean> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<Boolean>>() {
+        }
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+  }
+
+  @Test
+  @DisplayName("updateInstitute 잘못된 instituteId")
+  void updateInstitute_fail_1() {
+    // given
+    Admin admin = createAdmin();
+    setSession(admin);
+
+
+    UpdateInstituteDto.Request req = fixtureMonkey.giveMeOne(UpdateInstituteDto.Request.class);
+
+    String url = BASE_URL + "/updateInstitute";
+
+    NotFoundInstituteException exception = new NotFoundInstituteException();
 
     // when
     ResponseEntity<String> responseEntity = restTemplate.exchange(
