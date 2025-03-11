@@ -20,4 +20,9 @@ public class InstituteUpdater {
     instituteRepository.save(institute);
     return institute;
   }
+
+  public Institute updateName(Institute institute, String name, String updatedId) {
+    institute.updateName(name, updatedId);
+    return instituteRepository.save(institute);
+  }
 }
