@@ -5,7 +5,6 @@ import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.reservation.common.dto.AddReservationDto;
 import com.erp.erp.domain.reservation.common.dto.AddReservationMessageDto;
 import com.erp.erp.domain.reservation.service.ReservationService;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -26,10 +25,8 @@ public class ReservationListener {
     Account account = dto.getAccount();
     Customer customer = dto.getCustomer();
     AddReservationDto.Request req = dto.getReq();
-    LocalDateTime startTime = dto.getStartTime();
-    LocalDateTime endTime = dto.getEndTime();
 
-    reservationService.addReservations(account, customer, req, startTime, endTime);
+    reservationService.addReservations(account, customer, req);
   }
 
 }

@@ -5,7 +5,6 @@ import com.erp.erp.domain.reservation.common.entity.Reservation;
 import com.erp.erp.domain.reservation.common.exception.NotFoundReservationException;
 import com.erp.erp.domain.reservation.repository.ReservationRepository;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,22 +20,27 @@ public class ReservationReader {
     return reservationRepository.findByInstituteAndStartDate(institute, date);
   }
 
-  public List<Reservation> findByInstitutesAndReservationTimeBetween(
-      Institute institute,
-      LocalDateTime startTime,
-      LocalDateTime endTime
-  ){
-    return reservationRepository.findByInstituteWithOverlappingTimeRange(
-        institute,
-        startTime,
-        endTime
-    );
-  };
+//  public List<Reservation> findByInstitutesAndReservationTimeBetween(
+//      Institute institute,
+//      LocalDate day,
+//      int startTime,
+//      int endTime
+//  ){
+//    return reservationRepository.findByInstituteAndTimeRange(
+//        institute,
+//        day,
+//        startTime,
+//        endTime
+//    );
+//  };
 
   public Reservation findByIdAndInstituteId(Long reservationId, Long instituteId) {
     return reservationRepository.findByIdAndInstituteId(reservationId, instituteId)
         .orElseThrow(NotFoundReservationException::new);
   }
 
+  public List<Reservation> findReservationsWithinTimeRange(Institute institute, LocalDate day, int startIndex, int endIndex) {
+    return reservationRepository.findReservationsWithinTimeRange(institute,day,startIndex,endIndex);
+  }
 
 }

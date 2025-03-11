@@ -26,9 +26,7 @@ import com.erp.erp.domain.reservation.common.dto.AddReservationDto;
 import com.erp.erp.domain.reservation.common.dto.GetDailyReservationDto;
 import com.erp.erp.domain.reservation.common.dto.GetReservationCustomerDetailsDto;
 import com.erp.erp.domain.reservation.common.dto.UpdatedReservationDto;
-import com.erp.erp.domain.reservation.common.dto.UpdatedReservationDto.Request;
 import com.erp.erp.domain.reservation.common.dto.UpdatedSeatNumberDto;
-import com.erp.erp.domain.reservation.common.entity.AttendanceStatus;
 import com.erp.erp.domain.reservation.common.entity.Reservation;
 import com.erp.erp.domain.reservation.common.exception.InvalidReservationTimeException;
 import com.erp.erp.domain.reservation.common.exception.InvalidSeatRangeException;
@@ -47,8 +45,10 @@ import com.erp.erp.global.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,7 +88,6 @@ class ReservationTest extends IntegrationTest {
   @MockBean
   private ReservationSender reservationSender;
 
-
   private Institute createInstitutes() {
     return instituteRepository.save(InstituteGenerator.get());
   }
@@ -117,8 +116,13 @@ class ReservationTest extends IntegrationTest {
   }
 
   private Reservation createReservation(Customer customer, Institute institute,
-      LocalDateTime startTime, LocalDateTime endTime) {
-    Reservation reservation = ReservationGenerator.get(customer, institute, startTime, endTime);
+      LocalDate day) {
+    Reservation reservation = ReservationGenerator.get(customer, institute, day);
+    return reservationRepository.save(reservation);
+  }
+
+  private Reservation createReservation(Customer customer, Institute institute) {
+    Reservation reservation = ReservationGenerator.get(customer, institute);
     return reservationRepository.save(reservation);
   }
 
@@ -137,17 +141,14 @@ class ReservationTest extends IntegrationTest {
     Account account = createAccount(institute);
     TokenDto tokenDto = tokenManager.createToken(account);
 
-    LocalDateTime now = LocalDateTime.now();
-    LocalDateTime startTime =
-        (RandomValue.getInt(0, 2) == 0) ? now.withMinute(0) : now.withMinute(30);
-
-    LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
+    Reservation reservation = ReservationGenerator.get(customer, institute);
 
     int seatNumber = RandomValue.getInt(1, institute.getTotalSeat());
     AddReservationDto.Request req = AddReservationDto.Request.builder()
         .customerId(customer.getId())
-        .startTime(startTime)
-        .endTime(endTime)
+        .reservationDate(reservation.getReservationDate())
+        .startIndex(reservation.getStartIndex())
+        .endIndex(reservation.getEndIndex())
         .memo(RandomValue.string(255).get())
         .seatNumber(seatNumber)
         .build();
@@ -227,17 +228,17 @@ class ReservationTest extends IntegrationTest {
     Account account = createAccount(institute);
     TokenDto tokenDto = tokenManager.createToken(account);
 
-    LocalDateTime now = LocalDateTime.now();
-    LocalDateTime startTime =
-        (RandomValue.getInt(0, 2) == 0) ? now.withMinute(0) : now.withMinute(30);
+    Reservation reservation = ReservationGenerator.get(customer, institute);
+    int endIndex = RandomValue.getInt(0, reservation.getStartIndex());
 
-    LocalDateTime endTime = startTime.minusMinutes(30 * RandomValue.getInt(1, 10));
-
+    int seatNumber = RandomValue.getInt(1, institute.getTotalSeat());
     AddReservationDto.Request req = AddReservationDto.Request.builder()
         .customerId(customer.getId())
-        .startTime(startTime)
-        .endTime(endTime)
-        .seatNumber(RandomValue.getInt(1, institute.getTotalSeat()))
+        .reservationDate(reservation.getReservationDate())
+        .startIndex(reservation.getStartIndex())
+        .endIndex(endIndex)
+        .memo(RandomValue.string(255).get())
+        .seatNumber(seatNumber)
         .build();
 
     InvalidReservationTimeException exception = new InvalidReservationTimeException();
@@ -280,23 +281,15 @@ class ReservationTest extends IntegrationTest {
     LocalDate day = RandomValue.getRandomLocalDate();
 
     int reservationsCount = RandomValue.getInt(0, 5);
-    int hour = RandomValue.getInt(24);
-    int randomInt = RandomValue.getInt(2);
-    int minute = (randomInt == 1) ? 0 : 30;
-    LocalTime randomTime = LocalTime.of(hour, minute);
-    LocalDateTime startTime = LocalDateTime.of(day, randomTime);
-
     List<Reservation> reservations = IntStream.range(0, reservationsCount).mapToObj(i -> {
-      LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
-      return createReservation(customer, institute, startTime, endTime);
+      return createReservation(customer, institute, day);
     }).toList();
 
     int nonReturnReservationCount = RandomValue.getInt(0, 5);
     Institute nonReturnInstitute = createInstitutes();
     Customer nonReturnCustomer = createCustomers(nonReturnInstitute);
     IntStream.range(0, nonReturnReservationCount).forEach(i -> {
-      LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
-      createReservation(nonReturnCustomer, nonReturnInstitute, startTime, endTime);
+      createReservation(nonReturnCustomer, nonReturnInstitute);
     });
 
 
@@ -324,77 +317,78 @@ class ReservationTest extends IntegrationTest {
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(reservationsCount).isEqualTo(apiResponse.getData().size());
     IntStream.range(0, reservationsCount).forEach(i -> {
-      assertThat(apiResponse.getData().get(i).getStartTime()).isEqualTo(reservations.get(i).getStartTime());
-      assertThat(apiResponse.getData().get(i).getEndTime()).isEqualTo(reservations.get(i).getEndTime());
+      assertThat(apiResponse.getData().get(i).getReservationDate()).isEqualTo(reservations.get(i).getReservationDate());
+      assertThat(apiResponse.getData().get(i).getStartIndex()).isEqualTo(reservations.get(i).getStartIndex());
+      assertThat(apiResponse.getData().get(i).getEndIndex()).isEqualTo(reservations.get(i).getEndIndex());
       assertThat(apiResponse.getData().get(i).getSeatNumber()).isEqualTo(reservations.get(i).getSeatNumber());
       assertThat(apiResponse.getData().get(i).getName()).isEqualTo(reservations.get(i).getCustomer().getName());
     });
   }
-
+//
+//  @Test
+//  @DisplayName("getReservationByTime 성공")
+//  void getReservationByTime() {
+//    // given
+//    Institute institute = createInstitutes();
+//    Account account = createAccount(institute);
+//    TokenDto tokenDto = tokenManager.createToken(account);
+//
+//    Customer customer = createCustomers(institute);
+//    LocalDate day = RandomValue.getRandomLocalDate();
+//    int reservationsCount = RandomValue.getInt(0, 5);
+//
+//    int hour = RandomValue.getInt(24);
+//    int minute = (RandomValue.getInt(2) == 1) ? 0 : 30;
+//    LocalTime randomTime = LocalTime.of(hour, minute);
+//    LocalDateTime startTime = LocalDateTime.of(day, randomTime);
+//
+//    List<Reservation> reservations = IntStream.range(0, reservationsCount).mapToObj(i -> {
+//      LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
+//      return createReservation(customer, institute, startTime, endTime);
+//    }).toList();
+//
+//    int nonReturnReservationCount = RandomValue.getInt(0, 5);
+//    Institute nonReturnInstitute = createInstitutes();
+//    Customer nonReturnCustomer = createCustomers(nonReturnInstitute);
+//    IntStream.range(0, nonReturnReservationCount).forEach(i -> {
+//      LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
+//      createReservation(nonReturnCustomer, nonReturnInstitute, startTime, endTime);
+//    });
+//
+//    String url = BASE_URL + "/getReservationByTime?time=" + startTime;
+//
+//    HttpHeaders headers = new HttpHeaders();
+//    headers.setBearerAuth(tokenDto.getAccessToken());
+//    HttpEntity<UpdateCustomerDto.Request> requestEntity = new HttpEntity<>(headers);
+//
+//    //when
+//    ResponseEntity<String> responseEntity = restTemplate.exchange(
+//        url,
+//        HttpMethod.GET,
+//        requestEntity,
+//        String.class
+//    );
+//
+//    ApiResult<List<GetDailyReservationDto.Response>> apiResponse = gson.fromJson(
+//        responseEntity.getBody(),
+//        new TypeToken<ApiResult<List<GetDailyReservationDto.Response>>>() {
+//        }.getType()
+//    );
+//
+//    // then
+//    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+//    assertThat(apiResponse.getData().size()).isEqualTo(reservationsCount);
+//    IntStream.range(0, reservationsCount).forEach(i -> {
+//      assertThat(apiResponse.getData().get(i).getStartTime()).isEqualTo(reservations.get(i).getStartTime());
+//      assertThat(apiResponse.getData().get(i).getEndTime()).isEqualTo(reservations.get(i).getEndTime());
+//      assertThat(apiResponse.getData().get(i).getSeatNumber()).isEqualTo(reservations.get(i).getSeatNumber());
+//      assertThat(apiResponse.getData().get(i).getName()).isEqualTo(reservations.get(i).getCustomer().getName());
+//      assertThat(apiResponse.getData().get(i).getName()).isEqualTo(reservations.get(i).getCustomer().getName());
+//    });
+//  }
+//
   @Test
-  @DisplayName("getReservationByTime 성공")
-  void getReservationByTime() {
-    // given
-    Institute institute = createInstitutes();
-    Account account = createAccount(institute);
-    TokenDto tokenDto = tokenManager.createToken(account);
-
-    Customer customer = createCustomers(institute);
-    LocalDate day = RandomValue.getRandomLocalDate();
-    int reservationsCount = RandomValue.getInt(0, 5);
-
-    int hour = RandomValue.getInt(24);
-    int minute = (RandomValue.getInt(2) == 1) ? 0 : 30;
-    LocalTime randomTime = LocalTime.of(hour, minute);
-    LocalDateTime startTime = LocalDateTime.of(day, randomTime);
-
-    List<Reservation> reservations = IntStream.range(0, reservationsCount).mapToObj(i -> {
-      LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
-      return createReservation(customer, institute, startTime, endTime);
-    }).toList();
-
-    int nonReturnReservationCount = RandomValue.getInt(0, 5);
-    Institute nonReturnInstitute = createInstitutes();
-    Customer nonReturnCustomer = createCustomers(nonReturnInstitute);
-    IntStream.range(0, nonReturnReservationCount).forEach(i -> {
-      LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
-      createReservation(nonReturnCustomer, nonReturnInstitute, startTime, endTime);
-    });
-
-    String url = BASE_URL + "/getReservationByTime?time=" + startTime;
-
-    HttpHeaders headers = new HttpHeaders();
-    headers.setBearerAuth(tokenDto.getAccessToken());
-    HttpEntity<UpdateCustomerDto.Request> requestEntity = new HttpEntity<>(headers);
-
-    //when
-    ResponseEntity<String> responseEntity = restTemplate.exchange(
-        url,
-        HttpMethod.GET,
-        requestEntity,
-        String.class
-    );
-
-    ApiResult<List<GetDailyReservationDto.Response>> apiResponse = gson.fromJson(
-        responseEntity.getBody(),
-        new TypeToken<ApiResult<List<GetDailyReservationDto.Response>>>() {
-        }.getType()
-    );
-
-    // then
-    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(apiResponse.getData().size()).isEqualTo(reservationsCount);
-    IntStream.range(0, reservationsCount).forEach(i -> {
-      assertThat(apiResponse.getData().get(i).getStartTime()).isEqualTo(reservations.get(i).getStartTime());
-      assertThat(apiResponse.getData().get(i).getEndTime()).isEqualTo(reservations.get(i).getEndTime());
-      assertThat(apiResponse.getData().get(i).getSeatNumber()).isEqualTo(reservations.get(i).getSeatNumber());
-      assertThat(apiResponse.getData().get(i).getName()).isEqualTo(reservations.get(i).getCustomer().getName());
-      assertThat(apiResponse.getData().get(i).getName()).isEqualTo(reservations.get(i).getCustomer().getName());
-    });
-  }
-
-  @Test
-  @DisplayName("updatedReservation 성공")
+  @DisplayName("updatedReservation 진도표 미변경 성공")
   void updatedReservation() {
     // given
     Institute institute = createInstitutes();
@@ -405,22 +399,18 @@ class ReservationTest extends IntegrationTest {
     int progressSize = RandomValue.getInt(0, 5);
     List<Progress> progressList = createProgressList(customer, progressSize);
 
-    int minute = RandomValue.getInt(0,2) == 1 ? 0 : 30;
-    LocalDateTime startTime = RandomValue.getRandomLocalDateTime().withMinute(minute);
-    LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
-    Reservation reservation = createReservation(customer, institute, startTime, endTime);
+    Reservation reservation = createReservation(customer, institute);
 
-    int seatNumber = RandomValue.getInt(1, institute.getTotalSeat());
-    LocalDateTime updateStartTime = RandomValue.getRandomLocalDateTime().withMinute(minute).withSecond(0);
-    LocalDateTime updateEndTime = updateStartTime.plusMinutes(30 * RandomValue.getInt(1, 10));
+    Reservation newReservation = ReservationGenerator.get(customer, institute);
 
     UpdatedReservationDto.Request request = UpdatedReservationDto.Request.builder()
         .reservationId(reservation.getId())
-        .startTime(updateStartTime)
-        .endTime(updateEndTime)
-        .memo(RandomValue.string(255).get())
-        .seatNumber(seatNumber)
-        .attendanceStatus(RandomValue.getRandomEnum(AttendanceStatus.class))
+        .reservationDate(newReservation.getReservationDate())
+        .startIndex(newReservation.getStartIndex())
+        .endIndex(newReservation.getEndIndex())
+        .memo(newReservation.getMemo())
+        .seatNumber(newReservation.getSeatNumber())
+        .attendanceStatus(newReservation.getAttendanceStatus())
         .build();
 
     String url = BASE_URL + "/updatedReservation";
@@ -446,8 +436,9 @@ class ReservationTest extends IntegrationTest {
     // then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(apiResponse.getData().getReservationId()).isEqualTo(request.getReservationId());
-    assertThat(apiResponse.getData().getStartTime()).isEqualTo(request.getStartTime());
-    assertThat(apiResponse.getData().getEndTime()).isEqualTo(request.getEndTime());
+    assertThat(apiResponse.getData().getReservationDate()).isEqualTo(request.getReservationDate());
+    assertThat(apiResponse.getData().getStartIndex()).isEqualTo(request.getStartIndex());
+    assertThat(apiResponse.getData().getEndIndex()).isEqualTo(request.getEndIndex());
     assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
     assertThat(apiResponse.getData().getSeatNumber()).isEqualTo(request.getSeatNumber());
     assertThat(apiResponse.getData().getAttendanceStatus()).isEqualTo(request.getAttendanceStatus());
@@ -455,7 +446,7 @@ class ReservationTest extends IntegrationTest {
     List<ProgressDto.Response> actualProgress = apiResponse.getData().getProgressList();
     assertThat(actualProgress.size()).isEqualTo(progressSize);
 
-    IntStream.range(progressSize, 0)
+    IntStream.range(0, progressSize)
         .forEach(i -> {
           assertThat(actualProgress.get(i).getProgressId()).isEqualTo(progressList.get(i).getId());
           assertThat(actualProgress.get(i).getContent()).isEqualTo(progressList.get(i).getContent());
@@ -482,22 +473,27 @@ class ReservationTest extends IntegrationTest {
         .set("deleted", false)
         .sampleList(addProgressSize);
 
-    int minute = RandomValue.getInt(0,2) == 1 ? 0 : 30;
-    LocalDateTime startTime = RandomValue.getRandomLocalDateTime().withMinute(minute);
-    LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
-    Reservation reservation = createReservation(customer, institute, startTime, endTime);
+    List<ProgressDto.Request> allProgress = Stream.concat(
+        progressList.stream().map(progress -> ProgressDto.Request.builder()
+            .progressId(progress.getId())
+            .date(progress.getDate())
+            .content(progress.getContent())
+            .deleted(false)
+            .build()),
+        progressRequest.stream()
+    ).collect(Collectors.toCollection(ArrayList::new));
 
-    int seatNumber = RandomValue.getInt(1, institute.getTotalSeat());
-    LocalDateTime updateStartTime = RandomValue.getRandomLocalDateTime().withMinute(minute).withSecond(0);
-    LocalDateTime updateEndTime = updateStartTime.plusMinutes(30 * RandomValue.getInt(1, 10));
+    Reservation reservation = createReservation(customer, institute);
+    Reservation newReservation = ReservationGenerator.get(customer, institute);
 
     UpdatedReservationDto.Request request = UpdatedReservationDto.Request.builder()
         .reservationId(reservation.getId())
-        .startTime(updateStartTime)
-        .endTime(updateEndTime)
-        .memo(RandomValue.string(255).get())
-        .seatNumber(seatNumber)
-        .attendanceStatus(RandomValue.getRandomEnum(AttendanceStatus.class))
+        .reservationDate(newReservation.getReservationDate())
+        .startIndex(newReservation.getStartIndex())
+        .endIndex(newReservation.getEndIndex())
+        .memo(newReservation.getMemo())
+        .seatNumber(newReservation.getSeatNumber())
+        .attendanceStatus(newReservation.getAttendanceStatus())
         .progressList(progressRequest)
         .build();
 
@@ -524,25 +520,21 @@ class ReservationTest extends IntegrationTest {
     // then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(apiResponse.getData().getReservationId()).isEqualTo(request.getReservationId());
-    assertThat(apiResponse.getData().getStartTime()).isEqualTo(request.getStartTime());
-    assertThat(apiResponse.getData().getEndTime()).isEqualTo(request.getEndTime());
+    assertThat(apiResponse.getData().getReservationDate()).isEqualTo(request.getReservationDate());
+    assertThat(apiResponse.getData().getStartIndex()).isEqualTo(request.getStartIndex());
+    assertThat(apiResponse.getData().getEndIndex()).isEqualTo(request.getEndIndex());
     assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
     assertThat(apiResponse.getData().getSeatNumber()).isEqualTo(request.getSeatNumber());
     assertThat(apiResponse.getData().getAttendanceStatus()).isEqualTo(request.getAttendanceStatus());
 
     List<ProgressDto.Response> actualProgress = apiResponse.getData().getProgressList();
-    assertThat(actualProgress.size()).isEqualTo(addProgressSize+progressSize);
+    assertThat(actualProgress.size()).isEqualTo(allProgress.size());
+    Collections.reverse(actualProgress);
 
-    IntStream.range(addProgressSize, 0)
+    IntStream.range(0, allProgress.size())
         .forEach(i -> {
-          assertThat(actualProgress.get(i).getContent()).isEqualTo(progressRequest.get(i).getContent());
-          assertThat(actualProgress.get(i).getDate()).isEqualTo(progressRequest .get(i).getDate());
-        });
-
-    IntStream.range(addProgressSize+progressSize, progressSize)
-        .forEach(i -> {
-          assertThat(actualProgress.get(i).getContent()).isEqualTo(progressList.get(i).getContent());
-          assertThat(actualProgress.get(i).getDate()).isEqualTo(progressList.get(i).getDate());
+          assertThat(actualProgress.get(i).getContent()).isEqualTo(allProgress.get(i).getContent());
+          assertThat(actualProgress.get(i).getDate()).isEqualTo(allProgress.get(i).getDate());
         });
 
   }
@@ -567,22 +559,17 @@ class ReservationTest extends IntegrationTest {
               .sample();
         }).toList();
 
-    int minute = RandomValue.getInt(0,2) == 1 ? 0 : 30;
-    LocalDateTime startTime = RandomValue.getRandomLocalDateTime().withMinute(minute);
-    LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
-    Reservation reservation = createReservation(customer, institute, startTime, endTime);
-
-    int seatNumber = RandomValue.getInt(1, institute.getTotalSeat());
-    LocalDateTime updateStartTime = RandomValue.getRandomLocalDateTime().withMinute(minute).withSecond(0);
-    LocalDateTime updateEndTime = updateStartTime.plusMinutes(30 * RandomValue.getInt(1, 10));
+    Reservation reservation = createReservation(customer, institute);
+    Reservation newReservation = ReservationGenerator.get(customer, institute);
 
     UpdatedReservationDto.Request request = UpdatedReservationDto.Request.builder()
         .reservationId(reservation.getId())
-        .startTime(updateStartTime)
-        .endTime(updateEndTime)
-        .memo(RandomValue.string(255).get())
-        .seatNumber(seatNumber)
-        .attendanceStatus(RandomValue.getRandomEnum(AttendanceStatus.class))
+        .reservationDate(newReservation.getReservationDate())
+        .startIndex(newReservation.getStartIndex())
+        .endIndex(newReservation.getEndIndex())
+        .memo(newReservation.getMemo())
+        .seatNumber(newReservation.getSeatNumber())
+        .attendanceStatus(newReservation.getAttendanceStatus())
         .progressList(progressRequest)
         .build();
 
@@ -609,16 +596,18 @@ class ReservationTest extends IntegrationTest {
     // then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(apiResponse.getData().getReservationId()).isEqualTo(request.getReservationId());
-    assertThat(apiResponse.getData().getStartTime()).isEqualTo(request.getStartTime());
-    assertThat(apiResponse.getData().getEndTime()).isEqualTo(request.getEndTime());
+    assertThat(apiResponse.getData().getReservationDate()).isEqualTo(request.getReservationDate());
+    assertThat(apiResponse.getData().getStartIndex()).isEqualTo(request.getStartIndex());
+    assertThat(apiResponse.getData().getEndIndex()).isEqualTo(request.getEndIndex());
     assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
     assertThat(apiResponse.getData().getSeatNumber()).isEqualTo(request.getSeatNumber());
     assertThat(apiResponse.getData().getAttendanceStatus()).isEqualTo(request.getAttendanceStatus());
 
     List<ProgressDto.Response> actualProgress = apiResponse.getData().getProgressList();
+    Collections.reverse(actualProgress);
 
     assertThat(actualProgress).hasSameSizeAs(progressRequest);
-    IntStream.range(actualProgress.size(), 0)
+    IntStream.range(0, actualProgress.size())
         .forEach(i -> {
           assertThat(actualProgress.get(i).getProgressId()).isEqualTo(progressRequest.get(i).getProgressId());
           assertThat(actualProgress.get(i).getContent()).isEqualTo(progressRequest.get(i).getContent());
@@ -648,24 +637,20 @@ class ReservationTest extends IntegrationTest {
               .sample();
         }).toList();
 
-    int minute = RandomValue.getInt(0,2) == 1 ? 0 : 30;
-    LocalDateTime startTime = RandomValue.getRandomLocalDateTime().withMinute(minute);
-    LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
-    Reservation reservation = createReservation(customer, institute, startTime, endTime);
+    Reservation reservation = createReservation(customer, institute);
+    Reservation newReservation = ReservationGenerator.get(customer, institute);
 
-    int seatNumber = RandomValue.getInt(1, institute.getTotalSeat());
-    LocalDateTime updateStartTime = RandomValue.getRandomLocalDateTime().withMinute(minute).withSecond(0);
-    LocalDateTime updateEndTime = updateStartTime.plusMinutes(30 * RandomValue.getInt(1, 10));
-
-    UpdatedReservationDto.Request request = Request.builder()
+    UpdatedReservationDto.Request request = UpdatedReservationDto.Request.builder()
         .reservationId(reservation.getId())
-        .startTime(updateStartTime)
-        .endTime(updateEndTime)
-        .memo(RandomValue.string(255).get())
-        .seatNumber(seatNumber)
-        .attendanceStatus(RandomValue.getRandomEnum(AttendanceStatus.class))
+        .reservationDate(newReservation.getReservationDate())
+        .startIndex(newReservation.getStartIndex())
+        .endIndex(newReservation.getEndIndex())
+        .memo(newReservation.getMemo())
+        .seatNumber(newReservation.getSeatNumber())
+        .attendanceStatus(newReservation.getAttendanceStatus())
         .progressList(progressRequest)
         .build();
+
 
     String url = BASE_URL + "/updatedReservation";
 
@@ -690,8 +675,9 @@ class ReservationTest extends IntegrationTest {
     // then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(apiResponse.getData().getReservationId()).isEqualTo(request.getReservationId());
-    assertThat(apiResponse.getData().getStartTime()).isEqualTo(request.getStartTime());
-    assertThat(apiResponse.getData().getEndTime()).isEqualTo(request.getEndTime());
+    assertThat(apiResponse.getData().getReservationDate()).isEqualTo(request.getReservationDate());
+    assertThat(apiResponse.getData().getStartIndex()).isEqualTo(request.getStartIndex());
+    assertThat(apiResponse.getData().getEndIndex()).isEqualTo(request.getEndIndex());
     assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
     assertThat(apiResponse.getData().getSeatNumber()).isEqualTo(request.getSeatNumber());
     assertThat(apiResponse.getData().getAttendanceStatus()).isEqualTo(request.getAttendanceStatus());
@@ -757,15 +743,10 @@ class ReservationTest extends IntegrationTest {
 
     Institute nonReturnInstitute = createInstitutes();
     Customer customer = createCustomers(nonReturnInstitute);
-    int minute = RandomValue.getInt(0,2) == 1 ? 0 : 30;
-    LocalDateTime startTime = RandomValue.getRandomLocalDateTime().withMinute(minute);
-    LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
-    Reservation reservation = createReservation(customer, nonReturnInstitute ,startTime, endTime);
+    Reservation reservation = createReservation(customer, nonReturnInstitute);
 
-    int seatNumber = RandomValue.getInt(1, nonReturnInstitute.getTotalSeat());
     UpdatedReservationDto.Request request = fixtureMonkey.giveMeBuilder(UpdatedReservationDto.Request.class)
         .set("reservationId", reservation.getId())
-        .set("seatNumber", seatNumber)
         .sample();
 
     String url = BASE_URL + "/updatedReservation";
@@ -804,7 +785,7 @@ class ReservationTest extends IntegrationTest {
     Account account = createAccount(institute);
     TokenDto tokenDto = tokenManager.createToken(account);
     Customer customer = createCustomers(institute);
-    Reservation reservation = createReservation(customer, institute, LocalDateTime.now(), LocalDateTime.now());
+    Reservation reservation = createReservation(customer, institute);
 
     int seatNumber = RandomValue.getInt(0,2) == 0 ? 0 : institute.getTotalSeat() + RandomValue.getInt(1,5);
     UpdatedReservationDto.Request request = fixtureMonkey.giveMeBuilder(UpdatedReservationDto.Request.class)
@@ -864,22 +845,17 @@ class ReservationTest extends IntegrationTest {
         .set("deleted", false)
         .sampleList(1);
 
-    int minute = RandomValue.getInt(0,2) == 1 ? 0 : 30;
-    LocalDateTime startTime = RandomValue.getRandomLocalDateTime().withMinute(minute);
-    LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
-    Reservation reservation = createReservation(customer, institute, startTime, endTime);
-
-    int seatNumber = RandomValue.getInt(1, institute.getTotalSeat());
-    LocalDateTime updateStartTime = RandomValue.getRandomLocalDateTime().withMinute(minute).withSecond(0);
-    LocalDateTime updateEndTime = updateStartTime.plusMinutes(30 * RandomValue.getInt(1, 10));
+    Reservation reservation = createReservation(customer, institute);
+    Reservation newReservation = ReservationGenerator.get(customer, institute);
 
     UpdatedReservationDto.Request request = UpdatedReservationDto.Request.builder()
         .reservationId(reservation.getId())
-        .startTime(updateStartTime)
-        .endTime(updateEndTime)
-        .memo(RandomValue.string(255).get())
-        .seatNumber(seatNumber)
-        .attendanceStatus(RandomValue.getRandomEnum(AttendanceStatus.class))
+        .reservationDate(newReservation.getReservationDate())
+        .startIndex(newReservation.getStartIndex())
+        .endIndex(newReservation.getEndIndex())
+        .memo(newReservation.getMemo())
+        .seatNumber(newReservation.getSeatNumber())
+        .attendanceStatus(newReservation.getAttendanceStatus())
         .progressList(progressRequest)
         .build();
 
@@ -935,22 +911,17 @@ class ReservationTest extends IntegrationTest {
         .set("deleted", true)
         .sampleList(1);
 
-    int minute = RandomValue.getInt(0,2) == 1 ? 0 : 30;
-    LocalDateTime startTime = RandomValue.getRandomLocalDateTime().withMinute(minute);
-    LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
-    Reservation reservation = createReservation(customer, institute, startTime, endTime);
-
-    int seatNumber = RandomValue.getInt(1, institute.getTotalSeat());
-    LocalDateTime updateStartTime = RandomValue.getRandomLocalDateTime().withMinute(minute).withSecond(0);
-    LocalDateTime updateEndTime = updateStartTime.plusMinutes(30 * RandomValue.getInt(1, 10));
+    Reservation reservation = createReservation(customer, institute);
+    Reservation newReservation = ReservationGenerator.get(customer, institute);
 
     UpdatedReservationDto.Request request = UpdatedReservationDto.Request.builder()
         .reservationId(reservation.getId())
-        .startTime(updateStartTime)
-        .endTime(updateEndTime)
-        .memo(RandomValue.string(255).get())
-        .seatNumber(seatNumber)
-        .attendanceStatus(RandomValue.getRandomEnum(AttendanceStatus.class))
+        .reservationDate(newReservation.getReservationDate())
+        .startIndex(newReservation.getStartIndex())
+        .endIndex(newReservation.getEndIndex())
+        .memo(newReservation.getMemo())
+        .seatNumber(newReservation.getSeatNumber())
+        .attendanceStatus(newReservation.getAttendanceStatus())
         .progressList(progressRequest)
         .build();
 
@@ -991,12 +962,9 @@ class ReservationTest extends IntegrationTest {
     TokenDto tokenDto = tokenManager.createToken(account);
 
     Customer customer = createCustomers(institute);
-    int minute = RandomValue.getInt(0,2) == 1 ? 0 : 30;
-    LocalDateTime startTime = RandomValue.getRandomLocalDateTime().withMinute(minute);
-    LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
-    Reservation reservation = createReservation(customer, institute ,startTime, endTime);
-
+    Reservation reservation = createReservation(customer, institute);
     int seatNumber = RandomValue.getInt(1, institute.getTotalSeat());
+
     UpdatedSeatNumberDto.Request request = UpdatedSeatNumberDto.Request.builder()
         .reservationId(reservation.getId())
         .seatNumber(seatNumber)
@@ -1038,10 +1006,7 @@ class ReservationTest extends IntegrationTest {
 
     Institute nonReturnInstitute = createInstitutes();
     Customer customer = createCustomers(nonReturnInstitute);
-    int minute = RandomValue.getInt(0,2) == 1 ? 0 : 30;
-    LocalDateTime startTime = RandomValue.getRandomLocalDateTime().withMinute(minute);
-    LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
-    Reservation reservation = createReservation(customer, nonReturnInstitute ,startTime, endTime);
+    Reservation reservation = createReservation(customer, nonReturnInstitute);
 
     int seatNumber = RandomValue.getInt(1, institute.getTotalSeat());
     UpdatedSeatNumberDto.Request request = UpdatedSeatNumberDto.Request.builder()
@@ -1128,11 +1093,7 @@ class ReservationTest extends IntegrationTest {
     TokenDto tokenDto = tokenManager.createToken(account);
 
     Customer customer = createCustomers(institute);
-    int minute = RandomValue.getInt(0,2) == 1 ? 0 : 30;
-    LocalDateTime startTime = RandomValue.getRandomLocalDateTime().withMinute(minute);
-    LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
-    Reservation reservation = createReservation(customer, institute ,startTime, endTime);
-
+    Reservation reservation = createReservation(customer, institute);
 
     int seatNumber = RandomValue.getInt(0,2) == 0 ? 0 : institute.getTotalSeat() + RandomValue.getInt(1,5);
     UpdatedSeatNumberDto.Request request = UpdatedSeatNumberDto.Request.builder()
@@ -1177,10 +1138,7 @@ class ReservationTest extends IntegrationTest {
     TokenDto tokenDto = tokenManager.createToken(account);
 
     Customer customer = createCustomers(institute);
-    int minute = RandomValue.getInt(0,2) == 1 ? 0 : 30;
-    LocalDateTime startTime = RandomValue.getRandomLocalDateTime().withMinute(minute);
-    LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
-    Reservation reservation = createReservation(customer, institute ,startTime, endTime);
+    Reservation reservation = createReservation(customer, institute);
 
     String url = BASE_URL + "/deleteReservation/" + reservation.getId();
 
@@ -1208,7 +1166,6 @@ class ReservationTest extends IntegrationTest {
     assertThrows(AssertionError.class,
         () -> reservationRepository.findByIdAndInstituteId(reservation.getId(), institute.getId())
             .orElseThrow(AssertionError::new));
-
   }
 
   @Test
@@ -1257,10 +1214,7 @@ class ReservationTest extends IntegrationTest {
 
     Institute nonReturnInstitute = createInstitutes();
     Customer customer = createCustomers(nonReturnInstitute);
-    int minute = RandomValue.getInt(0,2) == 1 ? 0 : 30;
-    LocalDateTime startTime = RandomValue.getRandomLocalDateTime().withMinute(minute);
-    LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
-    Reservation reservation = createReservation(customer, nonReturnInstitute ,startTime, endTime);
+    Reservation reservation = createReservation(customer, nonReturnInstitute);
 
     String url = BASE_URL + "/deleteReservation/" + reservation.getId();
 
@@ -1299,12 +1253,11 @@ class ReservationTest extends IntegrationTest {
     TokenDto tokenDto = tokenManager.createToken(account);
 
     Customer customer = createCustomers(institute);
+
     int progressSize = RandomValue.getInt(0,5);
     List<Progress> progressList = createProgressList(customer, progressSize);
-    int minute = RandomValue.getInt(0,2) == 1 ? 0 : 30;
-    LocalDateTime startTime = RandomValue.getRandomLocalDateTime().withMinute(minute);
-    LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
-    Reservation reservation = createReservation(customer, institute ,startTime, endTime);
+
+    Reservation reservation = createReservation(customer, institute);
 
     String url = BASE_URL + "/getReservationCustomerDetails/" + reservation.getId();
 
@@ -1334,13 +1287,14 @@ class ReservationTest extends IntegrationTest {
 
 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(apiResponse.getData().getStartTime()).isEqualTo(reservation.getStartTime());
-    assertThat(apiResponse.getData().getEndTime()).isEqualTo(reservation.getEndTime());
+    assertThat(apiResponse.getData().getReservationDate()).isEqualTo(reservation.getReservationDate());
+    assertThat(apiResponse.getData().getStartIndex()).isEqualTo(reservation.getStartIndex());
+    assertThat(apiResponse.getData().getEndIndex()).isEqualTo(reservation.getEndIndex());
     assertThat(apiResponse.getData().getPhotoUrl()).isEqualTo(customer.getPhotoUrl());
     assertThat(apiResponse.getData().getName()).isEqualTo(customer.getName());
     assertThat(apiResponse.getData().getPhone()).isEqualTo(customer.getPhone());
     assertThat(apiResponse.getData().getPlanName()).isEqualTo(plan.getName());
-    assertThat(apiResponse.getData().getEndDate()).isEqualTo(endDate);
+    assertThat(apiResponse.getData().getPlanEndDate()).isEqualTo(endDate);
 //    assertThat(apiResponse.getData().getRemainingTime())
 //    assertThat(apiResponse.getData().getUsedTime())
     assertThat(apiResponse.getData().getMemo()).isEqualTo(customer.getMemo());
@@ -1402,10 +1356,8 @@ class ReservationTest extends IntegrationTest {
 
     Institute nonReturnInstitute = createInstitutes();
     Customer customer = createCustomers(nonReturnInstitute);
-    int minute = RandomValue.getInt(0,2) == 1 ? 0 : 30;
-    LocalDateTime startTime = RandomValue.getRandomLocalDateTime().withMinute(minute);
-    LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
-    Reservation reservation = createReservation(customer, nonReturnInstitute ,startTime, endTime);
+
+    Reservation reservation = createReservation(customer, nonReturnInstitute);
 
     String url = BASE_URL + "/getReservationCustomerDetails/" + reservation.getId();
 

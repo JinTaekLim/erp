@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -19,12 +19,15 @@ public class AddReservationDto {
     @NotNull
     @PositiveOrZero
     private Long customerId;
+    @Schema(description = "예약 날짜")
+    @NotNull
+    private LocalDate reservationDate;
     @Schema(description = "시작 시간")
     @NotNull
-    private LocalDateTime startTime;
+    private int startIndex;
     @Schema(description = "종료 시간")
     @NotNull
-    private LocalDateTime endTime;
+    private int endIndex;
     @Schema(description = "메모")
     private String memo;
     @Schema(description = "좌석 번호")

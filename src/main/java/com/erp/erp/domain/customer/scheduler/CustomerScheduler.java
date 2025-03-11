@@ -6,7 +6,6 @@ import com.erp.erp.domain.customer.business.CustomerUpdater;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerExpiredAtDto;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -63,7 +62,6 @@ public class CustomerScheduler {
 
   private UpdateCustomerExpiredAtDto.Request createRequest(UpdateCustomerExpiredAtDto customer) {
     LocalDate start = Optional.ofNullable(customer.getFirstReservationDate())
-        .map(LocalDateTime::toLocalDate)
         .orElse(LocalDate.now());
 
     LocalDate expiredAt = start.plusDays(customer.getAvailablePeriod());

@@ -5,7 +5,7 @@ import com.erp.erp.domain.reservation.common.entity.AttendanceStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,13 +22,17 @@ public class UpdatedReservationDto {
     @PositiveOrZero
     private Long reservationId;
 
+    @Schema(description = "예약 날짜")
+    @NotNull
+    private LocalDate reservationDate;
+
     @Schema(description = "시작 시간")
     @NotNull
-    private LocalDateTime startTime;
+    private int startIndex;
 
     @Schema(description = "종료 시간")
     @NotNull
-    private LocalDateTime endTime;
+    private int endIndex;
 
     @Schema(description = "메모")
     private String memo;
@@ -54,11 +58,14 @@ public class UpdatedReservationDto {
     @Schema(description = "예약 번호")
     private Long reservationId;
 
+    @Schema(description = "예약 날짜")
+    private LocalDate reservationDate;
+
     @Schema(description = "시작 시간")
-    private LocalDateTime startTime;
+    private int startIndex;
 
     @Schema(description = "종료 시간")
-    private LocalDateTime endTime;
+    private int endIndex;
 
     @Schema(description = "메모")
     private String memo;

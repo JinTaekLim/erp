@@ -1,7 +1,7 @@
 package com.erp.erp.domain.reservation.common.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,10 +13,12 @@ public class GetDailyReservationDto {
 
     @Schema(description = "예약 번호")
     private Long reservationId;
+    @Schema(description = "예약 날짜")
+    private LocalDate reservationDate;
     @Schema(description = "시작 시간")
-    private LocalDateTime startTime;
+    private Long startIndex;
     @Schema(description = "종료 시간")
-    private LocalDateTime endTime;
+    private Long endIndex;
     @Schema(description = "좌석 번호")
     private int seatNumber;
     @Schema(description = "이름")
