@@ -148,10 +148,10 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
       }).sum();
   }
 
-  private long getAttendanceStatusCount(
+  private int getAttendanceStatusCount(
       List<ReservationDto> reservationDtoList, AttendanceStatus attendanceStatus
   ) {
-    return reservationDtoList.stream()
+    return (int) reservationDtoList.stream()
         .filter(reservation -> reservation.getAttendanceStatus().equals(
             attendanceStatus)).count();
   }

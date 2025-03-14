@@ -15,7 +15,11 @@ import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.payment.common.entity.OtherPayment;
 import com.erp.erp.domain.payment.common.entity.PlanPayment;
 import com.erp.erp.domain.plan.common.entity.Plan;
+import com.erp.erp.domain.reservation.common.dto.ReservationCache;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.IntStream;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -51,6 +55,38 @@ public interface CustomerMapper {
 
   List<ProgressDto.Response> entityToProgressResponse(List<Progress> progress);
 
+  @Mapping(target = "customerId", source = "customer.id")
+  @Mapping(target = "status", source = "customer.status")
+  @Mapping(target = "photoUrl", source = "customer.photoUrl")
+  @Mapping(target = "name", source = "customer.name")
+  @Mapping(target = "gender", source = "customer.gender")
+  @Mapping(target = "phone", source = "customer.phone")
+  @Mapping(target = "licenseType", source = "customer.planPayment.plan.licenseType")
+  @Mapping(target = "planName", source = "customer.planPayment.plan.name")
+  @Mapping(target = "planType", source = "customer.planPayment.plan.planType")
+  @Mapping(target = "courseType", source = "customer.planPayment.plan.courseType")
+  @Mapping(target = "remainingTime", expression = "java(customer.getPlanPayment().getPlan().getAvailableTime() - reservationCache.getUsedTime())")
+  @Mapping(target = "remainingPeriod", expression = "java(getRemainingPeriod(customer))")
+  @Mapping(target = "usedTime", source = "reservationCache.usedTime")
+  @Mapping(target = "registrationDate", source = "customer.planPayment.registrationAt")
+  @Mapping(target = "lateCount", source = "reservationCache.lateCount")
+  @Mapping(target = "absenceCount", source = "reservationCache.absenceCount")
+  @Mapping(target = "otherPaymentPrice", expression = "java(getOtherPaymentPrice(customer.getOtherPayments()))")
+  GetCustomerDto.Response cacheToGetCustomer(Customer customer, ReservationCache reservationCache);
+
+  default List<GetCustomerDto.Response> cacheToGetCustomer(List<Customer> customers, List<ReservationCache> reservationCaches) {
+    return IntStream.range(0, customers.size())
+        .mapToObj(i -> cacheToGetCustomer(customers.get(customers.size() - 1 - i), reservationCaches.get(i)))
+        .toList();
+  }
+
+  default int getRemainingPeriod(Customer customer) {
+    long remainingPeriod = ( customer.getExpiredAt() != null ) ?
+        ChronoUnit.DAYS.between(customer.getExpiredAt(), LocalDateTime.now()) :
+        ChronoUnit.DAYS.between(customer.getPlanPayment().getRegistrationAt(), LocalDateTime.now());
+    return (int) remainingPeriod;
+  }
+
   List<GetCustomerDto.Response> entityToGetCustomerResponse(List<Customer> customers);
 
   @Mapping(target = "customerId", source = "customer.id")
@@ -62,8 +98,8 @@ public interface CustomerMapper {
   @Mapping(target = "remainingPeriod", expression = "java(0)")
   @Mapping(target = "usedTime", expression = "java(0)")
   @Mapping(target = "registrationDate", source = "customer.planPayment.registrationAt")
-  @Mapping(target = "lateCount", expression = "java(0L)")
-  @Mapping(target = "absenceCount", expression = "java(0L)")
+  @Mapping(target = "lateCount", expression = "java(0)")
+  @Mapping(target = "absenceCount", expression = "java(0)")
   @Mapping(target = "otherPaymentPrice", expression = "java(getOtherPaymentPrice(customer.getOtherPayments()))")
   GetCustomerDto.Response entityToGetCustomerResponse(Customer customer);
 

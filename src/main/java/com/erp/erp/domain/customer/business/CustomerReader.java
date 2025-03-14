@@ -51,4 +51,8 @@ public class CustomerReader {
   public List<Long> findIdsCreatedAtBeforeDaysAgo(LocalDate date) {
     return customerRepository.findIdsCreatedAtBeforeDaysAgo(date);
   }
+
+  public List<Customer> findByIds(List<Long> ids) {
+    return customerRepository.findAllById(ids);
+  }
 }
