@@ -36,7 +36,7 @@ public class SecurityConfig {
             .frameOptions(
                 HeadersConfigurer.FrameOptionsConfig::sameOrigin)) // X-Frame-Options sameOrigin 제한
         .sessionManagement(c -> c
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 비활성화
+            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // 세션 필요한 상황에만 생성
         // 로깅 필터 추가
         .addFilterBefore(new LogFilter(), SecurityContextHolderFilter.class)
     ;
