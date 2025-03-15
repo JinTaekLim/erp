@@ -18,9 +18,7 @@ import com.erp.erp.domain.reservation.business.ReservationUpdater;
 import com.erp.erp.domain.reservation.common.dto.*;
 import com.erp.erp.domain.reservation.common.entity.Reservation;
 import com.erp.erp.domain.reservation.common.mapper.ReservationMapper;
-import com.erp.erp.global.util.TimeUtil;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,20 +50,22 @@ public class ReservationService {
     Customer customer = customerReader.findByIdAndInstituteId(req.getCustomerId(),
         institute.getId());
 
+    // 영업 시간 내의 예약인지 검사
+    instituteValidator.validateOperatingHours(institute, req.getStartIndex(), req.getEndIndex());
+
+    // 예약이 가능한 좌석인지 검사
     instituteValidator.isValidSeatNumber(institute, req.getSeatNumber());
 
-    LocalDateTime startTime = reservationValidator.validateReservationTime(req.getStartTime());
-    LocalDateTime endTime = reservationValidator.validateReservationTime(req.getEndTime());
-    reservationValidator.isEndTimeAfterStartTime(startTime, endTime);
+    // 시작 시간 보다 종료 시간이 같거나 작은지 검사
+    reservationValidator.checkStartTimeBeforeEndTime(req.getStartIndex(), req.getEndIndex());
 
-    reservationSender.sendAddReservation(account, customer, req, startTime, endTime);
+    reservationSender.sendAddReservation(account, customer, req);
   }
 
-  public void addReservations(Account account, Customer customer, AddReservationDto.Request req,
-      LocalDateTime startTime, LocalDateTime endTime) {
+  public void addReservations(Account account, Customer customer, AddReservationDto.Request req) {
     Institute institute = account.getInstitute();
 
-    reservationValidator.isTimeSlotAvailable(institute, startTime, endTime);
+    reservationValidator.isTimeSlotAvailable(institute, req.getReservationDate(), req.getStartIndex(), req.getEndIndex(), req.getSeatNumber());
 
     Reservation reservation = reservationMapper.dtoToEntity(
         req, institute, customer, String.valueOf(account.getId())
@@ -80,16 +80,13 @@ public class ReservationService {
     return reservationMapper.entityToGetDailyReservationDtoResponse(reservations);
   }
 
-  public List<GetDailyReservationDto.Response> getReservationByTime(LocalDateTime time) {
-    Institute institute = authProvider.getCurrentInstitute();
-
-    LocalDateTime startTime = TimeUtil.roundToNearestHalfHour(time);
-    LocalDateTime endTime = startTime.plusMinutes(30);
-
-    List<Reservation> reservations = reservationReader.findByInstitutesAndReservationTimeBetween(
-        institute, startTime, endTime);
-    return reservationMapper.entityToGetDailyReservationDtoResponse(reservations);
-  }
+//  public List<GetDailyReservationDto.Response> getReservationByTime(LocalDate day, Long startIndex, Long endIndex) {
+//    Institute institute = authProvider.getCurrentInstitute();
+//
+//    List<Reservation> reservations = reservationReader.findByInstitutesAndReservationTimeBetween(
+//        institute, day, startIndex, endIndex);
+//    return reservationMapper.entityToGetDailyReservationDtoResponse(reservations);
+//  }
 
   // note. 전달받은 시간 값 검증, 예약 가능 좌석인지 검증 필요
   @Transactional

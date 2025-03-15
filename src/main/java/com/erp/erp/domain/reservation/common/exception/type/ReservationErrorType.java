@@ -8,7 +8,8 @@ public enum ReservationErrorType {
   NOT_FOUND_RESERVATION("예약이 존재하지 않거나 권한이 없습니다."),
   NO_AVAILABLE_SEAT("예약 가능한 자리가 없습니다."),
   TIME_NOT_ON_HALF_HOUR("예약 시간은 30분 단위로만 입력 가능합니다."),
-  INVALID_SEAT_RANGE("매장 내 좌석 번호 범위를 벗어났습니다.");
+  INVALID_SEAT_RANGE("매장 내 좌석 번호 범위를 벗어났습니다."),
+  OUT_SIDE_HOURS("매장 내 영업 시간을 벗어났습니다.");
 
   private final String message;
 

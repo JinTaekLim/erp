@@ -1,7 +1,6 @@
 package com.erp.erp.domain.customer.common.dto;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +11,7 @@ import lombok.Getter;
 public class UpdateCustomerExpiredAtDto {
 
   private Long id;
-  private LocalDateTime firstReservationDate;
+  private LocalDate firstReservationDate;
   private int availablePeriod;
 
   @Getter

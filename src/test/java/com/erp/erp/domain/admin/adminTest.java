@@ -151,7 +151,7 @@ class adminTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("성공")
+  @DisplayName("addInstitute 성공")
   void addInstitute() {
     // given
     Admin admin = createAdmin();
@@ -179,12 +179,12 @@ class adminTest extends IntegrationTest {
     assertNotNull(apiResponse.getData());
     assertThat(apiResponse.getData().getName()).isEqualTo(req.getName());
     assertThat(apiResponse.getData().getTotalSeat()).isEqualTo(req.getTotalSeat());
-    assertThat(apiResponse.getData().getOpenTime()).isEqualTo(req.getOpenTime());
-    assertThat(apiResponse.getData().getCloseTime()).isEqualTo(req.getCloseTime());
+    assertThat(apiResponse.getData().getOpenTime()).isEqualTo(req.getOpenTime().withSecond(0));
+    assertThat(apiResponse.getData().getCloseTime()).isEqualTo(req.getCloseTime().withSecond(0));
   }
 
   @Test
-  @DisplayName("필수값 미입력")
+  @DisplayName("addInstitute_fail 필수값 미입력")
   void addInstitute_fail() {
     // given
     AddInstituteDto.Request req = AddInstituteDto.Request.builder().build();
@@ -258,7 +258,7 @@ class adminTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("성공")
+  @DisplayName("addAccount 성공")
   void addAccount() {
     // given
     Admin admin = createAdmin();
@@ -400,7 +400,7 @@ class adminTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("존재하지 않는 관리자 요청")
+  @DisplayName("addAccount_fail_4 존재하지 않는 관리자 요청")
   void addAccount_fail_4() {
     // given
     Admin admin = fixtureMonkey.giveMeBuilder(Admin.class).sample();
@@ -437,6 +437,7 @@ class adminTest extends IntegrationTest {
   }
 
   @Test
+  @DisplayName("getInstitute 성공")
   void getInstitute() {
     // given
     int instituteCount = RandomValue.getInt(1,5);
@@ -472,6 +473,7 @@ class adminTest extends IntegrationTest {
   }
 
   @Test
+  @DisplayName("updateAccount 성공")
   void updateAccount() {
     // given
     Admin admin = createAdmin();
@@ -542,6 +544,7 @@ class adminTest extends IntegrationTest {
   }
 
   @Test
+  @DisplayName("lockAccount 성공")
   void lockAccount() {
     // given
     Admin admin = createAdmin();
@@ -571,6 +574,7 @@ class adminTest extends IntegrationTest {
   }
 
   @Test
+  @DisplayName("login 성공")
   void login() {
     // given
     Admin admin = createAdmin();
@@ -602,7 +606,7 @@ class adminTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("잘못된 아이디/비밀번호 입력")
+  @DisplayName("login_fail_1 잘못된 아이디/비밀번호 입력")
   void login_fail_1() {
     // given
     Admin admin = createAdmin();
