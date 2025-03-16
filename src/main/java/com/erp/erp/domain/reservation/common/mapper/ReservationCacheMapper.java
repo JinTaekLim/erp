@@ -10,6 +10,10 @@ public interface ReservationCacheMapper {
 
   @Mapping(target = "instituteId", source = "customer.institute.id")
   @Mapping(target = "customerId", source = "customer.id")
+  @Mapping(target = "reservationId", ignore = true)
+  @Mapping(target = "usedTime", ignore = true)
+  @Mapping(target = "lateCount", ignore = true)
+  @Mapping(target = "absenceCount", ignore = true)
   ReservationCache customerToEntity(Customer customer);
 
 }

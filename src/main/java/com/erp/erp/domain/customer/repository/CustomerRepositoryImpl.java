@@ -7,9 +7,11 @@ import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import com.erp.erp.domain.payment.common.entity.OtherPayment;
 import com.erp.erp.domain.payment.common.entity.PlanPayment;
+import com.erp.erp.domain.payment.common.entity.QOtherPayment;
 import com.erp.erp.domain.payment.common.entity.QPlanPayment;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.common.entity.QPlan;
+import com.erp.erp.domain.reservation.common.dto.ReservationCache;
 import com.erp.erp.domain.reservation.common.entity.AttendanceStatus;
 import com.erp.erp.domain.reservation.common.entity.QReservation;
 import com.querydsl.core.types.Projections;
@@ -19,7 +21,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import com.erp.erp.domain.customer.common.entity.QCustomer;
 import org.springframework.data.repository.query.Param;
@@ -84,12 +88,14 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
     QCustomer qCustomer = QCustomer.customer;
     QReservation qReservation = QReservation.reservation;
     QPlanPayment qPlanPayment = QPlanPayment.planPayment;
+    QOtherPayment qOtherPayment = QOtherPayment.otherPayment;
     QPlan qPlan = QPlan.plan;
 
     return queryFactory
         .select(qCustomer)
         .from(qCustomer)
         .join(qCustomer.planPayment, qPlanPayment).fetchJoin()
+        .join(qCustomer.otherPayments, QOtherPayment.otherPayment).fetchJoin()
         .join(qPlanPayment.plan, qPlan).fetchJoin()
         .where(qCustomer.id.lt(lastId))
         .where(qCustomer.institute.id.eq(instituteId))
@@ -240,6 +246,58 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
         .where(qCustomer.id.eq(customer.getId()))
         .execute();
 
+  }
+
+  @Override
+  public List<GetCustomerDto.Response> findByReservationCache(List<ReservationCache> reservationCaches) {
+    QCustomer qCustomer = QCustomer.customer;
+
+    List<Long> customerIds = reservationCaches.stream()
+        .map(ReservationCache::getCustomerId)
+        .distinct()
+        .toList();
+
+    List<Customer> customers = queryFactory
+        .select(qCustomer)
+        .from(qCustomer)
+        .where(qCustomer.id.in(customerIds))
+        .orderBy(qCustomer.id.desc())
+        .fetch();
+
+    Map<Long, ReservationCache> reservationCacheMap = reservationCaches.stream()
+        .collect(Collectors.toMap(ReservationCache::getCustomerId, cache -> cache));
+
+    return customers.stream()
+        .map(customer -> {
+          ReservationCache reservationCache = reservationCacheMap.get(customer.getId());
+
+          List<OtherPayment> otherPayment = customer.getOtherPayments();
+          PlanPayment planPayment = customer.getPlanPayment();
+          Plan plan = planPayment.getPlan();
+
+          double remainingTime = plan.getAvailableTime() - reservationCache.getUsedTime();
+
+          return GetCustomerDto.Response.builder()
+              .customerId(customer.getId())
+              .status(customer.getStatus())
+              .photoUrl(customer.getPhotoUrl())
+              .name(customer.getName())
+              .gender(customer.getGender())
+              .phone(customer.getPhone())
+              .licenseType(plan.getLicenseType())
+              .planName(plan.getName())
+              .planType(plan.getPlanType())
+              .courseType(plan.getCourseType())
+              .remainingTime(remainingTime)
+              .remainingPeriod(getRemainingPeriod(customer))
+              .usedTime(reservationCache.getUsedTime())
+              .registrationDate(planPayment.getRegistrationAt())
+              .lateCount(reservationCache.getLateCount())
+              .absenceCount(reservationCache.getAbsenceCount())
+              .otherPaymentPrice(getOtherPaymentPrice(otherPayment))
+              .build();
+        })
+        .toList();
   }
 
 }

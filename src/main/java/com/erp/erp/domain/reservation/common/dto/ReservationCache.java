@@ -19,9 +19,14 @@ public class ReservationCache {
   private int absenceCount;
 
   @Builder
-  public ReservationCache(Long instituteId, Long customerId) {
+  public ReservationCache(Long instituteId, Long customerId, Long reservationId, double usedTime,
+      int lateCount, int absenceCount) {
     this.instituteId = instituteId;
     this.customerId = customerId;
+    this.reservationId = reservationId;
+    this.usedTime = usedTime;
+    this.lateCount = lateCount;
+    this.absenceCount = absenceCount;
   }
 
   public ReservationCache update(Long reservationId, double usedTime, int lateCount, int absenceCount) {

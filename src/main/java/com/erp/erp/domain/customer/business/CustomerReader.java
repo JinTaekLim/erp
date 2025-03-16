@@ -7,6 +7,7 @@ import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.exception.NotFoundCustomerException;
 import com.erp.erp.domain.customer.repository.CustomerRepository;
 import com.erp.erp.domain.institute.common.entity.Institute;
+import com.erp.erp.domain.reservation.common.dto.ReservationCache;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -52,7 +53,7 @@ public class CustomerReader {
     return customerRepository.findIdsCreatedAtBeforeDaysAgo(date);
   }
 
-  public List<Customer> findByIds(List<Long> ids) {
-    return customerRepository.findAllById(ids);
+  public List<GetCustomerDto.Response> findByReservationCache(List<ReservationCache> reservationCaches) {
+    return customerRepository.findByReservationCache(reservationCaches);
   }
 }
