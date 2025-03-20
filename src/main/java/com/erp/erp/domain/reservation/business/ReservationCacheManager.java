@@ -8,7 +8,6 @@ import com.erp.erp.domain.reservation.common.dto.ReservationCache;
 import com.erp.erp.domain.reservation.common.dto.UpdatedReservationDto;
 import com.erp.erp.domain.reservation.common.entity.Reservation;
 import com.erp.erp.domain.reservation.common.mapper.ReservationCacheMapper;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -27,12 +26,8 @@ public class ReservationCacheManager {
 
   public List<GetCustomerDto.Response> getCustomers(Long instituteId) {
     List<ReservationCache> reservationCaches = findByInstituteId(instituteId);
-    if (reservationCaches.isEmpty()) {return new ArrayList<>();}
 
-    List<Long> customerIds = reservationCaches.stream().map(ReservationCache::getCustomerId).toList();
-    List<Customer> customer = customerReader.findByIds(customerIds);
-
-    return customerMapper.cacheToGetCustomer(customer, reservationCaches);
+    return customerReader.findByReservationCache(reservationCaches);
   }
 
   public List<ReservationCache> findByInstituteId(Long instituteId) {
