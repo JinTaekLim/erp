@@ -20,13 +20,11 @@ public class ReservationCacheManager {
   private final ReservationCacheReader reservationCacheReader;
   private final ReservationCacheUpdater reservationCacheUpdater;
   private final CustomerReader customerReader;
-  private final CustomerMapper customerMapper;
   private final ReservationCacheMapper reservationCacheMapper;
   private final ReservationCacheCalculator calculator;
 
   public List<GetCustomerDto.Response> getCustomers(Long instituteId) {
     List<ReservationCache> reservationCaches = findByInstituteId(instituteId);
-
     return customerReader.findByReservationCache(reservationCaches);
   }
 
@@ -64,5 +62,9 @@ public class ReservationCacheManager {
     if (reservationCache == null) return;
     ReservationCache newReservationCache = calculator.getNewReservationCache(reservationCache, oldReservation, req);
     reservationCacheUpdater.update(newReservationCache);
+  }
+
+  public void update(Long instituteId, List<ReservationCache> reservationCaches) {
+    reservationCacheUpdater.update(instituteId, reservationCaches);
   }
 }

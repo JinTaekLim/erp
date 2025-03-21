@@ -251,6 +251,10 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
   @Override
   public List<GetCustomerDto.Response> findByReservationCache(List<ReservationCache> reservationCaches) {
     QCustomer qCustomer = QCustomer.customer;
+    QPlanPayment qPlanPayment = QPlanPayment.planPayment;
+    QOtherPayment qOtherPayment = QOtherPayment.otherPayment;
+    QPlan qPlan = QPlan.plan;
+
 
     List<Long> customerIds = reservationCaches.stream()
         .map(ReservationCache::getCustomerId)
@@ -261,6 +265,9 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
         .select(qCustomer)
         .from(qCustomer)
         .where(qCustomer.id.in(customerIds))
+        .join(qCustomer.planPayment, qPlanPayment).fetchJoin()
+        .leftJoin(qCustomer.otherPayments, QOtherPayment.otherPayment).fetchJoin()
+        .join(qPlanPayment.plan, qPlan).fetchJoin()
         .orderBy(qCustomer.id.desc())
         .fetch();
 

@@ -65,4 +65,16 @@ public class ReservationCacheRepository {
       }
     }
   }
+
+  public void update(Long instituteId, List<ReservationCache> reservationCacheList) {
+    String key = getKey(instituteId);
+
+    redisTemplate.delete(key);
+
+    for (ReservationCache reservationCache : reservationCacheList) {
+      redisTemplate.opsForList().leftPush(key, reservationCache);
+    }
+    redisTemplate.opsForList().trim(key, 0, MAX_SIZE);
+  }
+
 }
