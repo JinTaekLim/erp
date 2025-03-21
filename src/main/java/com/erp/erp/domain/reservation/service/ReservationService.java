@@ -9,6 +9,7 @@ import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.Progress;
 import com.erp.erp.domain.institute.business.InstituteValidator;
 import com.erp.erp.domain.institute.common.entity.Institute;
+import com.erp.erp.domain.reservation.business.ReservationCacheManager;
 import com.erp.erp.domain.reservation.business.ReservationDelete;
 import com.erp.erp.domain.reservation.business.ReservationSender;
 import com.erp.erp.domain.reservation.business.ReservationValidator;
@@ -42,6 +43,7 @@ public class ReservationService {
   private final ProgressReader progressReader;
   private final ProgressManger progressManger;
   private final ReservationSender reservationSender;
+  private final ReservationCacheManager reservationCacheManager;
 
 
   public void sendAddReservationRequest(AddReservationDto.Request req) {
@@ -62,6 +64,7 @@ public class ReservationService {
     reservationSender.sendAddReservation(account, customer, req);
   }
 
+  @Transactional
   public void addReservations(Account account, Customer customer, AddReservationDto.Request req) {
     Institute institute = account.getInstitute();
 
@@ -72,6 +75,7 @@ public class ReservationService {
     );
 
     reservationCreator.save(reservation);
+    reservationCacheManager.update(reservation);
   }
 
   public List<GetDailyReservationDto.Response> getDailyReservations(LocalDate date) {
@@ -94,11 +98,13 @@ public class ReservationService {
     Account account = authProvider.getCurrentAccount();
     Institute institute = account.getInstitute();
 
-    Reservation reservation = reservationReader.findByIdAndInstituteId(req.getReservationId(),
+    Reservation oldReservation = reservationReader.findByIdAndInstituteId(req.getReservationId(),
         institute.getId());
 
+    reservationCacheManager.update(oldReservation, req);
+
     instituteValidator.isValidSeatNumber(institute, req.getSeatNumber());
-    reservationUpdater.updatedReservations(reservation, req, String.valueOf(account.getId()));
+    Reservation reservation = reservationUpdater.updatedReservations(oldReservation, req, String.valueOf(account.getId()));
 
     List<Progress> progressList = progressManger.add(
         reservation.getCustomer(), req.getProgressList(), String.valueOf(account.getId())

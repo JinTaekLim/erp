@@ -38,9 +38,7 @@ public class SecurityConfig {
         .sessionManagement(c -> c
             .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // 세션 필요한 상황에만 생성
         // 로깅 필터 추가
-        .addFilterBefore(new LogFilter(), SecurityContextHolderFilter.class)
-    ;
-
+        .addFilterBefore(new LogFilter(), SecurityContextHolderFilter.class);
     return http.build();
   }
 

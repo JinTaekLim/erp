@@ -49,9 +49,9 @@ public class GetCustomerDto {
     @Schema(description = "등록 날짜")
     private LocalDateTime registrationDate;
     @Schema(description = "지각 횟수")
-    private Long lateCount;
+    private int lateCount;
     @Schema(description = "결석 횟수")
-    private Long absenceCount;
+    private int absenceCount;
     @Schema(description = "기타 결제 금액")
     private int otherPaymentPrice;
   }
