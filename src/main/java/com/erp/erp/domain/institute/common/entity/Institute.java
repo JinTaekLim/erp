@@ -50,6 +50,11 @@ public class Institute {
     this.updatedAt = LocalDateTime.now();
   }
 
+  public void updateName(String name, String updatedId) {
+    this.name = name;
+    this.updatedId = updatedId;
+  }
+
   @Builder
   public Institute(String name, int totalSeat, LocalTime openTime, LocalTime closeTime, String createdId) {
     this.name = name;

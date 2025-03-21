@@ -13,10 +13,12 @@ import com.erp.erp.domain.admin.common.dto.AddPlanDto;
 import com.erp.erp.domain.admin.common.dto.GetAccountDto;
 import com.erp.erp.domain.admin.common.dto.LoginDto;
 import com.erp.erp.domain.admin.common.dto.UpdateAccountDto;
+import com.erp.erp.domain.admin.common.dto.UpdateInstituteDto;
 import com.erp.erp.domain.admin.common.entity.Admin;
 import com.erp.erp.domain.admin.common.dto.GetInstituteDto;
 import com.erp.erp.domain.institute.business.InstituteCreator;
 import com.erp.erp.domain.institute.business.InstituteReader;
+import com.erp.erp.domain.institute.business.InstituteUpdater;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.common.mapper.InstituteMapper;
 import com.erp.erp.domain.plan.business.PlanCreator;
@@ -41,6 +43,7 @@ public class AdminService {
   private final InstituteMapper instituteMapper;
   private final AdminReader adminReader;
   private final AdminAuthProvider adminAuthProvider;
+  private final InstituteUpdater instituteUpdater;
 
   public AddAccountDto.Response addAccount(AddAccountDto.Request req) {
     Admin admin = adminAuthProvider.getAdmin();
@@ -91,5 +94,11 @@ public class AdminService {
   public void login(LoginDto.Request req) {
     Admin admin = adminReader.findByIdentifierAndPassword(req);
     adminAuthProvider.setAttribute(admin);
+  }
+
+  public void updateInstitute(UpdateInstituteDto.Request req) {
+    Admin admin = adminAuthProvider.getAdmin();
+    Institute institute = instituteReader.findById(req.getInstituteId());
+    instituteUpdater.updateName(institute, req.getName(), String.valueOf(admin.getId()));
   }
 }

@@ -7,6 +7,7 @@ import com.erp.erp.domain.admin.common.dto.AddPlanDto;
 import com.erp.erp.domain.admin.common.dto.GetAccountDto;
 import com.erp.erp.domain.admin.common.dto.LoginDto;
 import com.erp.erp.domain.admin.common.dto.UpdateAccountDto;
+import com.erp.erp.domain.admin.common.dto.UpdateInstituteDto;
 import com.erp.erp.domain.admin.service.AdminService;
 import com.erp.erp.domain.admin.common.dto.GetInstituteDto;
 import com.erp.erp.global.annotation.authentication.Admin;
@@ -105,5 +106,13 @@ public class AdminController {
   public ApiResult<Boolean> login(@RequestBody @Valid LoginDto.Request req) {
     adminService.login(req);
     return ApiResult.success(true);
+  }
+
+  @Operation(summary = "매장 수정")
+  @PostMapping("/updateInstitute")
+  @Admin
+  public ApiResult<Void> updateInstitute(@RequestBody @Valid UpdateInstituteDto.Request req) {
+    adminService.updateInstitute(req);
+    return ApiResult.success(null);
   }
 }

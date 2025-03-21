@@ -1,5 +1,10 @@
 server:
   port: 8080
+  reactive:
+    session:
+      cookie:
+        same-site: none
+        secure: false
 
 spring:
   datasource:
