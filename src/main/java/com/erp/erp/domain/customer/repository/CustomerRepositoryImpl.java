@@ -95,7 +95,7 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
         .select(qCustomer)
         .from(qCustomer)
         .join(qCustomer.planPayment, qPlanPayment).fetchJoin()
-        .join(qCustomer.otherPayments, QOtherPayment.otherPayment).fetchJoin()
+        .leftJoin(qCustomer.otherPayments, QOtherPayment.otherPayment).fetchJoin()
         .join(qPlanPayment.plan, qPlan).fetchJoin()
         .where(qCustomer.id.lt(lastId))
         .where(qCustomer.institute.id.eq(instituteId))
