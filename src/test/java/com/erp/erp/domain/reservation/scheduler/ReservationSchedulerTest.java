@@ -69,7 +69,7 @@ class ReservationSchedulerTest extends IntegrationTest {
 
 
   @Test
-  void updateGetCustomer() {
+  void updateGetCustomer() throws Exception {
     //given
     Institute institute = createInstitutes();
     Plan plan = createPlans();
