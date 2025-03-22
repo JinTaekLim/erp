@@ -42,9 +42,6 @@ dependencies {
 	// Spring Security
 	implementation 'org.springframework.boot:spring-boot-starter-security:3.4.0'
 
-	// Spring Session
-	implementation 'org.springframework.session:spring-session-core'
-
 	// QueryDSL
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
 	implementation 'com.querydsl:querydsl-core:5.0.0'

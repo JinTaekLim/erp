@@ -11,8 +11,6 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.SecurityContextHolderFilter;
-import org.springframework.session.web.http.CookieSerializer;
-import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -37,7 +35,7 @@ public class SecurityConfig {
             .frameOptions(
                 HeadersConfigurer.FrameOptionsConfig::sameOrigin)) // X-Frame-Options sameOrigin 제한
         .sessionManagement(c -> c
-            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // 세션 필요한 상황에만 생성
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 필요한 상황에만 생성
         // 로깅 필터 추가
         .addFilterBefore(new LogFilter(), SecurityContextHolderFilter.class);
     return http.build();
@@ -58,11 +56,4 @@ public class SecurityConfig {
     return source;
   }
 
-  @Bean
-  public CookieSerializer cookieSerializer() {
-    DefaultCookieSerializer serializer = new DefaultCookieSerializer();
-    serializer.setSameSite("None");
-    serializer.setUseSecureCookie(false);
-    return serializer;
-  }
 }
