@@ -2,6 +2,7 @@ package com.erp.erp.domain.admin.business;
 
 import com.erp.erp.domain.admin.common.entity.Admin;
 import com.erp.erp.domain.admin.common.exception.UnauthorizedAccessException;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -23,8 +24,12 @@ public class AdminAuthProvider {
   }
 
   public void setAttribute(Admin admin) {
+    HttpServletResponse response = httpSessionManager.getResponse();
+
     HttpSession session = httpSessionManager.getSession();
     session.setAttribute(KEY, admin.getId());
+
+    response.setHeader("Set-Cookie", "JSESSIONID=" + session.getId() + "; Path=/; HttpOnly; Secure; SameSite=None");
   }
 
 }

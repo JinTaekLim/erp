@@ -1,5 +1,6 @@
 package com.erp.erp.domain.admin.business;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -11,6 +12,11 @@ public class HttpSessionManager {
   public HttpSession getSession() {
     ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
     return attributes.getRequest().getSession();
+  }
+
+  public HttpServletResponse getResponse() {
+    ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+    return attributes.getResponse();
   }
 
   public Object getValue(HttpSession session, String key) {

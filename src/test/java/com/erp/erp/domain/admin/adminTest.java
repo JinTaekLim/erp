@@ -28,6 +28,7 @@ import com.erp.erp.global.util.generator.InstituteGenerator;
 import com.erp.erp.global.util.randomValue.RandomValue;
 import com.erp.erp.global.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -40,6 +41,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -84,8 +86,10 @@ class adminTest extends IntegrationTest {
    */
   private void setSession(Admin admin) {
     HttpSession session = new MockHttpSession();
+    HttpServletResponse response = new MockHttpServletResponse();
     session.setAttribute("adminId", admin.getId());
     when(httpSessionManager.getSession()).thenReturn(session);
+    when(httpSessionManager.getResponse()).thenReturn(response);
     when(httpSessionManager.getValue(any(), any())).thenReturn(admin.getId());
   }
 
