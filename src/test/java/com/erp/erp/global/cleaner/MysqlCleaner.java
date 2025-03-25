@@ -1,4 +1,4 @@
-package com.erp.erp.global.test;
+package com.erp.erp.global.cleaner;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Component
-public class DatabaseCleaner {
+public class MysqlCleaner {
 
   private final JdbcTemplate jdbcTemplate;
   private List<String> tableNames;
@@ -18,7 +18,7 @@ public class DatabaseCleaner {
   @PersistenceContext
   private EntityManager entityManager;
 
-  public DatabaseCleaner(final JdbcTemplate jdbcTemplate) {
+  public MysqlCleaner(final JdbcTemplate jdbcTemplate) {
     this.jdbcTemplate = jdbcTemplate;
   }
 
@@ -28,11 +28,11 @@ public class DatabaseCleaner {
         "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'PUBLIC'",
         String.class);
 
-    this.execute();
+    this.clear();
   }
 
   @Transactional
-  public void execute() {
+  public void clear() {
     clearJpaCache();
 
     jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");

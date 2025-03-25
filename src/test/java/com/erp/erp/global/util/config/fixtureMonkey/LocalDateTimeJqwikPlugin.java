@@ -1,4 +1,4 @@
-package com.erp.erp.global.fixtureMonkey;
+package com.erp.erp.global.util.config.fixtureMonkey;
 
 import com.navercorp.fixturemonkey.api.jqwik.JavaTimeTypeArbitraryGenerator;
 import java.time.LocalDateTime;
