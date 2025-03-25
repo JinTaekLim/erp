@@ -1,6 +1,6 @@
 package com.erp.erp.global.util.generator;
 
-import com.erp.erp.global.fixtureMonkey.LocalDateTimeJqwikPlugin;
+import com.erp.erp.global.util.config.fixtureMonkey.LocalDateTimeJqwikPlugin;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikPlugin;
