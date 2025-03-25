@@ -1,5 +1,6 @@
 package com.erp.erp.global.test;
 
+import com.erp.erp.global.cleaner.DataCleaner;
 import com.erp.erp.global.container.RedisContainer;
 import com.erp.erp.global.fixtureMonkey.LocalDateTimeJqwikPlugin;
 import com.erp.erp.global.gson.LocalDateSerializer;
@@ -37,13 +38,8 @@ abstract public class IntegrationTest {
   @Autowired
   protected TestRestTemplate restTemplate;
 
-  protected MockMvc mvc;
-
   @Autowired
-  private WebApplicationContext context;
-
-  @Autowired
-  private DatabaseCleaner databaseCleaner;
+  private DataCleaner dataCleaner;
 
   @Autowired
   private RedisCleaner redisCleaner;
@@ -69,6 +65,6 @@ abstract public class IntegrationTest {
 
   @AfterEach
   void tearDown() {
-    databaseCleaner.execute();
+    dataCleaner.clearAll();
   }
 }
