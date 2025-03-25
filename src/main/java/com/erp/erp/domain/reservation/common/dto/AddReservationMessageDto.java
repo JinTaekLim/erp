@@ -10,5 +10,6 @@ import lombok.Getter;
 public class AddReservationMessageDto {
   private Account account;
   private Customer customer;
+  private PendingReservationDto pendingReservation;
   private AddReservationDto.Request req;
 }
