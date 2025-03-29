@@ -13,14 +13,9 @@ import org.springframework.stereotype.Component;
 public class RabbitMqManager {
 
   private final RabbitTemplate rabbitTemplate;
-  private final RabbitMqMapper rabbitMqMapper;
 
-  public void sendCustomerMessage(Message message) {
-    rabbitTemplate.convertAndSend(rabbitMqMapper.getCustomerQueueName(), message);
-  }
-
-  public void sendReservationMessage(Message message) {
-    rabbitTemplate.convertAndSend(rabbitMqMapper.getReservationQueueName(), message);
+  public void sendMessage(String exchange, String routingKey, Message message) {
+    rabbitTemplate.convertAndSend(exchange, routingKey, message);
   }
 
   public Message getMessage(Object object) {

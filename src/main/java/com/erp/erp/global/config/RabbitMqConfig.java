@@ -3,7 +3,11 @@ package com.erp.erp.global.config;
 import com.erp.erp.global.rabbitMq.RabbitMqProperties;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Declarable;
 import org.springframework.amqp.core.Declarables;
+import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -17,12 +21,26 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMqConfig {
 
   private final RabbitMqProperties rabbitMqProperties;
+
   @Bean
   public Declarables rabbitDeclarables() {
-    List<Queue> queues = rabbitMqProperties.getQueues().stream()
-        .map(q -> new Queue(q.getName(), true))
+    List<Declarable> declarable = rabbitMqProperties.getQueues().stream()
+        .flatMap(q -> q.getName().stream()
+            .map(queueName -> createQueueAndBinding(q.getExchange(), queueName)))
+        .flatMap(List::stream)
         .toList();
-    return new Declarables(queues);
+
+    return new Declarables(declarable);
+  }
+
+  private List<Declarable> createQueueAndBinding(String exchangeName, String queueName) {
+    Queue queue = new Queue(queueName, true);
+    DirectExchange exchange = new DirectExchange(exchangeName);
+    Binding binding = BindingBuilder.bind(queue)
+        .to(exchange)
+        .with(queueName);
+
+    return List.of(exchange, queue, binding);
   }
 
   @Bean

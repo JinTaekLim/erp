@@ -16,8 +16,7 @@ public class RabbitMqProperties {
   @Getter
   @Setter
   public static class QueueConfig {
-    private String name;
     private String exchange;
-    private String routingKey;
+    private List<String> name;
   }
 }
