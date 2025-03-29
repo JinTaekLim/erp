@@ -20,7 +20,10 @@ public class ProgressManger {
   private final ProgressDeleter progressDeleter;
   private final ProgressMapper progressMapper;
 
-  public List<Progress> add(Customer customer, List<ProgressDto.Request> req, String accountId) {
+  public void saveAll(List<Progress> progressList) {
+    progressCreator.saveAll(progressList);
+  }
+  public List<Progress> save(Customer customer, List<ProgressDto.Request> req, String accountId) {
     List<Progress> customerProgress = progressReader.findByCustomerId(customer.getId());
     if (req == null || req.isEmpty()) {
       return customerProgress;
@@ -46,6 +49,23 @@ public class ProgressManger {
 
   }
 
+  public List<Progress> getNewProgress(Customer customer, List<ProgressDto.Request> req, String accountId) {
+    List<Progress> customerProgress = progressReader.findByCustomerId(customer.getId());
+    if (req == null || req.isEmpty()) {
+      return customerProgress;
+    }
+    validateCustomerOwnsProgress(customerProgress, req);
+
+    if (!customerProgress.isEmpty()) {
+      // isDeleted 가 true 인 값을 삭제하고 진도표를 업데이트
+      customerProgress = deleteProgress(customerProgress, req);
+      // ID 값이 존재하고, isDeleted 가 false 데이터를 반영해 진도표 업데이트 후 반환
+      customerProgress = updateProgress(customerProgress, req, accountId);
+    }
+
+    // ID 값이 존재하지 않는 데이터를 진도표 리스트에 추가 후 반환
+    return addProgress(customerProgress, customer, accountId, req);
+  }
   private void validateCustomerOwnsProgress(List<Progress> progresses,
       List<ProgressDto.Request> req) {
     req.stream()
