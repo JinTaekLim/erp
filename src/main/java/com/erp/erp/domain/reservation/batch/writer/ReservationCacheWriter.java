@@ -18,7 +18,7 @@ public class ReservationCacheWriter implements ItemWriter<List<ReservationCache>
   public void write(Chunk<? extends List<ReservationCache>> chunk) {
     for (List<ReservationCache> reservationCache : chunk) {
       Long instituteId = reservationCache.get(0).getInstituteId();
-      reservationCacheManager.update(instituteId, reservationCache);
+      reservationCacheManager.updateAllInstituteCache(instituteId, reservationCache);
     }
   }
 }

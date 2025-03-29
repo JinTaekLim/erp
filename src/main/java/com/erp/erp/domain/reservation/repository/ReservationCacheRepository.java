@@ -51,7 +51,7 @@ public class ReservationCacheRepository {
         .findFirst();
   }
 
-  public void update(ReservationCache reservationCache) {
+  public void updateCustomerReservation(ReservationCache reservationCache) {
     String key = getKey(reservationCache.getInstituteId());
 
     List<Object> objects = redisTemplate.opsForList().range(key, 0, MAX_SIZE);
@@ -66,7 +66,7 @@ public class ReservationCacheRepository {
     }
   }
 
-  public void update(Long instituteId, List<ReservationCache> reservationCacheList) {
+  public void updateAllInstituteCache(Long instituteId, List<ReservationCache> reservationCacheList) {
     String key = getKey(instituteId);
 
     redisTemplate.delete(key);

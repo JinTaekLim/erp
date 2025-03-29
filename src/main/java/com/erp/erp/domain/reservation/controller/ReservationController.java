@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,8 +53,8 @@ public class ReservationController {
   @PutMapping("/updatedReservation")
   public ApiResult<UpdatedReservationDto.Response> updatedReservation(
       @Valid @RequestBody UpdatedReservationDto.Request req) {
-    UpdatedReservationDto.Response response = reservationService.updateReservation(req);
-    return ApiResult.success(response);
+    reservationService.sendUpdateReservation(req);
+    return ApiResult.success(null);
   }
 
   @Operation(summary = "좌석 번호 변경")

@@ -12,12 +12,12 @@ public class ReservationCacheUpdater {
 
   private final ReservationCacheRepository reservationCacheRepository;
 
-  public void update(ReservationCache reservationCache) {
-    reservationCacheRepository.update(reservationCache);
+  public void updateCustomerReservation(ReservationCache reservationCache) {
+    reservationCacheRepository.updateCustomerReservation(reservationCache);
   }
 
-  public void update(Long instituteId, List<ReservationCache> reservationCacheList) {
-    reservationCacheRepository.update(instituteId, reservationCacheList);
+  public void updateAllInstituteCache(Long instituteId, List<ReservationCache> reservationCacheList) {
+    reservationCacheRepository.updateAllInstituteCache(instituteId, reservationCacheList);
   }
 
 }

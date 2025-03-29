@@ -95,7 +95,7 @@ public class CustomerService {
     Customer updateCustomer = customerUpdater.updateCustomer(
         req, photoUrl, customer, String.valueOf(account.getId())
     );
-    List<Progress> progresses = progressManger.add(
+    List<Progress> progresses = progressManger.save(
         customer, req.getProgressList(), String.valueOf(account.getId())
     );
 

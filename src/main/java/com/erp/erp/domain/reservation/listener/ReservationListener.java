@@ -37,4 +37,14 @@ public class ReservationListener {
     reservationService.addReservations(account, customer, pendingReservation, req);
   }
 
+  @RabbitListener(queues = "#{rabbitMqMapper.updateReservationQueueName}")
+  public void updateReservationMessage(@Payload UpdateReservationMessageDto dto) {
+    Reservation reservation = dto.getReservation();
+    ReservationCache reservationCache = dto.getReservationCache();
+    List<Progress> progress = dto.getProgress();
+    PendingReservationDto pendingReservation = dto.getPendingReservation();
+
+    reservationService.updateReservation(reservation, reservationCache, progress, pendingReservation);
+  }
+
 }

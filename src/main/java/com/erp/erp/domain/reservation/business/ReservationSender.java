@@ -30,11 +30,18 @@ public class ReservationSender {
         .pendingReservation(pendingReservation)
         .req(req)
         .build();
-    Message message = rabbitMqManager.getMessage(dto);
-    rabbitMqManager.sendReservationMessage(message);
     Message message = converter.getMessage(dto);
     sender.sendAddReservation(message);
   }
 
+  public void sendUpdateReservation(Reservation newReservation, ReservationCache newReservationCache, List<Progress> newProgress, PendingReservationDto pendingReservation) {
+    UpdateReservationMessageDto dto = UpdateReservationMessageDto.builder()
+        .reservation(newReservation)
+        .reservationCache(newReservationCache)
+        .progress(newProgress)
+        .pendingReservation(pendingReservation)
+        .build();
+    Message message = converter.getMessage(dto);
+    sender.sendUpdateReservation(message);
   }
 }

@@ -435,23 +435,6 @@ class ReservationTest extends IntegrationTest {
 
     // then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(apiResponse.getData().getReservationId()).isEqualTo(request.getReservationId());
-    assertThat(apiResponse.getData().getReservationDate()).isEqualTo(request.getReservationDate());
-    assertThat(apiResponse.getData().getStartIndex()).isEqualTo(request.getStartIndex());
-    assertThat(apiResponse.getData().getEndIndex()).isEqualTo(request.getEndIndex());
-    assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
-    assertThat(apiResponse.getData().getSeatNumber()).isEqualTo(request.getSeatNumber());
-    assertThat(apiResponse.getData().getAttendanceStatus()).isEqualTo(request.getAttendanceStatus());
-
-    List<ProgressDto.Response> actualProgress = apiResponse.getData().getProgressList();
-    assertThat(actualProgress.size()).isEqualTo(progressSize);
-
-    IntStream.range(0, progressSize)
-        .forEach(i -> {
-          assertThat(actualProgress.get(i).getProgressId()).isEqualTo(progressList.get(i).getId());
-          assertThat(actualProgress.get(i).getContent()).isEqualTo(progressList.get(i).getContent());
-          assertThat(actualProgress.get(i).getDate()).isEqualTo(progressList.get(i).getDate());
-        });
   }
 
   @Test
@@ -519,24 +502,6 @@ class ReservationTest extends IntegrationTest {
 
     // then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(apiResponse.getData().getReservationId()).isEqualTo(request.getReservationId());
-    assertThat(apiResponse.getData().getReservationDate()).isEqualTo(request.getReservationDate());
-    assertThat(apiResponse.getData().getStartIndex()).isEqualTo(request.getStartIndex());
-    assertThat(apiResponse.getData().getEndIndex()).isEqualTo(request.getEndIndex());
-    assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
-    assertThat(apiResponse.getData().getSeatNumber()).isEqualTo(request.getSeatNumber());
-    assertThat(apiResponse.getData().getAttendanceStatus()).isEqualTo(request.getAttendanceStatus());
-
-    List<ProgressDto.Response> actualProgress = apiResponse.getData().getProgressList();
-    assertThat(actualProgress.size()).isEqualTo(allProgress.size());
-    Collections.reverse(actualProgress);
-
-    IntStream.range(0, allProgress.size())
-        .forEach(i -> {
-          assertThat(actualProgress.get(i).getContent()).isEqualTo(allProgress.get(i).getContent());
-          assertThat(actualProgress.get(i).getDate()).isEqualTo(allProgress.get(i).getDate());
-        });
-
   }
 
   @Test
@@ -595,25 +560,6 @@ class ReservationTest extends IntegrationTest {
 
     // then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(apiResponse.getData().getReservationId()).isEqualTo(request.getReservationId());
-    assertThat(apiResponse.getData().getReservationDate()).isEqualTo(request.getReservationDate());
-    assertThat(apiResponse.getData().getStartIndex()).isEqualTo(request.getStartIndex());
-    assertThat(apiResponse.getData().getEndIndex()).isEqualTo(request.getEndIndex());
-    assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
-    assertThat(apiResponse.getData().getSeatNumber()).isEqualTo(request.getSeatNumber());
-    assertThat(apiResponse.getData().getAttendanceStatus()).isEqualTo(request.getAttendanceStatus());
-
-    List<ProgressDto.Response> actualProgress = apiResponse.getData().getProgressList();
-    Collections.reverse(actualProgress);
-
-    assertThat(actualProgress).hasSameSizeAs(progressRequest);
-    IntStream.range(0, actualProgress.size())
-        .forEach(i -> {
-          assertThat(actualProgress.get(i).getProgressId()).isEqualTo(progressRequest.get(i).getProgressId());
-          assertThat(actualProgress.get(i).getContent()).isEqualTo(progressRequest.get(i).getContent());
-          assertThat(actualProgress.get(i).getDate()).isEqualTo(progressRequest.get(i).getDate());
-        });
-
   }
 
   @Test
@@ -674,23 +620,6 @@ class ReservationTest extends IntegrationTest {
 
     // then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(apiResponse.getData().getReservationId()).isEqualTo(request.getReservationId());
-    assertThat(apiResponse.getData().getReservationDate()).isEqualTo(request.getReservationDate());
-    assertThat(apiResponse.getData().getStartIndex()).isEqualTo(request.getStartIndex());
-    assertThat(apiResponse.getData().getEndIndex()).isEqualTo(request.getEndIndex());
-    assertThat(apiResponse.getData().getMemo()).isEqualTo(request.getMemo());
-    assertThat(apiResponse.getData().getSeatNumber()).isEqualTo(request.getSeatNumber());
-    assertThat(apiResponse.getData().getAttendanceStatus()).isEqualTo(request.getAttendanceStatus());
-
-    List<ProgressDto.Response> actualProgress = apiResponse.getData().getProgressList();
-
-    assertThat(actualProgress.size()).isEqualTo(progressSize-deleteProgressSize);
-    for (ProgressDto.Response progressResponse : actualProgress) {
-      for (ProgressDto.Request delete : progressRequest) {
-        assertThat(progressResponse.getProgressId()).isNotEqualTo(delete.getProgressId());
-      }
-    }
-
   }
 
   @Test
@@ -787,8 +716,11 @@ class ReservationTest extends IntegrationTest {
     Customer customer = createCustomers(institute);
     Reservation reservation = createReservation(customer, institute);
 
+    Reservation newReservation = ReservationGenerator.get(customer, institute);
     int seatNumber = RandomValue.getInt(0,2) == 0 ? 0 : institute.getTotalSeat() + RandomValue.getInt(1,5);
     UpdatedReservationDto.Request request = fixtureMonkey.giveMeBuilder(UpdatedReservationDto.Request.class)
+        .set("startIndex", newReservation.getStartIndex())
+        .set("endIndex", newReservation.getEndIndex())
         .set("reservationId", reservation.getId())
         .set("seatNumber", seatNumber)
         .sample();
