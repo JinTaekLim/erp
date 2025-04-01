@@ -7,6 +7,7 @@ import com.erp.erp.domain.institute.common.dto.UpdateTotalSeatDto;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import java.util.List;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface InstituteMapper {
@@ -20,4 +21,7 @@ public interface InstituteMapper {
   GetInstituteInfoDto.Response entityToGetInstituteInfoDtoResponse(Institute institute);
 
   List<GetInstituteDto.Response> entityToGetInstituteDto(List<Institute> institute);
+
+  @Mapping(target = "instituteId", source = "id")
+  GetInstituteDto.Response entityToGetInstituteDto(Institute institute);
 }
