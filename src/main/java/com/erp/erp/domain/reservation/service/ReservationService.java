@@ -143,13 +143,6 @@ public class ReservationService {
     return reservationMapper.entityToGetDailyReservationDtoResponse(reservations);
   }
 
-//  public List<GetDailyReservationDto.Response> getReservationByTime(LocalDate day, Long startIndex, Long endIndex) {
-//    Institute institute = authProvider.getCurrentInstitute();
-//
-//    List<Reservation> reservations = reservationReader.findByInstitutesAndReservationTimeBetween(
-//        institute, day, startIndex, endIndex);
-//    return reservationMapper.entityToGetDailyReservationDtoResponse(reservations);
-//  }
 
   // note. 변경된 좌석에 예약이 존재하는지 검증 필요
   public UpdatedSeatNumberDto.Response updatedSeatNumber(UpdatedSeatNumberDto.Request req) {

@@ -324,69 +324,7 @@ class ReservationTest extends IntegrationTest {
       assertThat(apiResponse.getData().get(i).getName()).isEqualTo(reservations.get(i).getCustomer().getName());
     });
   }
-//
-//  @Test
-//  @DisplayName("getReservationByTime 성공")
-//  void getReservationByTime() {
-//    // given
-//    Institute institute = createInstitutes();
-//    Account account = createAccount(institute);
-//    TokenDto tokenDto = tokenManager.createToken(account);
-//
-//    Customer customer = createCustomers(institute);
-//    LocalDate day = RandomValue.getRandomLocalDate();
-//    int reservationsCount = RandomValue.getInt(0, 5);
-//
-//    int hour = RandomValue.getInt(24);
-//    int minute = (RandomValue.getInt(2) == 1) ? 0 : 30;
-//    LocalTime randomTime = LocalTime.of(hour, minute);
-//    LocalDateTime startTime = LocalDateTime.of(day, randomTime);
-//
-//    List<Reservation> reservations = IntStream.range(0, reservationsCount).mapToObj(i -> {
-//      LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
-//      return createReservation(customer, institute, startTime, endTime);
-//    }).toList();
-//
-//    int nonReturnReservationCount = RandomValue.getInt(0, 5);
-//    Institute nonReturnInstitute = createInstitutes();
-//    Customer nonReturnCustomer = createCustomers(nonReturnInstitute);
-//    IntStream.range(0, nonReturnReservationCount).forEach(i -> {
-//      LocalDateTime endTime = startTime.plusMinutes(30 * RandomValue.getInt(1, 10));
-//      createReservation(nonReturnCustomer, nonReturnInstitute, startTime, endTime);
-//    });
-//
-//    String url = BASE_URL + "/getReservationByTime?time=" + startTime;
-//
-//    HttpHeaders headers = new HttpHeaders();
-//    headers.setBearerAuth(tokenDto.getAccessToken());
-//    HttpEntity<UpdateCustomerDto.Request> requestEntity = new HttpEntity<>(headers);
-//
-//    //when
-//    ResponseEntity<String> responseEntity = restTemplate.exchange(
-//        url,
-//        HttpMethod.GET,
-//        requestEntity,
-//        String.class
-//    );
-//
-//    ApiResult<List<GetDailyReservationDto.Response>> apiResponse = gson.fromJson(
-//        responseEntity.getBody(),
-//        new TypeToken<ApiResult<List<GetDailyReservationDto.Response>>>() {
-//        }.getType()
-//    );
-//
-//    // then
-//    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-//    assertThat(apiResponse.getData().size()).isEqualTo(reservationsCount);
-//    IntStream.range(0, reservationsCount).forEach(i -> {
-//      assertThat(apiResponse.getData().get(i).getStartTime()).isEqualTo(reservations.get(i).getStartTime());
-//      assertThat(apiResponse.getData().get(i).getEndTime()).isEqualTo(reservations.get(i).getEndTime());
-//      assertThat(apiResponse.getData().get(i).getSeatNumber()).isEqualTo(reservations.get(i).getSeatNumber());
-//      assertThat(apiResponse.getData().get(i).getName()).isEqualTo(reservations.get(i).getCustomer().getName());
-//      assertThat(apiResponse.getData().get(i).getName()).isEqualTo(reservations.get(i).getCustomer().getName());
-//    });
-//  }
-//
+
   @Test
   @DisplayName("updatedReservation 진도표 미변경 성공")
   void updatedReservation() {
