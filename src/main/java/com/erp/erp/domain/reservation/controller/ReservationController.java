@@ -38,17 +38,6 @@ public class ReservationController {
     return ApiResult.success(response);
   }
 
-//  @Operation(summary = "특정 시간 예약 조회")
-//  @GetMapping("/getReservationByTime")
-//  public ApiResult<List<GetDailyReservationDto.Response>> getReservationByTime(
-//      @RequestParam("time") LocalDate day,
-//      @RequestParam Long startIndex,
-//      @RequestParam Long endIndex) {
-//    List<GetDailyReservationDto.Response> response = reservationService.getReservationByTime(day, startIndex, endIndex);
-//    return ApiResult.success(response);
-//  }
-
-
   @Operation(summary = "예약 수정")
   @PutMapping("/updatedReservation")
   public ApiResult<UpdatedReservationDto.Response> updatedReservation(
