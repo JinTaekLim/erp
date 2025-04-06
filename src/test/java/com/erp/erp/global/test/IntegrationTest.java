@@ -1,6 +1,7 @@
 package com.erp.erp.global.test;
 
 import com.erp.erp.global.cleaner.DataCleaner;
+import com.erp.erp.global.container.RabbitMqContainer;
 import com.erp.erp.global.container.RedisContainer;
 import com.google.gson.Gson;
 import com.navercorp.fixturemonkey.FixtureMonkey;
@@ -14,7 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-@Import(RedisContainer.class)
+@Import({RedisContainer.class, RabbitMqContainer.class})
 abstract public class IntegrationTest {
 
   @LocalServerPort

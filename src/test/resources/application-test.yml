@@ -4,14 +4,11 @@ spring:
     username: sa
     password:
     driver-class-name: org.h2.Driver
-  rabbitmq:
-    dynamic: false
   batch:
     job:
       enabled: false
     jdbc:
       initialize-schema: always
-
 
   jpa:
     hibernate:
