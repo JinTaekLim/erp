@@ -12,8 +12,12 @@ public class DataCleaner {
   @Autowired
   private RedisCleaner redisCleaner;
 
+  @Autowired
+  private RabbitMqCleaner rabbitMqCleaner;
+
   public void clearAll() {
     mysqlCleaner.clear();
     redisCleaner.clear();
+    rabbitMqCleaner.clear();
   }
 }
