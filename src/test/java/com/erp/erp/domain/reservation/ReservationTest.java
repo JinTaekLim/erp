@@ -21,7 +21,6 @@ import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.repository.PlanRepository;
-import com.erp.erp.domain.reservation.business.ReservationSender;
 import com.erp.erp.domain.reservation.common.dto.AddReservationDto;
 import com.erp.erp.domain.reservation.common.dto.GetDailyReservationDto;
 import com.erp.erp.domain.reservation.common.dto.GetReservationCustomerDetailsDto;
@@ -46,7 +45,6 @@ import com.google.gson.reflect.TypeToken;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -55,7 +53,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -85,8 +82,7 @@ class ReservationTest extends IntegrationTest {
   private ProgressRepository progressRepository;
   @Autowired
   private TokenManager tokenManager;
-  @MockBean
-  private ReservationSender reservationSender;
+
 
   private Institute createInstitutes() {
     return instituteRepository.save(InstituteGenerator.get());
