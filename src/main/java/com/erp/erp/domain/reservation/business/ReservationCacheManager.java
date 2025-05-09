@@ -55,13 +55,6 @@ public class ReservationCacheManager {
     reservationCacheUpdater.updateCustomerReservation(reservationCache);
   }
 
-//  public void update(Reservation oldReservation, UpdatedReservationDto.Request req) {
-//    ReservationCache reservationCache = findByCustomerId(oldReservation);
-//    if (reservationCache == null) return;
-//    ReservationCache newReservationCache = calculator.getNewReservationCache(reservationCache, oldReservation, req);
-//    reservationCacheUpdater.update(newReservationCache);
-//  }
-
   public void updateAllInstituteCache(Long instituteId, List<ReservationCache> reservationCaches) {
     reservationCacheUpdater.updateAllInstituteCache(instituteId, reservationCaches);
   }
@@ -83,5 +76,14 @@ public class ReservationCacheManager {
     reservationCache.update(reservation.getId(), usedTime, lateCount, absenceCount);
 
     return reservationCache;
+  }
+
+  public void updateCacheExcludingCustomer(Long instituteId, Long customerId) {
+    List<ReservationCache> reservationCacheList = reservationCacheReader.findByInstituteId(
+        instituteId
+    );
+    reservationCacheUpdater.updateCacheExcludingCustomer(
+        instituteId, customerId, reservationCacheList
+    );
   }
 }
