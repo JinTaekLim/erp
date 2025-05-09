@@ -75,12 +75,19 @@ public class CustomerService {
     }
   }
 
+  @Transactional
   public CustomerStatus updateStatus(UpdateStatusDto.Request req) {
     Account account = authProvider.getCurrentAccount();
-    Institute institute = account.getInstitute();
+    Long instituteId = account.getInstitute().getId();
     Long customersId = req.getCustomerId();
+
     customerUpdater.updateStatus(customersId, req.getStatus(), String.valueOf(account.getId()));
-    return customerReader.findByIdAndInstituteId(customersId, institute.getId()).getStatus();
+
+    if (req.getStatus().equals(CustomerStatus.DELETED)) {
+      reservationCacheManager.updateCacheExcludingCustomer(instituteId, customersId);
+    }
+    
+    return customerReader.findByIdAndInstituteId(customersId, instituteId).getStatus();
   }
 
   @Transactional

@@ -20,4 +20,14 @@ public class ReservationCacheUpdater {
     reservationCacheRepository.updateAllInstituteCache(instituteId, reservationCacheList);
   }
 
+  public void updateCacheExcludingCustomer(
+      Long instituteId, Long customerId, List<ReservationCache> reservationCacheList
+  ) {
+    reservationCacheList = reservationCacheList.stream()
+        .filter(reservationCache -> !reservationCache.getCustomerId().equals(customerId))
+        .toList();
+
+    reservationCacheRepository.updateAllInstituteCache(instituteId, reservationCacheList);
+  }
+
 }
