@@ -69,6 +69,10 @@ dependencies {
 	// Redisson
 	implementation("org.redisson:redisson-spring-boot-starter:3.45.1")
 
+	// Jackson
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+
 	// test
 	testRuntimeOnly 'com.h2database:h2:2.2.224'
 	testCompileOnly 'org.projectlombok:lombok:1.18.34'
