@@ -23,4 +23,7 @@ spring:
     properties:
       show-sql: true
       format_sql: true
+  batch:
+    jdbc:
+      initialize-schema: never
 
