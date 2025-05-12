@@ -25,6 +25,7 @@ public class CustomerPhotoManger {
       InputStream inputStream = new ByteArrayInputStream(file);
       return s3Manager.upload(inputStream);
     } catch (Exception e) {
+      log.error(e.getMessage(), e);
       return null;
     }
   }
@@ -61,6 +62,7 @@ public class CustomerPhotoManger {
       s3Manager.deleteFromUrl(oldFile);
       return url;
     } catch (Exception e) {
+      log.error(e.getMessage(), e);
       return null;
     }
   }

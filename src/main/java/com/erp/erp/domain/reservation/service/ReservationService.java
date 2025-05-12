@@ -172,7 +172,7 @@ public class ReservationService {
     Institute institute = authProvider.getCurrentInstitute();
     Reservation reservation = reservationReader.findByIdAndInstituteId(reservationsId,
         institute.getId());
-    List<Progress> progressList = progressReader.findByCustomerId(reservation.getCustomer().getId());
+    List<Progress> progressList = progressReader.findByCustomerIdAndDesc(reservation.getCustomer().getId());
     return reservationMapper.entityToGetReservationCustomerDetailsDtoResponse(reservation, progressList);
   }
 
