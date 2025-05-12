@@ -159,7 +159,7 @@ public class CustomerService {
   public GetCustomerDetailDto.Response getCustomerDetail(Long customerId) {
     Institute institute = authProvider.getCurrentInstitute();
     Customer customer = customerReader.findByIdAndInstituteId(customerId, institute.getId());
-    List<Progress> progress = progressReader.findByCustomerId(customerId);
+    List<Progress> progress = progressReader.findByCustomerIdAndDesc(customerId);
     return customerMapper.entityToGetCustomerDetailResponse(customer, progress);
   }
 

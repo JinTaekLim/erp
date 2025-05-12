@@ -24,7 +24,7 @@ public class ProgressManger {
     progressCreator.saveAll(progressList);
   }
   public List<Progress> save(Customer customer, List<ProgressDto.Request> req, String accountId) {
-    List<Progress> customerProgress = progressReader.findByCustomerId(customer.getId());
+    List<Progress> customerProgress = progressReader.findByCustomerIdAndDesc(customer.getId());
     if (req == null || req.isEmpty()) {
       return customerProgress;
     }
@@ -50,7 +50,7 @@ public class ProgressManger {
   }
 
   public List<Progress> getNewProgress(Customer customer, List<ProgressDto.Request> req, String accountId) {
-    List<Progress> customerProgress = progressReader.findByCustomerId(customer.getId());
+    List<Progress> customerProgress = progressReader.findByCustomerIdAndDesc(customer.getId());
     if (req == null || req.isEmpty()) {
       return customerProgress;
     }
