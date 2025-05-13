@@ -39,3 +39,5 @@ out/
 
 ### .secret
 application-secret.yml
+application-prod-secret.yml
+gradle.properties
