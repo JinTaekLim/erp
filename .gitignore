@@ -41,3 +41,4 @@ out/
 application-secret.yml
 application-prod-secret.yml
 gradle.properties
+deploy-prod.sh
