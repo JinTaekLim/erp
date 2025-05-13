@@ -45,12 +45,14 @@ import com.google.gson.reflect.TypeToken;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -1165,7 +1167,11 @@ class ReservationTest extends IntegrationTest {
 //    assertThat(apiResponse.getData().getUsedTime())
     assertThat(apiResponse.getData().getMemo()).isEqualTo(customer.getMemo());
 
-    List<ProgressDto.Response> actualProgress = apiResponse.getData().getProgressList();
+    List<ProgressDto.Response> actualProgress = apiResponse.getData().getProgressList()
+        .stream()
+        .sorted(Comparator.comparing(ProgressDto.Response::getProgressId))
+        .toList();
+
     assertThat(actualProgress.size()).isEqualTo(progressSize);
     IntStream.range(0, progressSize)
         .forEach(i -> {
