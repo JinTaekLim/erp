@@ -10,7 +10,7 @@ import com.erp.erp.domain.customer.common.dto.ProgressDto;
 import com.erp.erp.domain.customer.common.dto.SearchCustomerNameDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customer.common.entity.Customer;
-import com.erp.erp.domain.customer.common.entity.Progress;
+import com.erp.erp.domain.progress.common.entity.Progress;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.payment.common.entity.OtherPayment;
 import com.erp.erp.domain.payment.common.entity.PlanPayment;
@@ -42,18 +42,16 @@ public interface CustomerMapper {
   @Mapping(target = "otherPaymentMethod", source = "req.planPayment.otherPaymentMethod")
   PlanPayment planPaymentResponseToPlanPayment(AddCustomerDto.Request req, Plan plan);
 
+
+  // 고객 수정
   @Mapping(target = "customerId", source = "customer.id")
-  @Mapping(target = "progressList", expression = "java(entityToProgressResponse(progressList))")
   @Mapping(target = "otherPayment", source = "customer.otherPayments")
   @Mapping(target = "planPaymentStatus", source = "customer.planPayment.status")
   UpdateCustomerDto.Response entityToUpdateCustomerResponse(Customer customer, List<Progress> progressList);
 
+  List<UpdateCustomerDto.ProgressResponse> updateCustomer(List<Progress> progressList);
   @Mapping(target = "progressId", source = "id")
-  @Mapping(target = "date", source = "date")
-  @Mapping(target = "content", source = "content")
-  ProgressDto.Response progressToProgressResponse(Progress progress);
-
-  List<ProgressDto.Response> entityToProgressResponse(List<Progress> progress);
+  UpdateCustomerDto.ProgressResponse updateCustomer(Progress progressList);
 
   @Mapping(target = "customerId", source = "customer.id")
   @Mapping(target = "status", source = "customer.status")
@@ -117,9 +115,12 @@ public interface CustomerMapper {
   SearchCustomerNameDto.Response entityToSearchCustomerNameResponse(Customer customers);
 
 
-  @Mapping(target = "otherPayment", expression = "java(otherPaymentResponseToOtherPaymentResponse(customer.getOtherPayments()))")
-  @Mapping(target = "progressList", expression = "java(entityToProgressResponse(progressList))")
+  // 고객 상세 조회
+  @Mapping(target = "otherPayment", source = "customer.otherPayments")
   GetCustomerDetailDto.Response entityToGetCustomerDetailResponse(Customer customer, List<Progress> progressList);
+
+  @Mapping(target = "progressId", source = "id")
+  GetCustomerDetailDto.ProgressResponse entityToGetProgressResponse(Progress progress);
 
   @Mapping(target = "licenseType", source = "planPayment.plan.licenseType")
   @Mapping(target = "planName", source = "planPayment.plan.name")
@@ -129,7 +130,6 @@ public interface CustomerMapper {
   @Mapping(target = "discountPrice", expression = "java(calculateDiscountPrice(planPayment))")
   @Mapping(target = "paymentTotal", expression = "java(calculatePaymentTotal(planPayment))")
   PlanPaymentResponse entityToGetCustomerDetailResponse(PlanPayment planPayment);
-  List<OtherPaymentResponse> otherPaymentResponseToOtherPaymentResponse(List<OtherPayment> otherPayments);
 
   default int calculateDiscountPrice(PlanPayment planPayment) {
     int planPrice = planPayment.getPlan().getPrice();

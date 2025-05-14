@@ -24,7 +24,7 @@ public class CustomerUpdater {
     customerRepository.updateStatusById(customersId, status, updatedId);
   }
 
-  public Customer updateCustomer(UpdateCustomerDto.Request req, String photoUrl, Customer customer, String updatedId) {
+  public Customer updateCustomer(UpdateCustomerDto.Request req, String photoUrl, Customer customer, Long updatedId) {
     customer.update(
         req.getName(),
         req.getGender(),
@@ -36,7 +36,7 @@ public class CustomerUpdater {
         req.getBirthDate(),
         req.isPlanPaymentStatus(),
         toOtherPaymentsList(req.getOtherPayment()),
-        updatedId
+        updatedId.toString()
     );
 
     return customerRepository.save(customer);

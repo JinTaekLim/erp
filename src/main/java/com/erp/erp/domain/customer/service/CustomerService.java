@@ -7,8 +7,8 @@ import com.erp.erp.domain.customer.business.CustomerCreator;
 import com.erp.erp.domain.customer.business.CustomerReader;
 import com.erp.erp.domain.customer.business.CustomerSender;
 import com.erp.erp.domain.customer.business.CustomerUpdater;
-import com.erp.erp.domain.customer.business.ProgressManger;
-import com.erp.erp.domain.customer.business.ProgressReader;
+import com.erp.erp.domain.progress.business.ProgressExtractor;
+import com.erp.erp.domain.progress.business.ProgressReader;
 import com.erp.erp.domain.customer.common.dto.AddCustomerDto;
 import com.erp.erp.domain.customer.common.dto.GetAvailableCustomerNamesDto;
 import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto;
@@ -18,7 +18,8 @@ import com.erp.erp.domain.customer.common.dto.UpdateStatusDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import com.erp.erp.domain.customer.common.entity.Customer;
-import com.erp.erp.domain.customer.common.entity.Progress;
+import com.erp.erp.domain.progress.business.ProgressUpdater;
+import com.erp.erp.domain.progress.common.entity.Progress;
 import com.erp.erp.domain.customer.common.mapper.CustomerMapper;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.plan.business.PlanReader;
@@ -48,9 +49,11 @@ public class CustomerService {
   private final CustomerPhotoManger customerPhotoManger;
   private final ProgressReader progressReader;
   private final CustomerMapper customerMapper;
-  private final ProgressManger progressManger;
   private final CustomerSender customerSender;
   private final ReservationCacheManager reservationCacheManager;
+  private final ProgressUpdater progressUpdater;
+
+  private final ProgressExtractor progressExtractor = new ProgressExtractor();
 
   public void sendAddCustomerRequest(AddCustomerDto.Request req, MultipartFile file) {
     Account account = authProvider.getCurrentAccount();
@@ -86,27 +89,39 @@ public class CustomerService {
     if (req.getStatus().equals(CustomerStatus.DELETED)) {
       reservationCacheManager.updateCacheExcludingCustomer(instituteId, customersId);
     }
-    
+
     return customerReader.findByIdAndInstituteId(customersId, instituteId).getStatus();
   }
 
   @Transactional
   public UpdateCustomerDto.Response updateCustomer(UpdateCustomerDto.Request req, MultipartFile file) {
+
     Account account = authProvider.getCurrentAccount();
+    Long accountId = account.getId();
     Institute institute = account.getInstitute();
-    Customer customer = customerReader.findByIdAndInstituteId(req.getCustomerId(),
-        institute.getId());
+    Customer customer = customerReader.findByIdAndInstituteId(
+        req.getCustomerId(),
+        institute.getId()
+    );
+
+    // 사진 데이터가 존재한다면, 이를 업로드하고 URL 을 반환 받음
     String photoUrl = customer.getPhotoUrl();
     if (file != null) photoUrl = customerPhotoManger.update(customer, file, customer.getPhotoUrl());
 
-    Customer updateCustomer = customerUpdater.updateCustomer(
-        req, photoUrl, customer, String.valueOf(account.getId())
-    );
-    List<Progress> progresses = progressManger.save(
-        customer, req.getProgressList(), String.valueOf(account.getId())
-    );
+    // 회원 정보 수정
+    Customer updateCustomer = customerUpdater.updateCustomer(req, photoUrl, customer, accountId);
 
-    return customerMapper.entityToUpdateCustomerResponse(updateCustomer, progresses);
+    // 요청 값의 진도표 검증
+    List<Long> ids = progressExtractor.extractProgressIds(req.getProgressList());
+    progressReader.findByIdAndCustomerId(ids, customer.getId());
+
+    // 진도표 수정
+    progressUpdater.updateProgress(req.getProgressList(), accountId);
+
+    // 진도표 전체 조회
+    List<Progress> updateProgress = progressReader.findByCustomerIdAndDesc(customer.getId());
+
+    return customerMapper.entityToUpdateCustomerResponse(updateCustomer, updateProgress);
   }
 
   public List<GetCustomerDto.Response> getCustomers(Long lastId, CustomerStatus status) {

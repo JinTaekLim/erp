@@ -1,7 +1,7 @@
 package com.erp.erp.domain.reservation.common.dto;
 
-import com.erp.erp.domain.customer.common.dto.ProgressDto;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,6 +38,23 @@ public class GetReservationCustomerDetailsDto {
     @Schema(description = "메모")
     private String memo;
     @Schema(description = "진도표")
-    private List<ProgressDto.Response> progressList;
+    private List<ProgressResponse> progressList;
+  }
+
+  @Getter
+  @Builder
+  @Schema(name = "GetReservationCustomerDetailsDto_ProgressResponse", description = "고객 예약 상세 조회 진도표 응답")
+  public static class ProgressResponse {
+    @Schema(description = "진도표 ID")
+    private Long progressId;
+    @Schema(description = "날짜")
+    @NotNull
+    private LocalDate date;
+    @Schema(description = "내용")
+    @NotNull
+    private String content;
+    @Schema(description = "사용 시간")
+    @NotNull
+    private Double usedTime;
   }
 }

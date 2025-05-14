@@ -12,15 +12,16 @@ import com.erp.erp.domain.auth.common.dto.TokenDto;
 import com.erp.erp.domain.customer.common.dto.ProgressDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customer.common.entity.Customer;
-import com.erp.erp.domain.customer.common.entity.Progress;
+import com.erp.erp.domain.progress.common.entity.Progress;
 import com.erp.erp.domain.customer.common.exception.NotFoundCustomerException;
-import com.erp.erp.domain.customer.common.exception.NotFoundProgressException;
 import com.erp.erp.domain.customer.repository.CustomerRepository;
-import com.erp.erp.domain.customer.repository.ProgressRepository;
+import com.erp.erp.domain.progress.common.exception.NotFoundProgressException;
+import com.erp.erp.domain.progress.repository.ProgressRepository;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.repository.PlanRepository;
+import com.erp.erp.domain.reservation.business.ReservationSender;
 import com.erp.erp.domain.reservation.common.dto.AddReservationDto;
 import com.erp.erp.domain.reservation.common.dto.GetDailyReservationDto;
 import com.erp.erp.domain.reservation.common.dto.GetReservationCustomerDetailsDto;
@@ -52,9 +53,9 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -84,6 +85,8 @@ class ReservationTest extends IntegrationTest {
   private ProgressRepository progressRepository;
   @Autowired
   private TokenManager tokenManager;
+  @MockBean
+  private ReservationSender reservationSender;
 
 
   private Institute createInstitutes() {
@@ -1167,9 +1170,9 @@ class ReservationTest extends IntegrationTest {
 //    assertThat(apiResponse.getData().getUsedTime())
     assertThat(apiResponse.getData().getMemo()).isEqualTo(customer.getMemo());
 
-    List<ProgressDto.Response> actualProgress = apiResponse.getData().getProgressList()
+    List<GetReservationCustomerDetailsDto.ProgressResponse> actualProgress = apiResponse.getData().getProgressList()
         .stream()
-        .sorted(Comparator.comparing(ProgressDto.Response::getProgressId))
+        .sorted(Comparator.comparing(GetReservationCustomerDetailsDto.ProgressResponse::getProgressId))
         .toList();
 
     assertThat(actualProgress.size()).isEqualTo(progressSize);

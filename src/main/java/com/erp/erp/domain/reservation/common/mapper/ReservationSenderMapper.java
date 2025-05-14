@@ -2,7 +2,7 @@ package com.erp.erp.domain.reservation.common.mapper;
 
 import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.customer.common.entity.Customer;
-import com.erp.erp.domain.customer.common.entity.Progress;
+import com.erp.erp.domain.progress.common.entity.Progress;
 import com.erp.erp.domain.reservation.common.dto.AddReservationDto;
 import com.erp.erp.domain.reservation.common.dto.AddReservationMessageDto;
 import com.erp.erp.domain.reservation.common.dto.PendingReservationDto;

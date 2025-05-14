@@ -1,7 +1,7 @@
-package com.erp.erp.domain.customer.business;
+package com.erp.erp.domain.progress.business;
 
-import com.erp.erp.domain.customer.common.entity.Progress;
-import com.erp.erp.domain.customer.repository.ProgressRepository;
+import com.erp.erp.domain.progress.common.entity.Progress;
+import com.erp.erp.domain.progress.repository.ProgressRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
