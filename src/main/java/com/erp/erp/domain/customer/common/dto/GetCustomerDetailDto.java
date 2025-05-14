@@ -6,6 +6,7 @@ import com.erp.erp.domain.plan.common.entity.CourseType;
 import com.erp.erp.domain.plan.common.entity.LicenseType;
 import com.erp.erp.domain.plan.common.entity.PlanType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,7 +36,7 @@ public class GetCustomerDetailDto {
     @Schema(description = "메모")
     private String memo;
     @Schema(description = "진도표")
-    List<ProgressDto.Response> progressList;
+    List<ProgressResponse> progressList;
     @Schema(description = "이용권 결제")
     private PlanPaymentResponse planPayment;
     @Schema(description = "기타 결제")
@@ -87,4 +88,22 @@ public class GetCustomerDetailDto {
     @Schema(description = "미납 여부")
     private boolean status;
   }
+
+  @Getter
+  @Builder
+  @Schema(name = "GetCustomerDetailDto_ProgressResponse", description = "고객 상세 조회 진도표 응답")
+  public static class ProgressResponse {
+    @Schema(description = "진도표 ID")
+    private Long progressId;
+    @Schema(description = "날짜")
+    @NotNull
+    private LocalDate date;
+    @Schema(description = "내용")
+    @NotNull
+    private String content;
+    @Schema(description = "사용 시간")
+    @NotNull
+    private Double usedTime;
+  }
+
 }

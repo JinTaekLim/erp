@@ -49,6 +49,7 @@ public class Progress {
   ) {
     this.customer = customer;
     this.date = date;
+    this.usedTime = usedTime;
     this.content = content;
     this.createdId = createdId;
     this.createdAt = LocalDateTime.now();

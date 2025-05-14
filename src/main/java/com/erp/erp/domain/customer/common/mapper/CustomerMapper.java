@@ -53,14 +53,6 @@ public interface CustomerMapper {
   @Mapping(target = "progressId", source = "id")
   UpdateCustomerDto.ProgressResponse updateCustomer(Progress progressList);
 
-
-  @Mapping(target = "progressId", source = "id")
-  @Mapping(target = "date", source = "date")
-  @Mapping(target = "content", source = "content")
-  ProgressDto.Response progressToProgressResponse(Progress progress);
-
-  List<ProgressDto.Response> entityToProgressResponse(List<Progress> progress);
-
   @Mapping(target = "customerId", source = "customer.id")
   @Mapping(target = "status", source = "customer.status")
   @Mapping(target = "photoUrl", source = "customer.photoUrl")
@@ -123,9 +115,12 @@ public interface CustomerMapper {
   SearchCustomerNameDto.Response entityToSearchCustomerNameResponse(Customer customers);
 
 
-  @Mapping(target = "otherPayment", expression = "java(otherPaymentResponseToOtherPaymentResponse(customer.getOtherPayments()))")
-  @Mapping(target = "progressList", expression = "java(entityToProgressResponse(progressList))")
+  // 고객 상세 조회
+  @Mapping(target = "otherPayment", source = "customer.otherPayments")
   GetCustomerDetailDto.Response entityToGetCustomerDetailResponse(Customer customer, List<Progress> progressList);
+
+  @Mapping(target = "progressId", source = "id")
+  GetCustomerDetailDto.ProgressResponse entityToGetProgressResponse(Progress progress);
 
   @Mapping(target = "licenseType", source = "planPayment.plan.licenseType")
   @Mapping(target = "planName", source = "planPayment.plan.name")
@@ -135,7 +130,6 @@ public interface CustomerMapper {
   @Mapping(target = "discountPrice", expression = "java(calculateDiscountPrice(planPayment))")
   @Mapping(target = "paymentTotal", expression = "java(calculatePaymentTotal(planPayment))")
   PlanPaymentResponse entityToGetCustomerDetailResponse(PlanPayment planPayment);
-  List<OtherPaymentResponse> otherPaymentResponseToOtherPaymentResponse(List<OtherPayment> otherPayments);
 
   default int calculateDiscountPrice(PlanPayment planPayment) {
     int planPrice = planPayment.getPlan().getPrice();
