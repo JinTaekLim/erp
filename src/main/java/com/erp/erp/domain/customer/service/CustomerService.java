@@ -8,7 +8,6 @@ import com.erp.erp.domain.customer.business.CustomerReader;
 import com.erp.erp.domain.customer.business.CustomerSender;
 import com.erp.erp.domain.customer.business.CustomerUpdater;
 import com.erp.erp.domain.progress.business.ProgressExtractor;
-import com.erp.erp.domain.progress.business.ProgressManger;
 import com.erp.erp.domain.progress.business.ProgressReader;
 import com.erp.erp.domain.customer.common.dto.AddCustomerDto;
 import com.erp.erp.domain.customer.common.dto.GetAvailableCustomerNamesDto;
@@ -120,7 +119,7 @@ public class CustomerService {
     progressUpdater.updateProgress(req.getProgressList(), accountId);
 
     // 진도표 전체 조회
-    List<Progress> updateProgress = progressReader.findByCustomerId(customer.getId());
+    List<Progress> updateProgress = progressReader.findByCustomerIdAndDesc(customer.getId());
 
     return customerMapper.entityToUpdateCustomerResponse(updateCustomer, updateProgress);
   }
