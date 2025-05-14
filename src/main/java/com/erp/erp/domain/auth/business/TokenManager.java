@@ -21,8 +21,8 @@ public class TokenManager {
   }
 
   public TokenDto reissueToken(Account account, String refreshToken) {
-    String token = tokenReader.findByRefreshToken(refreshToken);
-    tokenDeleter.deleteToken(token);
+    tokenReader.findByRefreshToken(refreshToken);
+    tokenDeleter.deleteToken(refreshToken);
     return createToken(account);
   }
 

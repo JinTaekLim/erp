@@ -10,8 +10,6 @@ import com.erp.erp.domain.admin.common.dto.UpdateAccountDto;
 import com.erp.erp.domain.admin.common.dto.UpdateInstituteDto;
 import com.erp.erp.domain.admin.service.AdminService;
 import com.erp.erp.domain.admin.common.dto.GetInstituteDto;
-import com.erp.erp.global.annotation.authentication.Admin;
-import com.erp.erp.global.annotation.authentication.PermitAll;
 import com.erp.erp.global.response.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -39,7 +37,6 @@ public class AdminController {
 
   @Operation(summary = "이용권 등록")
   @PostMapping("/addPlan")
-  @Admin
   public ApiResult<AddPlanDto.Response> addPlans(
       @RequestBody @Valid AddPlanDto.Request request
   ) {
@@ -49,7 +46,6 @@ public class AdminController {
 
   @Operation(summary = "매장 등록")
   @PostMapping("/addInstitute")
-  @Admin
   public ApiResult<AddInstituteDto.Response> addInstitute(
       @RequestBody @Valid AddInstituteDto.Request req
   ) {
@@ -59,7 +55,6 @@ public class AdminController {
 
   @Operation(summary = "계정 추가")
   @PostMapping("/addAccount")
-  @Admin
   public ApiResult<AddAccountDto.Response> addAccount(
       @RequestBody @Valid AddAccountDto.Request req
   ) {
@@ -69,7 +64,6 @@ public class AdminController {
 
   @Operation(summary = "전체 매장 조회")
   @GetMapping("/getInstitutes")
-  @Admin
   public ApiResult<List<GetInstituteDto.Response>> getInstitutes() {
     List<GetInstituteDto.Response> response = adminService.getInstitutes();
     return ApiResult.success(response);
@@ -77,7 +71,6 @@ public class AdminController {
 
   @Operation(summary = "계정 조회")
   @GetMapping("/getAccounts")
-  @Admin
   public ApiResult<List<GetAccountDto.Response>> getAccounts(@RequestParam Long instituteId) {
     List<GetAccountDto.Response> response = adminService.getAccounts(instituteId);
     return ApiResult.success(response);
@@ -85,7 +78,6 @@ public class AdminController {
 
   @Operation(summary = "계정 수정")
   @PatchMapping("/updateAccount")
-  @Admin
   public ApiResult<UpdateAccountDto.Response> updateAccount(
       @RequestBody @Valid UpdateAccountDto.Request req) {
     UpdateAccountDto.Response response = adminService.updateAccount(req);
@@ -94,7 +86,6 @@ public class AdminController {
 
   @Operation(summary = "계정 삭제")
   @DeleteMapping("/deleteAccount")
-  @Admin
   public ApiResult<?> lockAccount(@RequestBody Long accountId) {
     adminService.lockAccount(accountId);
     return ApiResult.success(true);
@@ -102,7 +93,6 @@ public class AdminController {
 
   @Operation(summary = "로그인")
   @PostMapping("/login")
-  @PermitAll
   public ApiResult<Boolean> login(@RequestBody @Valid LoginDto.Request req) {
     adminService.login(req);
     return ApiResult.success(true);
@@ -110,7 +100,6 @@ public class AdminController {
 
   @Operation(summary = "매장 수정")
   @PostMapping("/updateInstitute")
-  @Admin
   public ApiResult<Void> updateInstitute(@RequestBody @Valid UpdateInstituteDto.Request req) {
     adminService.updateInstitute(req);
     return ApiResult.success(null);

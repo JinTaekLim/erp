@@ -2,6 +2,22 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.4'
 	id 'io.spring.dependency-management' version '1.1.6'
+	id 'com.google.cloud.tools.jib' version '3.4.5'
+}
+
+
+jib {
+	from {
+		image = "openjdk:21-jdk-slim"
+	}
+	to {
+		image = project.findProperty("dockerImageName")
+		tags = [project.findProperty("dockerVersion")]
+		auth {
+			username = project.findProperty("dockerUsername")
+			password = project.findProperty("dockerPassword")
+		}
+	}
 }
 
 group = 'com.erp'
@@ -66,6 +82,13 @@ dependencies {
 	// Spring Batch
 	implementation 'org.springframework.boot:spring-boot-starter-batch:3.4.3'
 
+	// Redisson
+	implementation("org.redisson:redisson-spring-boot-starter:3.45.1")
+
+	// Jackson
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+
 	// test
 	testRuntimeOnly 'com.h2database:h2:2.2.224'
 	testCompileOnly 'org.projectlombok:lombok:1.18.34'
@@ -79,10 +102,12 @@ dependencies {
 	testImplementation("org.testcontainers:testcontainers:1.20.6")
 	testImplementation("org.testcontainers:junit-jupiter:1.20.6")
 	testImplementation("org.testcontainers:testcontainers:1.20.6")
+	testImplementation("org.testcontainers:rabbitmq:1.20.6")
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+	jvmArgs '-Xshare:off'
 }
 
 def querydslDir = "build/generated/sources/annotationProcessor/java/main"

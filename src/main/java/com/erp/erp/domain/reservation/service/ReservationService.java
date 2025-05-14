@@ -9,6 +9,7 @@ import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.progress.common.entity.Progress;
 import com.erp.erp.domain.institute.business.InstituteValidator;
 import com.erp.erp.domain.institute.common.entity.Institute;
+import com.erp.erp.domain.reservation.business.PendingReservationDeleter;
 import com.erp.erp.domain.reservation.business.ReservationCacheManager;
 import com.erp.erp.domain.reservation.business.ReservationDelete;
 import com.erp.erp.domain.reservation.business.ReservationSender;
@@ -44,6 +45,7 @@ public class ReservationService {
   private final ProgressManger progressManger;
   private final ReservationSender reservationSender;
   private final ReservationCacheManager reservationCacheManager;
+  private final PendingReservationDeleter pendingReservationDeleter;
 
 
   public void sendAddReservationRequest(AddReservationDto.Request req) {
@@ -55,27 +57,84 @@ public class ReservationService {
     // 영업 시간 내의 예약인지 검사
     instituteValidator.validateOperatingHours(institute, req.getStartIndex(), req.getEndIndex());
 
-    // 예약이 가능한 좌석인지 검사
+    // 매장 범위 내 좌석인지 검사
+    instituteValidator.isValidSeatNumber(institute, req.getSeatNumber());
+
+    // 예약이 가능한 시간인지 검사 후 임시 저장
+    reservationValidator.checkStartTimeBeforeEndTime(req.getStartIndex(), req.getEndIndex());
+
+    // 예약이 가능한 시간인지 검사
+    PendingReservationDto pendingReservation = reservationValidator.checkAndReserveTimeSlot(
+        institute,
+        req.getReservationDate(),
+        req.getStartIndex(),
+        req.getEndIndex()
+    );
+
+    reservationSender.sendAddReservation(account, customer, pendingReservation, req);
+  }
+
+  @Transactional
+  public void sendUpdateReservation(UpdatedReservationDto.Request req) {
+    Account account = authProvider.getCurrentAccount();
+    Institute institute = account.getInstitute();
+
+    // 기존 예약 조회
+    Reservation oldReservation = reservationReader.findByIdAndInstituteId(req.getReservationId(),
+        institute.getId());
+
+    // 영업 시간 내의 예약인지 검사
+    instituteValidator.validateOperatingHours(institute, req.getStartIndex(), req.getEndIndex());
+
+    // 매장 범위 내 좌석인지 검사
     instituteValidator.isValidSeatNumber(institute, req.getSeatNumber());
 
     // 시작 시간 보다 종료 시간이 같거나 작은지 검사
     reservationValidator.checkStartTimeBeforeEndTime(req.getStartIndex(), req.getEndIndex());
 
-    reservationSender.sendAddReservation(account, customer, req);
+    // 예약이 가능한 시간인지 검사 후 임시 저장
+    PendingReservationDto pendingReservation = reservationValidator.checkAndReserveTimeSlot(
+        institute,
+        req.getReservationDate(),
+        req.getStartIndex(),
+        req.getEndIndex()
+    );
+
+    Reservation newReservation = reservationUpdater.updatedReservations(oldReservation, req, String.valueOf(account.getId()));
+    ReservationCache newReservationCache = reservationCacheManager.getNewReservationCache(newReservation);
+    List<Progress> newProgress = progressManger.getNewProgress(newReservation.getCustomer(), req.getProgressList(), String.valueOf(account.getId()));
+
+    reservationSender.sendUpdateReservation(newReservation, newReservationCache, newProgress, pendingReservation);
   }
 
   @Transactional
-  public void addReservations(Account account, Customer customer, AddReservationDto.Request req) {
+  public void addReservations(Account account, Customer customer, PendingReservationDto pendingReservation, AddReservationDto.Request req) {
     Institute institute = account.getInstitute();
-
-    reservationValidator.isTimeSlotAvailable(institute, req.getReservationDate(), req.getStartIndex(), req.getEndIndex(), req.getSeatNumber());
 
     Reservation reservation = reservationMapper.dtoToEntity(
         req, institute, customer, String.valueOf(account.getId())
     );
 
+    // 임시 저장 데이터 제거
+    pendingReservationDeleter.delete(institute.getId(), pendingReservation);
+    // 데이터 저장
     reservationCreator.save(reservation);
-    reservationCacheManager.update(reservation);
+    // 캐시 데이터 갱신
+    reservationCacheManager.updateCustomerReservation(reservation);
+  }
+
+  @Transactional
+  public void updateReservation(Reservation newReservation, ReservationCache newReservationCache, List<Progress> newProgress, PendingReservationDto pendingReservation) {
+    Institute institute = newReservation.getInstitute();
+
+    // 임시 저장 데이터 제거
+    pendingReservationDeleter.delete(institute.getId(), pendingReservation);
+    // 예약 데이터 저장
+    reservationCreator.save(newReservation);
+    // 진도표 데이터 저장
+    progressManger.saveAll(newProgress);
+    // 캐시 데이터 갱신
+    reservationCacheManager.updateCustomerReservation(newReservationCache);
   }
 
   public List<GetDailyReservationDto.Response> getDailyReservations(LocalDate date) {
@@ -84,34 +143,6 @@ public class ReservationService {
     return reservationMapper.entityToGetDailyReservationDtoResponse(reservations);
   }
 
-//  public List<GetDailyReservationDto.Response> getReservationByTime(LocalDate day, Long startIndex, Long endIndex) {
-//    Institute institute = authProvider.getCurrentInstitute();
-//
-//    List<Reservation> reservations = reservationReader.findByInstitutesAndReservationTimeBetween(
-//        institute, day, startIndex, endIndex);
-//    return reservationMapper.entityToGetDailyReservationDtoResponse(reservations);
-//  }
-
-  // note. 전달받은 시간 값 검증, 예약 가능 좌석인지 검증 필요
-  @Transactional
-  public UpdatedReservationDto.Response updateReservation(UpdatedReservationDto.Request req) {
-    Account account = authProvider.getCurrentAccount();
-    Institute institute = account.getInstitute();
-
-    Reservation oldReservation = reservationReader.findByIdAndInstituteId(req.getReservationId(),
-        institute.getId());
-
-    reservationCacheManager.update(oldReservation, req);
-
-    instituteValidator.isValidSeatNumber(institute, req.getSeatNumber());
-    Reservation reservation = reservationUpdater.updatedReservations(oldReservation, req, String.valueOf(account.getId()));
-
-    List<Progress> progressList = progressManger.add(
-        reservation.getCustomer(), req.getProgressList(), String.valueOf(account.getId())
-    );
-
-    return reservationMapper.entityToUpdatedReservationDtoResponse(reservation, progressList);
-  }
 
   // note. 변경된 좌석에 예약이 존재하는지 검증 필요
   public UpdatedSeatNumberDto.Response updatedSeatNumber(UpdatedSeatNumberDto.Request req) {
@@ -141,7 +172,7 @@ public class ReservationService {
     Institute institute = authProvider.getCurrentInstitute();
     Reservation reservation = reservationReader.findByIdAndInstituteId(reservationsId,
         institute.getId());
-    List<Progress> progressList = progressReader.findByCustomerId(reservation.getCustomer().getId());
+    List<Progress> progressList = progressReader.findByCustomerIdAndDesc(reservation.getCustomer().getId());
     return reservationMapper.entityToGetReservationCustomerDetailsDtoResponse(reservation, progressList);
   }
 

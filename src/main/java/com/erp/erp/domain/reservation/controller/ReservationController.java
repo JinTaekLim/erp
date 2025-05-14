@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,23 +38,12 @@ public class ReservationController {
     return ApiResult.success(response);
   }
 
-//  @Operation(summary = "특정 시간 예약 조회")
-//  @GetMapping("/getReservationByTime")
-//  public ApiResult<List<GetDailyReservationDto.Response>> getReservationByTime(
-//      @RequestParam("time") LocalDate day,
-//      @RequestParam Long startIndex,
-//      @RequestParam Long endIndex) {
-//    List<GetDailyReservationDto.Response> response = reservationService.getReservationByTime(day, startIndex, endIndex);
-//    return ApiResult.success(response);
-//  }
-
-
   @Operation(summary = "예약 수정")
   @PutMapping("/updatedReservation")
   public ApiResult<UpdatedReservationDto.Response> updatedReservation(
       @Valid @RequestBody UpdatedReservationDto.Request req) {
-    UpdatedReservationDto.Response response = reservationService.updateReservation(req);
-    return ApiResult.success(response);
+    reservationService.sendUpdateReservation(req);
+    return ApiResult.success(null);
   }
 
   @Operation(summary = "좌석 번호 변경")

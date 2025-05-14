@@ -9,8 +9,6 @@ public interface ReservationRepositoryCustom {
 
   List<Reservation> findByInstituteAndStartDate(Institute institute, LocalDate date);
 
-//  List<Reservation> findByInstituteAndTimeRange(Institute institute, LocalDate day, int startTime, int endTime);
-
   List<Reservation> findReservationsWithinTimeRange(Institute institute, LocalDate day, int startIndex, int endIndex);
 
 

@@ -2,6 +2,7 @@ package com.erp.erp.global.test;
 
 
 import com.erp.erp.global.config.QuerydslConfig;
+import com.erp.erp.global.util.config.fixtureMonkey.FixtureMonkeyConfig;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -11,7 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
 @ActiveProfiles("test")
-@Import(QuerydslConfig.class)
+@Import({QuerydslConfig.class, FixtureMonkeyConfig.class})
 public class JpaTest {
 
   @Autowired

@@ -13,5 +13,9 @@ import org.springframework.context.annotation.Configuration;
 public class UrlProperties {
 
   private List<String> allowedOrigins;
+  private List<String> permitAll;
 
+  public String[] getPermitAll() {
+    return permitAll.toArray(new String[0]);
+  }
 }

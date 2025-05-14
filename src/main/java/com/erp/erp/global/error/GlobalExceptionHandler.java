@@ -2,10 +2,12 @@ package com.erp.erp.global.error;
 
 import com.erp.erp.global.error.exception.UnAuthenticatedException;
 import com.erp.erp.global.error.exception.type.ApiErrorType;
+import com.erp.erp.global.notification.SendNotification;
 import com.erp.erp.global.response.ApiResult;
 import java.util.Objects;
 
 import com.erp.erp.global.error.exception.BusinessException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -17,13 +19,17 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 @Slf4j
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
+
+  private final SendNotification sendNotification;
 
   @ExceptionHandler(Exception.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public ApiResult<?> handleException(Exception ex){
     log.error(ex.getMessage());
     log.error("Exception : "+ ex);
+    sendNotification.sendError(ex.getMessage());
     return ApiResult.fail();
   }
 

@@ -12,7 +12,7 @@ public class GetInstituteDto {
   @Builder
   public static class Response{
     @Schema(description = "매장 ID")
-    private Long id;
+    private Long instituteId;
     @Schema(description = "매장 이름")
     private String name;
     @Schema(description = "영업 시작 시간")

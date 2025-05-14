@@ -6,10 +6,12 @@ import com.erp.erp.domain.customer.business.CustomerUpdater;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerExpiredAtDto;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -30,7 +32,11 @@ public class CustomerScheduler {
   // 매일 3시 임시 저장된 사진 업로드
   @Scheduled(cron = "0 0 3 * * ?")
   public void uploadTemporaryPhotoJob() throws Exception {
-    jobLauncher.run(uploadCustomerPhotoBatch.uploadTemporaryPhotoJob(), new JobParameters());
+    JobParameters params = new JobParametersBuilder()
+        .addDate("date", new Date())
+        .toJobParameters();
+
+    jobLauncher.run(uploadCustomerPhotoBatch.uploadTemporaryPhotoJob(), params);
   }
 
   // 매정각 만료일자가 지난 회원의 상태 값을 변경

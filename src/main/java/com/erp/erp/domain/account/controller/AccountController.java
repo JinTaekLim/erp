@@ -3,7 +3,6 @@ package com.erp.erp.domain.account.controller;
 import com.erp.erp.domain.account.common.dto.AccountLoginDto;
 import com.erp.erp.domain.account.service.AccountService;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
-import com.erp.erp.global.annotation.authentication.PermitAll;
 import com.erp.erp.global.response.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,7 +27,6 @@ public class AccountController {
 
   @Operation(summary = "로그인")
   @PostMapping("/login")
-  @PermitAll
   public ApiResult<TokenDto> login(@Valid @RequestBody AccountLoginDto.Request request) {
     TokenDto response = accountService.login(request);
     return ApiResult.success(response);
@@ -36,7 +34,6 @@ public class AccountController {
 
   @Operation(summary = "토큰 재발급")
   @PostMapping("/reissueToken")
-  @PermitAll
   public ApiResult<TokenDto> reissueToken(@RequestParam("refreshToken") String refreshToken) {
     TokenDto response = accountService.reissueToken(refreshToken);
     return ApiResult.success(response);

@@ -12,12 +12,22 @@ public class ReservationCacheUpdater {
 
   private final ReservationCacheRepository reservationCacheRepository;
 
-  public void update(ReservationCache reservationCache) {
-    reservationCacheRepository.update(reservationCache);
+  public void updateCustomerReservation(ReservationCache reservationCache) {
+    reservationCacheRepository.updateCustomerReservation(reservationCache);
   }
 
-  public void update(Long instituteId, List<ReservationCache> reservationCacheList) {
-    reservationCacheRepository.update(instituteId, reservationCacheList);
+  public void updateAllInstituteCache(Long instituteId, List<ReservationCache> reservationCacheList) {
+    reservationCacheRepository.updateAllInstituteCache(instituteId, reservationCacheList);
+  }
+
+  public void updateCacheExcludingCustomer(
+      Long instituteId, Long customerId, List<ReservationCache> reservationCacheList
+  ) {
+    reservationCacheList = reservationCacheList.stream()
+        .filter(reservationCache -> !reservationCache.getCustomerId().equals(customerId))
+        .toList();
+
+    reservationCacheRepository.updateAllInstituteCache(instituteId, reservationCacheList);
   }
 
 }

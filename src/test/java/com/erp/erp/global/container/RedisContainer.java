@@ -3,9 +3,6 @@ package com.erp.erp.global.container;
 
 import java.time.Duration;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
@@ -25,13 +22,7 @@ public class RedisContainer {
 
   static {
     redisContainer.start();
-  }
-
-  @Bean
-  public RedisConnectionFactory redisConnectionFactory() {
-    return new LettuceConnectionFactory(
-        redisContainer.getHost(),
-        redisContainer.getMappedPort(REDIS_PORT)
-    );
+    System.setProperty("spring.data.redis.host", redisContainer.getHost());
+    System.setProperty("spring.data.redis.port", redisContainer.getMappedPort(REDIS_PORT).toString());
   }
 }

@@ -20,20 +20,6 @@ public class ReservationReader {
     return reservationRepository.findByInstituteAndStartDate(institute, date);
   }
 
-//  public List<Reservation> findByInstitutesAndReservationTimeBetween(
-//      Institute institute,
-//      LocalDate day,
-//      int startTime,
-//      int endTime
-//  ){
-//    return reservationRepository.findByInstituteAndTimeRange(
-//        institute,
-//        day,
-//        startTime,
-//        endTime
-//    );
-//  };
-
   public Reservation findByIdAndInstituteId(Long reservationId, Long instituteId) {
     return reservationRepository.findByIdAndInstituteId(reservationId, instituteId)
         .orElseThrow(NotFoundReservationException::new);

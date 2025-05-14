@@ -2,7 +2,6 @@ package com.erp.erp.domain.reservation.business;
 
 import com.erp.erp.domain.reservation.common.dto.UpdatedReservationDto;
 import com.erp.erp.domain.reservation.common.entity.Reservation;
-import com.erp.erp.domain.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -11,8 +10,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 public class ReservationUpdater {
-
-  private final ReservationRepository reservationRepository;
 
   public Reservation updatedReservations(
       Reservation reservation,
@@ -23,7 +20,7 @@ public class ReservationUpdater {
         req.getReservationDate(), req.getStartIndex(), req.getEndIndex(),
         req.getMemo(), req.getSeatNumber(),
         req.getAttendanceStatus(), updatedId);
-    return reservationRepository.save(reservation);
+    return reservation;
   }
 
   public Reservation updateSeatNumber(Reservation reservation, int seatNumber, String updatedId) {
