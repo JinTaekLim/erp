@@ -141,7 +141,7 @@ public class UpdateCustomerDto {
 
     @Schema(description = "사용 시간")
     @NotNull
-    private Double useTime;
+    private Double usedTime;
 
   }
 }

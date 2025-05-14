@@ -51,7 +51,6 @@ public interface CustomerMapper {
 
   List<UpdateCustomerDto.ProgressResponse> updateCustomer(List<Progress> progressList);
   @Mapping(target = "progressId", source = "id")
-  @Mapping(target = "useTime", ignore = true)
   UpdateCustomerDto.ProgressResponse updateCustomer(Progress progressList);
 
 
