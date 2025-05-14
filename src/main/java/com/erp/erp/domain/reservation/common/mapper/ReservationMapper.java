@@ -29,13 +29,18 @@ public interface ReservationMapper {
   @Mapping(target = "name", source = "reservation.customer.name")
   GetDailyReservationDto.Response entityToGetDailyReservationDtoResponse(Reservation reservation);
 
+  // 좌석 수정
+  @Mapping(target = "reservationId", source = "reservation.id")
+  UpdatedSeatNumberDto.Response entityToUpdatedSeatNumberDtoResponse(Reservation reservation);
+
+  // 예약 수정
   @Mapping(target = "reservationId", source = "reservation.id")
   @Mapping(target = "progressList", expression = "java(entityToProgressResponse(progressList))")
   UpdatedReservationDto.Response entityToUpdatedReservationDtoResponse(Reservation reservation, List<Progress> progressList);
 
-  @Mapping(target = "reservationId", source = "reservation.id")
-  UpdatedSeatNumberDto.Response entityToUpdatedSeatNumberDtoResponse(Reservation reservation);
+  List<ProgressDto.Response> entityToProgressResponse(List<Progress> progress);
 
+  // 고객 예약 상세 조회
   @Mapping(target = "photoUrl", source = "reservation.customer.photoUrl")
   @Mapping(target = "name", source = "reservation.customer.name")
   @Mapping(target = "phone", source = "reservation.customer.phone")
@@ -44,10 +49,10 @@ public interface ReservationMapper {
   @Mapping(target = "remainingTime", ignore = true)
   @Mapping(target = "usedTime", ignore = true)
   @Mapping(target = "memo", source = "reservation.customer.memo")
-  @Mapping(target = "progressList", expression = "java(entityToProgressResponse(progressList))")
   GetReservationCustomerDetailsDto.Response entityToGetReservationCustomerDetailsDtoResponse(Reservation reservation, List<Progress> progressList);
 
-  List<ProgressDto.Response> entityToProgressResponse(List<Progress> progress);
+  @Mapping(target = "progressId", source = "id")
+  GetReservationCustomerDetailsDto.ProgressResponse entityToGetReservationCustomerDetailsDtoResponse(Progress progress);
 
   @Mapping(target = "progressId", source = "id")
   @Mapping(target = "date", source = "date")
