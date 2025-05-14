@@ -1,10 +1,10 @@
-package com.erp.erp.domain.customer.business;
+package com.erp.erp.domain.progress.business;
 
 import com.erp.erp.domain.customer.common.dto.ProgressDto;
 import com.erp.erp.domain.customer.common.entity.Customer;
-import com.erp.erp.domain.customer.common.entity.Progress;
-import com.erp.erp.domain.customer.common.exception.NotFoundProgressException;
-import com.erp.erp.domain.customer.common.mapper.ProgressMapper;
+import com.erp.erp.domain.progress.common.entity.Progress;
+import com.erp.erp.domain.progress.common.mapper.ProgressMapper;
+import com.erp.erp.domain.progress.common.exception.NotFoundProgressException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;

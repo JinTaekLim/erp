@@ -1,5 +1,6 @@
-package com.erp.erp.domain.customer.common.entity;
+package com.erp.erp.domain.progress.common.entity;
 
+import com.erp.erp.domain.customer.common.entity.Customer;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

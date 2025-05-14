@@ -1,6 +1,6 @@
-package com.erp.erp.domain.customer.repository;
+package com.erp.erp.domain.progress.repository;
 
-import com.erp.erp.domain.customer.common.entity.Progress;
+import com.erp.erp.domain.progress.common.entity.Progress;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 

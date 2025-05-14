@@ -1,7 +1,7 @@
 package com.erp.erp.global.util.generator;
 
 import com.erp.erp.domain.customer.common.entity.Customer;
-import com.erp.erp.domain.customer.common.entity.Progress;
+import com.erp.erp.domain.progress.common.entity.Progress;
 import java.util.List;
 
 public class ProgressGenerator extends EntityGenerator{

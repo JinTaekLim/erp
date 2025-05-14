@@ -10,7 +10,7 @@ import com.erp.erp.domain.customer.common.dto.ProgressDto;
 import com.erp.erp.domain.customer.common.dto.SearchCustomerNameDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customer.common.entity.Customer;
-import com.erp.erp.domain.customer.common.entity.Progress;
+import com.erp.erp.domain.progress.common.entity.Progress;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.payment.common.entity.OtherPayment;
 import com.erp.erp.domain.payment.common.entity.PlanPayment;

@@ -1,9 +1,9 @@
-package com.erp.erp.domain.customer.common.mapper;
+package com.erp.erp.domain.progress.common.mapper;
 
 
 import com.erp.erp.domain.customer.common.dto.ProgressDto;
 import com.erp.erp.domain.customer.common.entity.Customer;
-import com.erp.erp.domain.customer.common.entity.Progress;
+import com.erp.erp.domain.progress.common.entity.Progress;
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
