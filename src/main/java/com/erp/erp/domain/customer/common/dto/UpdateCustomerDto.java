@@ -41,7 +41,7 @@ public class UpdateCustomerDto {
     @Schema(description = "메모")
     private String memo;
     @Schema(description = "진도표")
-    private List<ProgressDto.Request> progressList;
+    private List<ProgressRequest> progressList;
     @Schema(description = "이용권 결제 여부")
     private boolean planPaymentStatus;
     @Schema(description = "기타 결제")
@@ -73,7 +73,7 @@ public class UpdateCustomerDto {
       @Schema(description = "메모")
       private String memo;
       @Schema(description = "진도표")
-      private List<ProgressDto.Response> progressList;
+      private List<ProgressResponse> progressList;
       @Schema(description = "이용권 결제 여부")
       private boolean planPaymentStatus;
       @Schema(description = "기타 결제")
@@ -106,5 +106,42 @@ public class UpdateCustomerDto {
     @Schema(description = "결제 여부")
     @NotNull(message = "결제 여부를 입력해주세요")
     private boolean status;
+  }
+
+  @Getter
+  @Builder
+  @Schema(name = "UpdateCustomerDto_ProgressRequest", description = "회원 수정 진도표 요청")
+  public static class ProgressRequest {
+
+    @Schema(description = "진도표 ID")
+    @NotNull
+    private Long progressId;
+
+    @Schema(description = "내용")
+    @NotNull
+    private String content;
+
+  }
+
+  @Getter
+  @Builder
+  @Schema(name = "UpdateCustomerDto_ProgressResponse", description = "회원 수정 진도표 응답")
+  public static class ProgressResponse {
+
+    @Schema(description = "진도표 ID")
+    private Long progressId;
+
+    @Schema(description = "날짜")
+    @NotNull
+    private LocalDate date;
+
+    @Schema(description = "내용")
+    @NotNull
+    private String content;
+
+    @Schema(description = "사용 시간")
+    @NotNull
+    private Double useTime;
+
   }
 }

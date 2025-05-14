@@ -30,7 +30,6 @@ public class Progress {
   @NotNull
   private LocalDate date;
 
-  @NotNull
   private String content;
 
   private String createdId;
@@ -52,6 +51,13 @@ public class Progress {
 
   public Progress update(LocalDate date, String content, String updatedId) {
     this.date = date;
+    this.content = content;
+    this.updatedId = updatedId;
+    this.updatedAt = LocalDateTime.now();
+    return this;
+  }
+
+  public Progress update(String content, String updatedId) {
     this.content = content;
     this.updatedId = updatedId;
     this.updatedAt = LocalDateTime.now();

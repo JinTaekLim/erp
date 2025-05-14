@@ -42,11 +42,18 @@ public interface CustomerMapper {
   @Mapping(target = "otherPaymentMethod", source = "req.planPayment.otherPaymentMethod")
   PlanPayment planPaymentResponseToPlanPayment(AddCustomerDto.Request req, Plan plan);
 
+
+  // 고객 수정
   @Mapping(target = "customerId", source = "customer.id")
-  @Mapping(target = "progressList", expression = "java(entityToProgressResponse(progressList))")
   @Mapping(target = "otherPayment", source = "customer.otherPayments")
   @Mapping(target = "planPaymentStatus", source = "customer.planPayment.status")
   UpdateCustomerDto.Response entityToUpdateCustomerResponse(Customer customer, List<Progress> progressList);
+
+  List<UpdateCustomerDto.ProgressResponse> updateCustomer(List<Progress> progressList);
+  @Mapping(target = "progressId", source = "id")
+  @Mapping(target = "useTime", ignore = true)
+  UpdateCustomerDto.ProgressResponse updateCustomer(Progress progressList);
+
 
   @Mapping(target = "progressId", source = "id")
   @Mapping(target = "date", source = "date")

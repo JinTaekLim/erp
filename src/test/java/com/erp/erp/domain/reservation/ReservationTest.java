@@ -15,6 +15,7 @@ import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.progress.common.entity.Progress;
 import com.erp.erp.domain.customer.common.exception.NotFoundCustomerException;
 import com.erp.erp.domain.customer.repository.CustomerRepository;
+import com.erp.erp.domain.progress.common.exception.NotFoundProgressException;
 import com.erp.erp.domain.progress.repository.ProgressRepository;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
