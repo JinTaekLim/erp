@@ -30,6 +30,9 @@ public class Progress {
   @NotNull
   private LocalDate date;
 
+  @NotNull
+  private Double usedTime;
+
   private String content;
 
   private String createdId;
@@ -41,7 +44,9 @@ public class Progress {
   private LocalDateTime updatedAt;
 
   @Builder
-  public Progress(Customer customer, LocalDate date, String content, String createdId) {
+  public Progress(
+      Customer customer, LocalDate date, Double usedTime, String content, String createdId
+  ) {
     this.customer = customer;
     this.date = date;
     this.content = content;
