@@ -30,4 +30,15 @@ public class InstituteLock {
     rLock.unlock();
   }
 
+  public void executeWithLock(Long instituteId, Runnable action) {
+    try {
+      getLock(instituteId);
+      action.run();
+    } catch (Exception e) {
+      throw new RuntimeException("락 획득 실패");
+    } finally {
+      unLock(instituteId);
+    }
+  }
+
 }

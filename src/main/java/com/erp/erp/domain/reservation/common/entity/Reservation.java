@@ -61,7 +61,7 @@ public class Reservation {
     this.createdAt = LocalDateTime.now();
   }
 
-  public void updatedReservations(LocalDate reservationDate, int startIndex, int endIndex, String memo,
+  public Reservation updatedReservations(LocalDate reservationDate, int startIndex, int endIndex, String memo,
       int seatNumber, AttendanceStatus attendanceStatus, String updatedId) {
     this.reservationDate = reservationDate;
     this.startIndex = startIndex;
@@ -71,6 +71,7 @@ public class Reservation {
     this.attendanceStatus = attendanceStatus;
     this.updatedId = updatedId;
     this.updatedAt = LocalDateTime.now();
+    return this;
   }
 
   public void updatedSeat(int seatNumber, String updatedId) {

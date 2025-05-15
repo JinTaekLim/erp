@@ -25,7 +25,7 @@ public class ReservationController {
   @PostMapping("/addReservation")
   public ApiResult<Void> addReservation(
       @Valid @RequestBody AddReservationDto.Request req) {
-    reservationService.sendAddReservationRequest(req);
+    reservationService.addReservationRequest(req);
     return ApiResult.success(null);
   }
 
@@ -40,9 +40,9 @@ public class ReservationController {
 
   @Operation(summary = "예약 수정")
   @PutMapping("/updatedReservation")
-  public ApiResult<UpdatedReservationDto.Response> updatedReservation(
-      @Valid @RequestBody UpdatedReservationDto.Request req) {
-    reservationService.sendUpdateReservation(req);
+  public ApiResult<UpdateReservationDto.Response> updatedReservation(
+      @Valid @RequestBody UpdateReservationDto.Request req) {
+    reservationService.updateReservation(req);
     return ApiResult.success(null);
   }
 

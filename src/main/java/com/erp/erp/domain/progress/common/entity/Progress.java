@@ -25,6 +25,7 @@ public class Progress {
   private Long id;
 
   @ManyToOne
+  @NotNull
   private Customer customer;
 
   @NotNull
@@ -44,13 +45,10 @@ public class Progress {
   private LocalDateTime updatedAt;
 
   @Builder
-  public Progress(
-      Customer customer, LocalDate date, Double usedTime, String content, String createdId
-  ) {
+  public Progress(Customer customer, LocalDate date, Double usedTime, String createdId) {
     this.customer = customer;
     this.date = date;
     this.usedTime = usedTime;
-    this.content = content;
     this.createdId = createdId;
     this.createdAt = LocalDateTime.now();
   }

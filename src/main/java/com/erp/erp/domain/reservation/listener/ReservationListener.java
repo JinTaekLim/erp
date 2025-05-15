@@ -24,27 +24,27 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ReservationListener {
 
-  private final ReservationService reservationService;
-  private final RabbitMqMapper rabbitMqMapper;
-
-  @RabbitListener(queues = "#{rabbitMqMapper.addReservationQueueName}")
-  public void addReservationMessage(@Payload AddReservationMessageDto dto) {
-    Account account = dto.getAccount();
-    Customer customer = dto.getCustomer();
-    PendingReservationDto pendingReservation = dto.getPendingReservation();
-    AddReservationDto.Request req = dto.getReq();
-
-    reservationService.addReservations(account, customer, pendingReservation, req);
-  }
-
-  @RabbitListener(queues = "#{rabbitMqMapper.updateReservationQueueName}")
-  public void updateReservationMessage(@Payload UpdateReservationMessageDto dto) {
-    Reservation reservation = dto.getReservation();
-    ReservationCache reservationCache = dto.getReservationCache();
-    List<Progress> progress = dto.getProgress();
-    PendingReservationDto pendingReservation = dto.getPendingReservation();
-
-    reservationService.updateReservation(reservation, reservationCache, progress, pendingReservation);
-  }
+//  private final ReservationService reservationService;
+//  private final RabbitMqMapper rabbitMqMapper;
+//
+//  @RabbitListener(queues = "#{rabbitMqMapper.addReservationQueueName}")
+//  public void addReservationMessage(@Payload AddReservationMessageDto dto) {
+//    Account account = dto.getAccount();
+//    Customer customer = dto.getCustomer();
+//    PendingReservationDto pendingReservation = dto.getPendingReservation();
+//    AddReservationDto.Request req = dto.getReq();
+//
+//    reservationService.addReservations(account, customer, pendingReservation, req);
+//  }
+//
+//  @RabbitListener(queues = "#{rabbitMqMapper.updateReservationQueueName}")
+//  public void updateReservationMessage(@Payload UpdateReservationMessageDto dto) {
+//    Reservation reservation = dto.getReservation();
+//    ReservationCache reservationCache = dto.getReservationCache();
+//    List<Progress> progress = dto.getProgress();
+//    PendingReservationDto pendingReservation = dto.getPendingReservation();
+//
+//    reservationService.updateReservation(reservation, reservationCache, progress, pendingReservation);
+//  }
 
 }

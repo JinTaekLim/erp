@@ -8,7 +8,7 @@ import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.reservation.common.dto.AddReservationDto;
 import com.erp.erp.domain.reservation.common.dto.GetDailyReservationDto;
 import com.erp.erp.domain.reservation.common.dto.GetReservationCustomerDetailsDto;
-import com.erp.erp.domain.reservation.common.dto.UpdatedReservationDto;
+import com.erp.erp.domain.reservation.common.dto.UpdateReservationDto;
 import com.erp.erp.domain.reservation.common.dto.UpdatedSeatNumberDto;
 import com.erp.erp.domain.reservation.common.entity.Reservation;
 import java.time.LocalDateTime;
@@ -33,12 +33,12 @@ public interface ReservationMapper {
   @Mapping(target = "reservationId", source = "reservation.id")
   UpdatedSeatNumberDto.Response entityToUpdatedSeatNumberDtoResponse(Reservation reservation);
 
-  // 예약 수정
-  @Mapping(target = "reservationId", source = "reservation.id")
-  @Mapping(target = "progressList", expression = "java(entityToProgressResponse(progressList))")
-  UpdatedReservationDto.Response entityToUpdatedReservationDtoResponse(Reservation reservation, List<Progress> progressList);
-
-  List<ProgressDto.Response> entityToProgressResponse(List<Progress> progress);
+//  // 예약 수정
+//  @Mapping(target = "reservationId", source = "reservation.id")
+//  @Mapping(target = "progressList", expression = "java(entityToProgressResponse(progressList))")
+//  UpdateReservationDto.Response entityToUpdatedReservationDtoResponse(Reservation reservation, List<Progress> progressList);
+//
+//  List<ProgressDto.Response> entityToProgressResponse(List<Progress> progress);
 
   // 고객 예약 상세 조회
   @Mapping(target = "photoUrl", source = "reservation.customer.photoUrl")
