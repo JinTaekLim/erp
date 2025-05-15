@@ -16,4 +16,8 @@ public class ProgressCreator {
     return progressRepository.saveAll(progress);
   }
 
+  public void save(Progress progress) {
+    progressRepository.save(progress);
+  }
+
 }

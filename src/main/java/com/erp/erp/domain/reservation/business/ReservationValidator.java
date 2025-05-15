@@ -1,6 +1,7 @@
 package com.erp.erp.domain.reservation.business;
 
 import com.erp.erp.domain.institute.business.InstituteLock;
+import com.erp.erp.domain.institute.business.InstituteValidator;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.reservation.common.dto.PendingReservationDto;
 import com.erp.erp.domain.reservation.common.entity.Reservation;
@@ -101,9 +102,39 @@ public class ReservationValidator {
     }
   }
 
+  public void checkAvailableSeat(List<Reservation> reservations, int totalSeat) {
+    // 예약이 가능한 좌석이 없으면 예외를 던짐
+    if (reservations.size() >= totalSeat) {
+      throw new NoAvailableSeatException();
+    }
+  }
+
   public void checkStartTimeBeforeEndTime(int startIndex, int endIndex) {
     if (startIndex >= endIndex) {
       throw new InvalidReservationTimeException();
     }
+  }
+
+
+
+
+
+
+
+
+
+  private final InstituteValidator instituteValidator;
+
+
+  public void validateRequest(Institute institute, int startIndex, int endIndex) {
+
+    // 영업 시간 내의 예약인지 검사
+    instituteValidator.validateOperatingHours(institute, startIndex, endIndex);
+
+    // 매장 범위 내 좌석인지 검사
+    instituteValidator.isValidSeatNumber(institute, institute.getTotalSeat());
+
+    // 예약 시작 시간이 종료 시간보다 이전인지 검사
+    checkStartTimeBeforeEndTime(startIndex, endIndex);
   }
 }

@@ -10,7 +10,7 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
-public class UpdatedReservationDto {
+public class UpdateReservationDto {
 
   @Schema(name = "UpdateReservationDto_Request" , description = "회원 예약 변경 요청")
   @Builder
@@ -46,7 +46,7 @@ public class UpdatedReservationDto {
     private AttendanceStatus attendanceStatus;
 
     @Schema(description = "진도표")
-    private List<ProgressDto.Request> progressList;
+    private List<ProgressRequest> progressList;
 
   }
 
@@ -77,7 +77,44 @@ public class UpdatedReservationDto {
     private AttendanceStatus attendanceStatus;
 
     @Schema(description = "진도표")
-    private List<ProgressDto.Response> progressList;
+    private List<ProgressResponse> progressList;
+  }
+
+  @Getter
+  @Builder
+  @Schema(name = "UpdateReservationDto_ProgressRequest", description = "예약 수정 진도표 요청")
+  public static class ProgressRequest {
+
+    @Schema(description = "진도표 ID")
+    @NotNull
+    private Long progressId;
+
+    @Schema(description = "내용")
+    @NotNull
+    private String content;
+
+  }
+
+  @Getter
+  @Builder
+  @Schema(name = "UpdateReservationDto_ProgressResponse", description = "예약 수정 진도표 응답")
+  public static class ProgressResponse {
+
+    @Schema(description = "진도표 ID")
+    private Long progressId;
+
+    @Schema(description = "날짜")
+    @NotNull
+    private LocalDate date;
+
+    @Schema(description = "내용")
+    @NotNull
+    private String content;
+
+    @Schema(description = "사용 시간")
+    @NotNull
+    private Double usedTime;
+
   }
 
 }
