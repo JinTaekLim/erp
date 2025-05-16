@@ -9,13 +9,11 @@ import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.account.repository.AccountRepository;
 import com.erp.erp.domain.auth.business.TokenManager;
 import com.erp.erp.domain.auth.common.dto.TokenDto;
-import com.erp.erp.domain.customer.common.dto.ProgressDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.progress.common.entity.Progress;
 import com.erp.erp.domain.customer.common.exception.NotFoundCustomerException;
 import com.erp.erp.domain.customer.repository.CustomerRepository;
-import com.erp.erp.domain.progress.common.exception.NotFoundProgressException;
 import com.erp.erp.domain.progress.repository.ProgressRepository;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.institute.repository.InstituteRepository;
@@ -26,6 +24,7 @@ import com.erp.erp.domain.reservation.common.dto.AddReservationDto;
 import com.erp.erp.domain.reservation.common.dto.GetDailyReservationDto;
 import com.erp.erp.domain.reservation.common.dto.GetReservationCustomerDetailsDto;
 import com.erp.erp.domain.reservation.common.dto.UpdateReservationDto;
+import com.erp.erp.domain.reservation.common.dto.UpdateReservationDto.ProgressRequest;
 import com.erp.erp.domain.reservation.common.dto.UpdatedSeatNumberDto;
 import com.erp.erp.domain.reservation.common.entity.Reservation;
 import com.erp.erp.domain.reservation.common.exception.InvalidReservationTimeException;
@@ -45,12 +44,9 @@ import com.erp.erp.global.test.IntegrationTest;
 import com.google.gson.reflect.TypeToken;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -316,7 +312,7 @@ class ReservationTest extends IntegrationTest {
 
     //then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-//    assertThat(reservationsCount).isEqualTo(apiResponse.getData().size());
+    assertThat(reservationsCount).isEqualTo(apiResponse.getData().size());
     IntStream.range(0, reservationsCount).forEach(i -> {
       assertThat(apiResponse.getData().get(i).getReservationDate()).isEqualTo(reservations.get(i).getReservationDate());
       assertThat(apiResponse.getData().get(i).getStartIndex()).isEqualTo(reservations.get(i).getStartIndex());
@@ -325,506 +321,214 @@ class ReservationTest extends IntegrationTest {
       assertThat(apiResponse.getData().get(i).getName()).isEqualTo(reservations.get(i).getCustomer().getName());
     });
   }
-//
-//  @Test
-//  @DisplayName("updatedReservation 진도표 미변경 성공")
-//  void updatedReservation() {
-//    // given
-//    Institute institute = createInstitutes();
-//    Account account = createAccount(institute);
-//    TokenDto tokenDto = tokenManager.createToken(account);
-//
-//    Customer customer = createCustomers(institute);
-//    int progressSize = RandomValue.getInt(0, 5);
-//    List<Progress> progressList = createProgressList(customer, progressSize);
-//
-//    Reservation reservation = createReservation(customer, institute);
-//
-//    Reservation newReservation = ReservationGenerator.get(customer, institute);
-//
-//    UpdateReservationDto.Request request = UpdateReservationDto.Request.builder()
-//        .reservationId(reservation.getId())
-//        .reservationDate(newReservation.getReservationDate())
-//        .startIndex(newReservation.getStartIndex())
-//        .endIndex(newReservation.getEndIndex())
-//        .memo(newReservation.getMemo())
-//        .seatNumber(newReservation.getSeatNumber())
-//        .attendanceStatus(newReservation.getAttendanceStatus())
-//        .build();
-//
-//    String url = BASE_URL + "/updatedReservation";
-//
-//    HttpHeaders headers = new HttpHeaders();
-//    headers.setBearerAuth(tokenDto.getAccessToken());
-//    HttpEntity<UpdateReservationDto.Request> requestEntity = new HttpEntity<>(request, headers);
-//
-//    //when
-//    ResponseEntity<String> responseEntity = restTemplate.exchange(
-//        url,
-//        HttpMethod.PUT,
-//        requestEntity,
-//        String.class
-//    );
-//
-//    ApiResult<UpdateReservationDto.Response> apiResponse = gson.fromJson(
-//        responseEntity.getBody(),
-//        new TypeToken<ApiResult<UpdateReservationDto.Response>>() {
-//        }.getType()
-//    );
-//
-//    // then
-//    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-//  }
 
-//  @Test
-//  @DisplayName("updatedReservation 진도표 추가 성공")
-//  void updatedReservation_success_1() {
-//    // given
-//    Institute institute = createInstitutes();
-//    Account account = createAccount(institute);
-//    TokenDto tokenDto = tokenManager.createToken(account);
-//
-//    Customer customer = createCustomers(institute);
-//    int progressSize = RandomValue.getInt(0, 5);
-//    List<Progress> progressList = createProgressList(customer, progressSize);
-//
-//    int addProgressSize = RandomValue.getInt(1,5);;
-//
-//    List<ProgressDto.Request> progressRequest = fixtureMonkey.giveMeBuilder(ProgressDto.Request.class)
-//        .setNull("progressId")
-//        .set("deleted", false)
-//        .sampleList(addProgressSize);
-//
-//    List<ProgressDto.Request> allProgress = Stream.concat(
-//        progressList.stream().map(progress -> ProgressDto.Request.builder()
-//            .progressId(progress.getId())
-//            .date(progress.getDate())
-//            .content(progress.getContent())
-//            .deleted(false)
-//            .build()),
-//        progressRequest.stream()
-//    ).collect(Collectors.toCollection(ArrayList::new));
-//
-//    Reservation reservation = createReservation(customer, institute);
-//    Reservation newReservation = ReservationGenerator.get(customer, institute);
-//
-//    UpdateReservationDto.Request request = UpdateReservationDto.Request.builder()
-//        .reservationId(reservation.getId())
-//        .reservationDate(newReservation.getReservationDate())
-//        .startIndex(newReservation.getStartIndex())
-//        .endIndex(newReservation.getEndIndex())
-//        .memo(newReservation.getMemo())
-//        .seatNumber(newReservation.getSeatNumber())
-//        .attendanceStatus(newReservation.getAttendanceStatus())
-//        .progressList(progressRequest)
-//        .build();
-//
-//    String url = BASE_URL + "/updatedReservation";
-//
-//    HttpHeaders headers = new HttpHeaders();
-//    headers.setBearerAuth(tokenDto.getAccessToken());
-//    HttpEntity<UpdateReservationDto.Request> requestEntity = new HttpEntity<>(request, headers);
-//
-//    //when
-//    ResponseEntity<String> responseEntity = restTemplate.exchange(
-//        url,
-//        HttpMethod.PUT,
-//        requestEntity,
-//        String.class
-//    );
-//
-//    ApiResult<UpdateReservationDto.Response> apiResponse = gson.fromJson(
-//        responseEntity.getBody(),
-//        new TypeToken<ApiResult<UpdateReservationDto.Response>>() {
-//        }.getType()
-//    );
-//
-//    // then
-//    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-//  }
-//
-//  @Test
-//  @DisplayName("updatedReservation 진도표 수정 성공")
-//  void updatedReservation_success_2() {
-//    // given
-//    Institute institute = createInstitutes();
-//    Account account = createAccount(institute);
-//    TokenDto tokenDto = tokenManager.createToken(account);
-//
-//    Customer customer = createCustomers(institute);
-//    int progressSize = RandomValue.getInt(0, 5);
-//    List<Progress> progressList = createProgressList(customer, progressSize);
-//
-//    List<ProgressDto.Request> progressRequest = progressList.stream()
-//        .map(progress -> {
-//          return fixtureMonkey.giveMeBuilder(ProgressDto.Request.class)
-//              .set("progressId", progress.getId())
-//              .set("deleted", false)
-//              .sample();
-//        }).toList();
-//
-//    Reservation reservation = createReservation(customer, institute);
-//    Reservation newReservation = ReservationGenerator.get(customer, institute);
-//
-//    UpdateReservationDto.Request request = UpdateReservationDto.Request.builder()
-//        .reservationId(reservation.getId())
-//        .reservationDate(newReservation.getReservationDate())
-//        .startIndex(newReservation.getStartIndex())
-//        .endIndex(newReservation.getEndIndex())
-//        .memo(newReservation.getMemo())
-//        .seatNumber(newReservation.getSeatNumber())
-//        .attendanceStatus(newReservation.getAttendanceStatus())
-//        .progressList(progressRequest)
-//        .build();
-//
-//    String url = BASE_URL + "/updatedReservation";
-//
-//    HttpHeaders headers = new HttpHeaders();
-//    headers.setBearerAuth(tokenDto.getAccessToken());
-//    HttpEntity<UpdateReservationDto.Request> requestEntity = new HttpEntity<>(request, headers);
-//
-//    //when
-//    ResponseEntity<String> responseEntity = restTemplate.exchange(
-//        url,
-//        HttpMethod.PUT,
-//        requestEntity,
-//        String.class
-//    );
-//
-//    ApiResult<UpdateReservationDto.Response> apiResponse = gson.fromJson(
-//        responseEntity.getBody(),
-//        new TypeToken<ApiResult<UpdateReservationDto.Response>>() {
-//        }.getType()
-//    );
-//
-//    // then
-//    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-//  }
-//
-//  @Test
-//  @DisplayName("updatedReservation 진도표 삭제 성공")
-//  void updatedReservation_success_3() {
-//    // given
-//    Institute institute = createInstitutes();
-//    Account account = createAccount(institute);
-//    TokenDto tokenDto = tokenManager.createToken(account);
-//
-//    Customer customer = createCustomers(institute);
-//    int progressSize = RandomValue.getInt(1, 5);;
-//    List<Progress> progressList = createProgressList(customer, progressSize);
-//
-//    int deleteProgressSize = RandomValue.getInt(1, progressSize);
-//    List<ProgressDto.Request> progressRequest = IntStream.range(0, deleteProgressSize)
-//        .mapToObj(i -> {
-//          return fixtureMonkey.giveMeBuilder(ProgressDto.Request.class)
-//              .set("progressId", progressList.get(i).getId())
-//              .set("deleted", true)
-//              .sample();
-//        }).toList();
-//
-//    Reservation reservation = createReservation(customer, institute);
-//    Reservation newReservation = ReservationGenerator.get(customer, institute);
-//
-//    UpdateReservationDto.Request request = UpdateReservationDto.Request.builder()
-//        .reservationId(reservation.getId())
-//        .reservationDate(newReservation.getReservationDate())
-//        .startIndex(newReservation.getStartIndex())
-//        .endIndex(newReservation.getEndIndex())
-//        .memo(newReservation.getMemo())
-//        .seatNumber(newReservation.getSeatNumber())
-//        .attendanceStatus(newReservation.getAttendanceStatus())
-//        .progressList(progressRequest)
-//        .build();
-//
-//
-//    String url = BASE_URL + "/updatedReservation";
-//
-//    HttpHeaders headers = new HttpHeaders();
-//    headers.setBearerAuth(tokenDto.getAccessToken());
-//    HttpEntity<UpdateReservationDto.Request> requestEntity = new HttpEntity<>(request, headers);
-//
-//    //when
-//    ResponseEntity<String> responseEntity = restTemplate.exchange(
-//        url,
-//        HttpMethod.PUT,
-//        requestEntity,
-//        String.class
-//    );
-//
-//    ApiResult<UpdateReservationDto.Response> apiResponse = gson.fromJson(
-//        responseEntity.getBody(),
-//        new TypeToken<ApiResult<UpdateReservationDto.Response>>() {
-//        }.getType()
-//    );
-//
-//    // then
-//    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-//  }
+  @Test
+  @DisplayName("updatedReservation 성공")
+  void updatedReservation_success_1() {
+    // given
+    Institute institute = createInstitutes();
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
 
-//  @Test
-//  @DisplayName("updatedReservation 존재하지 않는 예약")
-//  void updatedReservation_fail() {
-//    // given
-//    Institute institute = createInstitutes();
-//    Account account = createAccount(institute);
-//    TokenDto tokenDto = tokenManager.createToken(account);
-//
-//    UpdateReservationDto.Request request = fixtureMonkey.giveMeBuilder(UpdateReservationDto.Request.class)
-//        .set("reservationId", RandomValue.getRandomLong(9999))
-//        .sample();
-//
-//    String url = BASE_URL + "/updatedReservation";
-//
-//    HttpHeaders headers = new HttpHeaders();
-//    headers.setBearerAuth(tokenDto.getAccessToken());
-//    HttpEntity<UpdateReservationDto.Request> requestEntity = new HttpEntity<>(request, headers);
-//
-//    NotFoundReservationException exception = new NotFoundReservationException();
-//
-//    //when
-//    ResponseEntity<String> responseEntity = restTemplate.exchange(
-//        url,
-//        HttpMethod.PUT,
-//        requestEntity,
-//        String.class
-//    );
-//
-//    ApiResult<UpdateReservationDto.Response> apiResponse = gson.fromJson(
-//        responseEntity.getBody(),
-//        new TypeToken<ApiResult<UpdateReservationDto.Response>>() {
-//        }.getType()
-//    );
-//
-//    // then
-//    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-//    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
-//    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
-//  }
-//
-//  @Test
-//  @DisplayName("updatedReservation 다른 매장 예약")
-//  void updatedReservation_fail_2() {
-//    // given
-//    Institute institute = createInstitutes();
-//    Account account = createAccount(institute);
-//    TokenDto tokenDto = tokenManager.createToken(account);
-//
-//    Institute nonReturnInstitute = createInstitutes();
-//    Customer customer = createCustomers(nonReturnInstitute);
-//    Reservation reservation = createReservation(customer, nonReturnInstitute);
-//
-//    UpdateReservationDto.Request request = fixtureMonkey.giveMeBuilder(UpdateReservationDto.Request.class)
-//        .set("reservationId", reservation.getId())
-//        .set("startIndex", 10)
-//        .set("endIndex", 20)
-//        .sample();
-//
-//    String url = BASE_URL + "/updatedReservation";
-//
-//    HttpHeaders headers = new HttpHeaders();
-//    headers.setBearerAuth(tokenDto.getAccessToken());
-//    HttpEntity<UpdateReservationDto.Request> requestEntity = new HttpEntity<>(request, headers);
-//
-//    NotFoundReservationException exception = new NotFoundReservationException();
-//
-//    //when
-//    ResponseEntity<String> responseEntity = restTemplate.exchange(
-//        url,
-//        HttpMethod.PUT,
-//        requestEntity,
-//        String.class
-//    );
-//
-//    ApiResult<UpdateReservationDto.Response> apiResponse = gson.fromJson(
-//        responseEntity.getBody(),
-//        new TypeToken<ApiResult<UpdateReservationDto.Response>>() {
-//        }.getType()
-//    );
-//
-//    // then
-//    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-//    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
-//    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
-//  }
+    Customer customer = createCustomers(institute);
+    Reservation reservation = createReservation(customer, institute);
+    int progressSize = RandomValue.getInt(0, 5);
+    List<Progress> progressList = createProgressList(customer, progressSize);
 
-//  @Test
-//  @DisplayName("updatedReservation 잘못된 seatNumber")
-//  void updatedReservation_fail_3() {
-//    // given
-//    Institute institute = createInstitutes();
-//    Account account = createAccount(institute);
-//    TokenDto tokenDto = tokenManager.createToken(account);
-//    Customer customer = createCustomers(institute);
-//    Reservation reservation = createReservation(customer, institute);
-//
-//    Reservation newReservation = ReservationGenerator.get(customer, institute);
-//    int seatNumber = RandomValue.getInt(0,2) == 0 ? 0 : institute.getTotalSeat() + RandomValue.getInt(1,5);
-//    UpdateReservationDto.Request request = fixtureMonkey.giveMeBuilder(UpdateReservationDto.Request.class)
-//        .set("startIndex", newReservation.getStartIndex())
-//        .set("endIndex", newReservation.getEndIndex())
-//        .set("reservationId", reservation.getId())
-//        .set("seatNumber", seatNumber)
-//        .sample();
-//
-//    String url = BASE_URL + "/updatedReservation";
-//
-//    HttpHeaders headers = new HttpHeaders();
-//    headers.setBearerAuth(tokenDto.getAccessToken());
-//    HttpEntity<UpdateReservationDto.Request> requestEntity = new HttpEntity<>(request, headers);
-//
-//    InvalidSeatRangeException exception = new InvalidSeatRangeException();
-//
-//    //when
-//    ResponseEntity<String> responseEntity = restTemplate.exchange(
-//        url,
-//        HttpMethod.PUT,
-//        requestEntity,
-//        String.class
-//    );
-//
-//    ApiResult<UpdateReservationDto.Response> apiResponse = gson.fromJson(
-//        responseEntity.getBody(),
-//        new TypeToken<ApiResult<UpdateReservationDto.Response>>() {
-//        }.getType()
-//    );
-//
-//    // then
-//    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-//    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
-//    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
-//  }
-//
-//  @Test
-//  @DisplayName("updatedReservation 진도표 수정 잘못된 ID값 입력")
-//  void updatedReservation_fail_4() {
-//    // given
-//    Institute institute = createInstitutes();
-//    Account account = createAccount(institute);
-//    TokenDto tokenDto = tokenManager.createToken(account);
-//
-//    Customer customer = createCustomers(institute);
-//    int progressSize = RandomValue.getInt(0, 5);
-//    List<Long> progressIds = createProgressList(customer, progressSize).stream()
-//        .map(Progress::getId)
-//        .toList();
-//
-//    long newId = Stream.generate(() -> RandomValue.getRandomLong(0, 99999))
-//        .filter(id -> !progressIds.contains(id))
-//        .findFirst()
-//        .orElseThrow(() -> new IllegalStateException("새로운 ID를 생성할 수 없습니다."));
-//
-//    List<ProgressDto.Request> progressRequest = fixtureMonkey.giveMeBuilder(ProgressDto.Request.class)
-//        .set("progressId", newId)
-//        .set("deleted", false)
-//        .sampleList(1);
-//
-//    Reservation reservation = createReservation(customer, institute);
-//    Reservation newReservation = ReservationGenerator.get(customer, institute);
-//
-//    UpdateReservationDto.Request request = UpdateReservationDto.Request.builder()
-//        .reservationId(reservation.getId())
-//        .reservationDate(newReservation.getReservationDate())
-//        .startIndex(newReservation.getStartIndex())
-//        .endIndex(newReservation.getEndIndex())
-//        .memo(newReservation.getMemo())
-//        .seatNumber(newReservation.getSeatNumber())
-//        .attendanceStatus(newReservation.getAttendanceStatus())
-//        .progressList(progressRequest)
-//        .build();
-//
-//    String url = BASE_URL + "/updatedReservation";
-//
-//    HttpHeaders headers = new HttpHeaders();
-//    headers.setBearerAuth(tokenDto.getAccessToken());
-//    HttpEntity<UpdateReservationDto.Request> requestEntity = new HttpEntity<>(request, headers);
-//
-//    NotFoundProgressException exception = new NotFoundProgressException();
-//
-//    //when
-//    ResponseEntity<String> responseEntity = restTemplate.exchange(
-//        url,
-//        HttpMethod.PUT,
-//        requestEntity,
-//        String.class
-//    );
-//
-//    ApiResult<UpdateReservationDto.Response> apiResponse = gson.fromJson(
-//        responseEntity.getBody(),
-//        new TypeToken<ApiResult<UpdateReservationDto.Response>>() {
-//        }.getType()
-//    );
-//
-//    // then
-//    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-//    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
-//    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
-//  }
-//
-//  @Test
-//  @DisplayName("updatedReservation 진도표 삭제 잘못된 ID값 입력")
-//  void updatedReservation_fail_5() {
-//    // given
-//    Institute institute = createInstitutes();
-//    Account account = createAccount(institute);
-//    TokenDto tokenDto = tokenManager.createToken(account);
-//
-//    Customer customer = createCustomers(institute);
-//    int progressSize = RandomValue.getInt(0, 5);
-//    List<Long> progressIds = createProgressList(customer, progressSize).stream()
-//        .map(Progress::getId)
-//        .toList();
-//
-//    long newId = Stream.generate(() -> RandomValue.getRandomLong(0, 99999))
-//        .filter(id -> !progressIds.contains(id))
-//        .findFirst()
-//        .orElseThrow(() -> new IllegalStateException("새로운 ID를 생성할 수 없습니다."));
-//
-//    List<ProgressDto.Request> progressRequest = fixtureMonkey.giveMeBuilder(ProgressDto.Request.class)
-//        .set("progressId", newId)
-//        .set("deleted", true)
-//        .sampleList(1);
-//
-//    Reservation reservation = createReservation(customer, institute);
-//    Reservation newReservation = ReservationGenerator.get(customer, institute);
-//
-//    UpdateReservationDto.Request request = UpdateReservationDto.Request.builder()
-//        .reservationId(reservation.getId())
-//        .reservationDate(newReservation.getReservationDate())
-//        .startIndex(newReservation.getStartIndex())
-//        .endIndex(newReservation.getEndIndex())
-//        .memo(newReservation.getMemo())
-//        .seatNumber(newReservation.getSeatNumber())
-//        .attendanceStatus(newReservation.getAttendanceStatus())
-//        .progressList(progressRequest)
-//        .build();
-//
-//    String url = BASE_URL + "/updatedReservation";
-//
-//    HttpHeaders headers = new HttpHeaders();
-//    headers.setBearerAuth(tokenDto.getAccessToken());
-//    HttpEntity<UpdateReservationDto.Request> requestEntity = new HttpEntity<>(request, headers);
-//
-//    NotFoundProgressException exception = new NotFoundProgressException();
-//
-//    //when
-//    ResponseEntity<String> responseEntity = restTemplate.exchange(
-//        url,
-//        HttpMethod.PUT,
-//        requestEntity,
-//        String.class
-//    );
-//
-//    ApiResult<UpdateReservationDto.Response> apiResponse = gson.fromJson(
-//        responseEntity.getBody(),
-//        new TypeToken<ApiResult<UpdateReservationDto.Response>>() {
-//        }.getType()
-//    );
-//
-//    // then
-//    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-//    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
-//    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
-//  }
+    int addProgressSize = RandomValue.getInt(0,progressSize);
+    List<UpdateReservationDto.ProgressRequest> progressRequest = IntStream.range(0, addProgressSize)
+        .mapToObj(p -> {
+          return ProgressRequest.builder()
+              .progressId(progressList.get(p).getId())
+              .content(RandomValue.string(100).get())
+              .build();
+        }).toList();
+
+
+    Reservation newReservation = ReservationGenerator.get(customer, institute);
+    UpdateReservationDto.Request request = UpdateReservationDto.Request.builder()
+        .reservationId(reservation.getId())
+        .reservationDate(newReservation.getReservationDate())
+        .startIndex(newReservation.getStartIndex())
+        .endIndex(newReservation.getEndIndex())
+        .memo(newReservation.getMemo())
+        .seatNumber(newReservation.getSeatNumber())
+        .attendanceStatus(newReservation.getAttendanceStatus())
+        .progressList(progressRequest)
+        .build();
+
+    String url = BASE_URL + "/updatedReservation";
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setBearerAuth(tokenDto.getAccessToken());
+    HttpEntity<UpdateReservationDto.Request> requestEntity = new HttpEntity<>(request, headers);
+
+    //when
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
+        url,
+        HttpMethod.PUT,
+        requestEntity,
+        String.class
+    );
+
+    ApiResult<UpdateReservationDto.Response> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<UpdateReservationDto.Response>>() {
+        }.getType()
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+  }
+
+  @Test
+  @DisplayName("updatedReservation 존재하지 않는 예약")
+  void updatedReservation_fail() {
+    // given
+    Institute institute = createInstitutes();
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+
+    Customer customer = createCustomers(institute);
+
+    Reservation newReservation = ReservationGenerator.get(customer, institute);
+    UpdateReservationDto.Request request = UpdateReservationDto.Request.builder()
+        .reservationId(RandomValue.getRandomLong(9999))
+        .reservationDate(newReservation.getReservationDate())
+        .startIndex(newReservation.getStartIndex())
+        .endIndex(newReservation.getEndIndex())
+        .memo(newReservation.getMemo())
+        .seatNumber(newReservation.getSeatNumber())
+        .attendanceStatus(newReservation.getAttendanceStatus())
+        .build();
+
+
+    String url = BASE_URL + "/updatedReservation";
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setBearerAuth(tokenDto.getAccessToken());
+    HttpEntity<UpdateReservationDto.Request> requestEntity = new HttpEntity<>(request, headers);
+
+    NotFoundReservationException exception = new NotFoundReservationException();
+
+    //when
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
+        url,
+        HttpMethod.PUT,
+        requestEntity,
+        String.class
+    );
+
+    ApiResult<UpdateReservationDto.Response> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<UpdateReservationDto.Response>>() {
+        }.getType()
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
+    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
+  }
+
+  @Test
+  @DisplayName("updatedReservation 다른 매장 예약")
+  void updatedReservation_fail_2() {
+    // given
+    Institute institute = createInstitutes();
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+
+    Institute nonReturnInstitute = createInstitutes();
+    Customer customer = createCustomers(nonReturnInstitute);
+    Reservation reservation = createReservation(customer, nonReturnInstitute);
+
+    Reservation reqReservation = createReservation(customer, institute);
+    UpdateReservationDto.Request request = UpdateReservationDto.Request.builder()
+        .reservationId(reservation.getId())
+        .reservationDate(reqReservation.getReservationDate())
+        .startIndex(reqReservation.getStartIndex())
+        .endIndex(reqReservation.getEndIndex())
+        .memo(reqReservation.getMemo())
+        .seatNumber(reqReservation.getSeatNumber())
+        .attendanceStatus(reqReservation.getAttendanceStatus())
+        .build();
+
+    String url = BASE_URL + "/updatedReservation";
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setBearerAuth(tokenDto.getAccessToken());
+    HttpEntity<UpdateReservationDto.Request> requestEntity = new HttpEntity<>(request, headers);
+
+    NotFoundReservationException exception = new NotFoundReservationException();
+
+    //when
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
+        url,
+        HttpMethod.PUT,
+        requestEntity,
+        String.class
+    );
+
+    ApiResult<UpdateReservationDto.Response> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<UpdateReservationDto.Response>>() {
+        }.getType()
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
+    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
+  }
+
+  @Test
+  @DisplayName("updatedReservation 잘못된 seatNumber")
+  void updatedReservation_fail_3() {
+    // given
+    Institute institute = createInstitutes();
+    Account account = createAccount(institute);
+    TokenDto tokenDto = tokenManager.createToken(account);
+
+    Customer customer = createCustomers(institute);
+    Reservation reservation = createReservation(customer, institute);
+
+    Reservation newReservation = ReservationGenerator.get(customer, institute);
+    int seatNumber = RandomValue.getInt(0,2) == 0 ? 0 : institute.getTotalSeat() + RandomValue.getInt(1,5);
+    UpdateReservationDto.Request request = fixtureMonkey.giveMeBuilder(UpdateReservationDto.Request.class)
+        .set("reservationId", reservation.getId())
+        .set("startIndex", newReservation.getStartIndex())
+        .set("endIndex", newReservation.getEndIndex())
+        .set("seatNumber", seatNumber)
+        .sample();
+
+    String url = BASE_URL + "/updatedReservation";
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setBearerAuth(tokenDto.getAccessToken());
+    HttpEntity<UpdateReservationDto.Request> requestEntity = new HttpEntity<>(request, headers);
+
+    InvalidSeatRangeException exception = new InvalidSeatRangeException();
+
+    //when
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
+        url,
+        HttpMethod.PUT,
+        requestEntity,
+        String.class
+    );
+
+    ApiResult<UpdateReservationDto.Response> apiResponse = gson.fromJson(
+        responseEntity.getBody(),
+        new TypeToken<ApiResult<UpdateReservationDto.Response>>() {
+        }.getType()
+    );
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertThat(apiResponse.getCode()).isEqualTo(exception.getCode());
+    assertThat(apiResponse.getMessage()).isEqualTo(exception.getMessage());
+  }
 
   @Test
   @DisplayName("updatedSeatNumber 성공")
