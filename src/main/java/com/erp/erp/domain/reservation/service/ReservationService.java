@@ -60,26 +60,30 @@ public class ReservationService {
 
   public void addReservationRequest(AddReservationDto.Request req) {
     Account account = authProvider.getCurrentAccount();
-    String accountId = account.getId().toString();
     Institute institute = account.getInstitute();
-    Long instituteId = institute.getId();
     Customer customer = customerReader.findByIdAndInstituteId(
-        req.getCustomerId(),
-        institute.getId()
+        req.getCustomerId(), institute.getId()
     );
 
+    String accountId = account.getId().toString();
+    Long instituteId = institute.getId();
+
     // 요청 값 검증
-    reservationValidator.validateRequest(institute, req.getStartIndex(), req.getEndIndex());
+    reservationValidator.validateRequest(
+        institute, req.getStartIndex(), req.getEndIndex(), req.getSeatNumber()
+    );
 
     Reservation reservation = reservationMapper.dtoToEntity(
-        req, institute, customer, String.valueOf(account.getId())
+        req, institute, customer, accountId
     );
 
     // 분산락 획득 후 작업 종료시 반환
     instituteLock.executeWithLock(instituteId, () -> {
 
       // 요청 시간 내 모든 예약 조회
-      List<Reservation> reservations = reservationReader.findReservationsWithinTimeRange(institute, req.getReservationDate(), req.getStartIndex(), req.getEndIndex());
+      List<Reservation> reservations = reservationReader.findReservationsWithinTimeRange(
+          institute, req.getReservationDate(), req.getStartIndex(), req.getEndIndex()
+      );
 
       // 예약 가능한 좌석인지 검증
       reservationValidator.checkAvailableSeat(reservations, institute.getTotalSeat());
@@ -100,27 +104,24 @@ public class ReservationService {
   @Transactional
   public void updateReservation(UpdateReservationDto.Request req) {
     Account account = authProvider.getCurrentAccount();
-    Long accountId = account.getId();
     Institute institute = account.getInstitute();
+
+    Long accountId = account.getId();
     Long instituteId = institute.getId();
 
     // 요청 값 검증
-    reservationValidator.validateRequest(institute, req.getStartIndex(), req.getEndIndex());
+    reservationValidator.validateRequest(
+        institute, req.getStartIndex(), req.getEndIndex(), req.getSeatNumber()
+    );
 
     // 기존 예약 조회
     Reservation oldReservation = reservationReader.findByIdAndInstituteId(
-        req.getReservationId(),
-        institute.getId()
+        req.getReservationId(), institute.getId()
     );
 
     Reservation newReservation = oldReservation.updatedReservations(
-        req.getReservationDate(),
-        req.getStartIndex(),
-        req.getEndIndex(),
-        req.getMemo(),
-        req.getSeatNumber(),
-        req.getAttendanceStatus(),
-        accountId.toString()
+        req.getReservationDate(), req.getStartIndex(), req.getEndIndex(), req.getMemo(),
+        req.getSeatNumber(), req.getAttendanceStatus(), accountId.toString()
     );
     Customer customer = newReservation.getCustomer();
 
