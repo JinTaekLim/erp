@@ -21,7 +21,7 @@ public class CustomerPhoto {
   private Long id;
 
   @OneToOne
-  @JoinColumn(unique = true)
+  @JoinColumn
   private Customer customer;
 
   @Lob
@@ -33,7 +33,8 @@ public class CustomerPhoto {
     this.data = data;
   }
 
-  public void updateData(byte[] data) {
+  public CustomerPhoto updateData(byte[] data) {
     this.data = data;
+    return this;
   }
 }
