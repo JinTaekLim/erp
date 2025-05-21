@@ -17,19 +17,19 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 public class CustomerListener {
-
-  private final CustomerService customerService;
-  private final RabbitMqMapper rabbitMqMapper;
-
-  @RabbitListener(queues = "#{rabbitMqMapper.addCustomerQueueName}")
-  public void addCustomerMessage(Message<?> message) {
-    AddCustomerMessageDto dto = (AddCustomerMessageDto) message.getPayload();
-    Account account = dto.getAccount();
-    Plan plan = dto.getPlan();
-    AddCustomerDto.Request req = dto.getReq();
-    byte[] file = dto.getFile();
-
-    customerService.addCustomer(account, plan, req, file);
-  }
+//
+//  private final CustomerService customerService;
+//  private final RabbitMqMapper rabbitMqMapper;
+//
+//  @RabbitListener(queues = "#{rabbitMqMapper.addCustomerQueueName}")
+//  public void addCustomerMessage(Message<?> message) {
+//    AddCustomerMessageDto dto = (AddCustomerMessageDto) message.getPayload();
+//    Account account = dto.getAccount();
+//    Plan plan = dto.getPlan();
+//    AddCustomerDto.Request req = dto.getReq();
+//    byte[] file = dto.getFile();
+//
+//    customerService.addCustomer(account, plan, req, file);
+//  }
 
 }

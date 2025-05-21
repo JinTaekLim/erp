@@ -4,6 +4,7 @@ import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.CustomerPhoto;
 import com.erp.erp.domain.customer.repository.CustomerPhotoRepository;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -13,8 +14,8 @@ public class CustomerPhotoReader {
 
   private final CustomerPhotoRepository customerPhotoRepository;
 
-  public CustomerPhoto findByCustomer(Customer customer) {
-    return customerPhotoRepository.findByCustomer(customer).orElse(null);
+  public Optional<CustomerPhoto> findByCustomer(Customer customer) {
+    return customerPhotoRepository.findByCustomer(customer);
   }
 
   public List<CustomerPhoto> findAll() {

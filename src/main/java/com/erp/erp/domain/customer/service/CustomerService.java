@@ -1,5 +1,6 @@
 package com.erp.erp.domain.customer.service;
 
+import com.erp.erp.domain.customer.business.CustomerPhotoCreator;
 import com.erp.erp.domain.customer.business.CustomerPhotoManger;
 import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.auth.business.AuthProvider;
@@ -7,6 +8,8 @@ import com.erp.erp.domain.customer.business.CustomerCreator;
 import com.erp.erp.domain.customer.business.CustomerReader;
 import com.erp.erp.domain.customer.business.CustomerSender;
 import com.erp.erp.domain.customer.business.CustomerUpdater;
+import com.erp.erp.domain.customer.common.entity.CustomerPhoto;
+import com.erp.erp.domain.customer.common.mapper.CustomerPhotoMapper;
 import com.erp.erp.domain.progress.business.ProgressExtractor;
 import com.erp.erp.domain.progress.business.ProgressReader;
 import com.erp.erp.domain.customer.common.dto.AddCustomerDto;
@@ -52,30 +55,38 @@ public class CustomerService {
   private final CustomerSender customerSender;
   private final ReservationCacheManager reservationCacheManager;
   private final ProgressUpdater progressUpdater;
+  private final CustomerPhotoMapper customerPhotoMapper;
+  private final CustomerPhotoCreator customerPhotoCreator;
 
   private final ProgressExtractor progressExtractor = new ProgressExtractor();
 
+  @Transactional
   public void sendAddCustomerRequest(AddCustomerDto.Request req, MultipartFile file) {
     Account account = authProvider.getCurrentAccount();
-    Plan plan = planReader.findById(req.getPlanId());
-    customerSender.sendAddCustomer(account, plan, req, file);
-  }
-
-  @Transactional
-  public void addCustomer(Account account, Plan plan, AddCustomerDto.Request req, byte[] file) {
     Institute institute = account.getInstitute();
-    String photoUrl = file == null ? null : customerPhotoManger.upload(file);
+
+    // 이용권 조회
+    Plan plan = planReader.findById(req.getPlanId());
+
+    // 파일 업로드
+    String photoUrl = (file == null) ? null : customerPhotoManger.uploadOrNull(file);
+
+    // 회원 저장
     Customer customer = customerMapper.dtoToEntity(
         req, institute, plan, photoUrl, String.valueOf(account.getId())
     );
     customerCreator.save(customer);
 
+
+    // 사진을 전달 받았지만 S3에 정상적으로 저장하지 못 한 경우
+    if (photoUrl == null && file != null) {
+      CustomerPhoto customerPhoto = customerPhotoMapper.toCustomerPhoto(customer, file);
+      customerPhotoCreator.save(customerPhoto);
+    }
+
+    // 캐시 갱신
     reservationCacheManager.save(customer);
 
-    // 사진을 전달 받았지만 S3에 정상적으로 저장하지 못 한 경우 DB에 데이터 임시 저장
-    if (photoUrl == null && file != null) {
-      customerPhotoManger.saveTempImage(customer, file);
-    }
   }
 
   @Transactional
@@ -99,14 +110,15 @@ public class CustomerService {
     Account account = authProvider.getCurrentAccount();
     Long accountId = account.getId();
     Institute institute = account.getInstitute();
+
+    // 회원 조회
     Customer customer = customerReader.findByIdAndInstituteId(
-        req.getCustomerId(),
-        institute.getId()
+        req.getCustomerId(), institute.getId()
     );
 
     // 사진 데이터가 존재한다면, 이를 업로드하고 URL 을 반환 받음
     String photoUrl = customer.getPhotoUrl();
-    if (file != null) photoUrl = customerPhotoManger.update(customer, file, customer.getPhotoUrl());
+    if (file != null) photoUrl = customerPhotoManger.update(customer, file);
 
     // 회원 정보 수정
     Customer updateCustomer = customerUpdater.updateCustomer(req, photoUrl, customer, accountId);
