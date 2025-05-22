@@ -5,6 +5,8 @@ import com.erp.erp.domain.customer.common.dto.GetCustomerDto.ReservationDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerExpiredAtDto;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
+import com.erp.erp.domain.customer.common.projection.GetCustomersProjection;
+import com.erp.erp.domain.institute.common.entity.QInstitute;
 import com.erp.erp.domain.payment.common.entity.OtherPayment;
 import com.erp.erp.domain.payment.common.entity.PlanPayment;
 import com.erp.erp.domain.payment.common.entity.QOtherPayment;
@@ -15,6 +17,7 @@ import com.erp.erp.domain.reservation.common.dto.ReservationCache;
 import com.erp.erp.domain.reservation.common.entity.AttendanceStatus;
 import com.erp.erp.domain.reservation.common.entity.QReservation;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
@@ -305,6 +308,55 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
               .build();
         })
         .toList();
+  }
+
+  @Override
+  public List<GetCustomersProjection.Customer> findCustomersAfter(
+      Long instituteId, Long lastId, CustomerStatus status, int size
+  ) {
+    QCustomer qCustomer = QCustomer.customer;
+    QInstitute qInstitute = QInstitute.institute;
+    QPlanPayment qPlanPayment = QPlanPayment.planPayment;
+    QOtherPayment qOtherPayment = QOtherPayment.otherPayment;
+    QPlan qPlan = QPlan.plan;
+
+    // lstId 가 null 일시 관련 where 실행하지 않음
+    BooleanExpression lastIdCondition = lastId != null ? qCustomer.id.lt(lastId) : null;
+
+    return queryFactory
+        .select(
+            Projections.fields(
+                GetCustomersProjection.Customer.class,
+                qCustomer.id.as("customerId"),
+                qCustomer.status,
+                qCustomer.photoUrl,
+                qCustomer.name,
+                qCustomer.gender,
+                qCustomer.phone,
+                qCustomer.createdAt,
+                qCustomer.expiredAt,
+                qPlanPayment.registrationAt.as("registrationDate"),
+                qOtherPayment.price.sum().as("otherPaymentPrice"),
+                qPlan.availableTime,
+                qPlan.availablePeriod,
+                qPlan.name.as("planName"),
+                qPlan.licenseType,
+                qPlan.planType,
+                qPlan.courseType
+            )
+        )
+        .from(qCustomer)
+        .join(qCustomer.institute, qInstitute)
+        .join(qCustomer.planPayment, qPlanPayment)
+        .join(qPlanPayment.plan, qPlan)
+        .leftJoin(qCustomer.otherPayments, qOtherPayment)
+        .where(lastIdCondition)
+        .where(qInstitute.id.eq(instituteId))
+        .where(qCustomer.status.eq(status))
+        .limit(size)
+        .groupBy(qCustomer.id)
+        .orderBy(qCustomer.id.desc())
+        .fetch();
   }
 
 }

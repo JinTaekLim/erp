@@ -5,6 +5,7 @@ import com.erp.erp.domain.customer.common.dto.UpdateCustomerExpiredAtDto;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.exception.NotFoundCustomerException;
+import com.erp.erp.domain.customer.common.projection.GetCustomersProjection;
 import com.erp.erp.domain.customer.repository.CustomerRepository;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.reservation.common.dto.ReservationCache;
@@ -55,5 +56,11 @@ public class CustomerReader {
 
   public List<GetCustomerDto.Response> findByReservationCache(List<ReservationCache> reservationCaches) {
     return customerRepository.findByReservationCache(reservationCaches);
+  }
+
+  public List<GetCustomersProjection.Customer> findCustomersAfter(
+      Long instituteId, Long lastId, CustomerStatus status, int size
+  ) {
+    return customerRepository.findCustomersAfter(instituteId, lastId, status, size);
   }
 }

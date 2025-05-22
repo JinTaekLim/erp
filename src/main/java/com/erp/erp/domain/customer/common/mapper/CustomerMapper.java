@@ -3,13 +3,12 @@ package com.erp.erp.domain.customer.common.mapper;
 import com.erp.erp.domain.customer.common.dto.AddCustomerDto;
 import com.erp.erp.domain.customer.common.dto.GetAvailableCustomerNamesDto;
 import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto;
-import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto.OtherPaymentResponse;
 import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto.PlanPaymentResponse;
 import com.erp.erp.domain.customer.common.dto.GetCustomerDto;
-import com.erp.erp.domain.customer.common.dto.ProgressDto;
 import com.erp.erp.domain.customer.common.dto.SearchCustomerNameDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto;
 import com.erp.erp.domain.customer.common.entity.Customer;
+import com.erp.erp.domain.customer.common.projection.GetCustomersProjection;
 import com.erp.erp.domain.progress.common.entity.Progress;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.payment.common.entity.OtherPayment;
@@ -142,4 +141,15 @@ public interface CustomerMapper {
     int discountPrice = calculateDiscountPrice(planPayment);
     return planPrice - discountPrice;
   }
+
+
+  // 회원 목록 조회
+  GetCustomerDto.Response getCustomers(
+      GetCustomersProjection.Customer customer,
+      double usedTime,
+      int lateCount,
+      int absenceCount,
+      int remainingPeriod,
+      double remainingTime
+  );
 }

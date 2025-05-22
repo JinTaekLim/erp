@@ -4,6 +4,7 @@ import com.erp.erp.domain.customer.common.dto.GetCustomerDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerExpiredAtDto;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.entity.CustomerStatus;
+import com.erp.erp.domain.customer.common.projection.GetCustomersProjection;
 import com.erp.erp.domain.reservation.common.dto.ReservationCache;
 import java.time.LocalDate;
 import java.util.List;
@@ -31,4 +32,8 @@ public interface CustomerRepositoryCustom {
   void updatePhotoUrl(Customer customer);
 
   List<GetCustomerDto.Response> findByReservationCache(List<ReservationCache> reservationCaches);
+
+  List<GetCustomersProjection.Customer> findCustomersAfter(
+      Long instituteId, Long lastId, CustomerStatus status, int size
+  );
 }

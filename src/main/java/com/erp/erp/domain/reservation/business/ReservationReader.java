@@ -1,5 +1,6 @@
 package com.erp.erp.domain.reservation.business;
 
+import com.erp.erp.domain.customer.common.projection.GetCustomersProjection;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.reservation.common.entity.Reservation;
 import com.erp.erp.domain.reservation.common.exception.NotFoundReservationException;
@@ -27,6 +28,10 @@ public class ReservationReader {
 
   public List<Reservation> findReservationsWithinTimeRange(Institute institute, LocalDate day, int startIndex, int endIndex) {
     return reservationRepository.findReservationsWithinTimeRange(institute,day,startIndex,endIndex);
+  }
+
+  public List<GetCustomersProjection.Reservation> findByCustomerIds(List<Long> customerIds) {
+    return reservationRepository.findByCustomerIds(customerIds);
   }
 
 }

@@ -53,4 +53,11 @@ public class AuthProvider {
     return accountReader.findById(accountId);
   }
 
+
+  public Long getCurrentInstituteId() {
+    Long accountId = getCurrentAccountId();
+    return accountReader.findInstitutesByAccountId(accountId).getId();
+  }
+
+
 }
