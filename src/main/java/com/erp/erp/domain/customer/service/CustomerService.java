@@ -8,10 +8,13 @@ import com.erp.erp.domain.customer.business.CustomerCreator;
 import com.erp.erp.domain.customer.business.CustomerReader;
 import com.erp.erp.domain.customer.business.CustomerSender;
 import com.erp.erp.domain.customer.business.CustomerUpdater;
+import com.erp.erp.domain.customer.business.GetCustomerCacheManager;
+import com.erp.erp.domain.customer.common.dto.UpdateCustomersCacheMessageDto;
 import com.erp.erp.domain.customer.common.entity.CustomerPhoto;
 import com.erp.erp.domain.customer.common.mapper.CustomerParser;
 import com.erp.erp.domain.customer.common.mapper.CustomerPhotoMapper;
 import com.erp.erp.domain.customer.common.projection.GetCustomersProjection;
+import com.erp.erp.domain.customer.support.CustomerExtractor;
 import com.erp.erp.domain.progress.business.ProgressExtractor;
 import com.erp.erp.domain.progress.business.ProgressReader;
 import com.erp.erp.domain.customer.common.dto.AddCustomerDto;
@@ -60,9 +63,12 @@ public class CustomerService {
   private final ProgressUpdater progressUpdater;
   private final CustomerPhotoMapper customerPhotoMapper;
   private final CustomerPhotoCreator customerPhotoCreator;
+  private final GetCustomerCacheManager getCustomerCacheManager;
+
 
   private final CustomerParser customerParser = new CustomerParser();
   private final ProgressExtractor progressExtractor = new ProgressExtractor();
+  private final CustomerExtractor customerExtractor = new CustomerExtractor();
 
   @Transactional
   public void sendAddCustomerRequest(AddCustomerDto.Request req, MultipartFile file) {
@@ -143,15 +149,19 @@ public class CustomerService {
   public List<GetCustomerDto.Response> getCustomers(Long lastId, CustomerStatus status) {
     Long instituteId = authProvider.getCurrentInstituteId();
 
+    // 캐시 데이터가 존재할시, 이를 반환
+    List<GetCustomerDto.Response> cache = getCustomerCacheManager.findByInstituteId(instituteId);
+    if (!cache.isEmpty()) return cache;
+
     // 고객 정보 조회
     List<GetCustomersProjection.Customer> customers = customerReader.findCustomersAfter(
         instituteId, lastId, status, PAGE_SIZE
     );
 
-    List<Long> customerIds = customers.stream()
-        .map(GetCustomersProjection.Customer::getCustomerId)
-        .toList();
+    // CustomerID 추출
+    List<Long> customerIds = customerExtractor.getIds(customers);
 
+    // 예약 정보 조회
     List<GetCustomersProjection.Reservation> reservations = reservationReader.findByCustomerIds(
         customerIds
     );
@@ -219,5 +229,29 @@ public class CustomerService {
         customerName
     );
     return customerMapper.entityToGetCustomerResponse(customers);
+  }
+
+  public void updateCustomersCache(UpdateCustomersCacheMessageDto dto) {
+    Long instituteId = dto.getInstituteId();
+
+    // 고객 정보 조회
+    List<GetCustomersProjection.Customer> customers = customerReader.findCustomersAfter(
+        instituteId, null, CustomerStatus.ACTIVE, PAGE_SIZE
+    );
+
+    // CustomerID 추출
+    List<Long> customerIds = customerExtractor.getIds(customers);
+
+    // 예약 정보 조회
+    List<GetCustomersProjection.Reservation> reservations = reservationReader.findByCustomerIds(
+        customerIds
+    );
+
+    List<GetCustomerDto.Response> getCustomers =  customerParser.getCustomers(
+        customers, reservations
+    );
+
+    // 저장 되어있는 캐시의 타임 스탬프보다 이후 데이터면 갱신
+    getCustomerCacheManager.updateCacheWithTime(instituteId, getCustomers, dto.getTime());
   }
 }
