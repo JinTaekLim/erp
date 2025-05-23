@@ -48,7 +48,7 @@ public interface ReservationMapper {
   @Mapping(target = "planEndDate", expression = "java(calculatePlanEndDate(reservation))")
   @Mapping(target = "remainingTime", ignore = true)
   @Mapping(target = "usedTime", ignore = true)
-  @Mapping(target = "memo", source = "reservation.customer.memo")
+  @Mapping(target = "memo", source = "reservation.memo")
   GetReservationCustomerDetailsDto.Response entityToGetReservationCustomerDetailsDtoResponse(Reservation reservation, List<Progress> progressList);
 
   @Mapping(target = "progressId", source = "id")

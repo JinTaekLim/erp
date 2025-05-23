@@ -874,7 +874,7 @@ class ReservationTest extends IntegrationTest {
     assertThat(apiResponse.getData().getPlanEndDate()).isEqualTo(endDate);
 //    assertThat(apiResponse.getData().getRemainingTime())
 //    assertThat(apiResponse.getData().getUsedTime())
-    assertThat(apiResponse.getData().getMemo()).isEqualTo(customer.getMemo());
+    assertThat(apiResponse.getData().getMemo()).isEqualTo(reservation.getMemo());
 
     List<GetReservationCustomerDetailsDto.ProgressResponse> actualProgress = apiResponse.getData().getProgressList()
         .stream()
