@@ -1,20 +1,19 @@
 package com.erp.erp.global.config.log;
 
+import com.erp.erp.global.util.ConverterUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.support.GenericMessage;
 
 @Slf4j
 public class LogPrinter {
 
-  private final LogMapper logMapper = new LogMapper();
-
   public void printRequestLog(String methodName, GenericMessage<?> message, String uuid) {
-    String payloadJson = logMapper.convertToJson(message.getPayload());
+    String payloadJson = ConverterUtil.toJson(message.getPayload());
     printLog(methodName, uuid, payloadJson);
   }
 
   public void printResponseLog(Object result, String methodName, String uuid) {
-    String value = logMapper.converToString(result);
+    String value = ConverterUtil.toJson(result);
     printLog(methodName, uuid, value);
   }
 

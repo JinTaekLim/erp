@@ -18,4 +18,12 @@ public class RabbitMqCustomerManger {
         message);
   }
 
+  public void sendUpdateCustomersCache(Message message) {
+    rabbitMqManager.sendMessage(
+        rabbitMqMapper.getUpdateCustomersCacheExchange(),
+        rabbitMqMapper.getUpdateCustomersCacheQueueName(),
+        message
+    );
+  }
+
 }

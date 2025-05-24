@@ -1,8 +1,11 @@
 package com.erp.erp.domain.reservation.repository;
 
+import com.erp.erp.domain.customer.common.entity.QCustomer;
+import com.erp.erp.domain.customer.common.projection.GetCustomersProjection;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.reservation.common.entity.QReservation;
 import com.erp.erp.domain.reservation.common.entity.Reservation;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.util.List;
@@ -55,6 +58,27 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom{
             reservation.startIndex.goe(startIndex)
                 .and(reservation.endIndex.loe(endIndex))
         )
+        .fetch();
+  }
+
+  @Override
+  public List<GetCustomersProjection.Reservation> findByCustomerIds(List<Long> customerIds) {
+    QReservation qReservation = QReservation.reservation;
+    QCustomer qCustomer = QCustomer.customer;
+
+    return queryFactory
+        .select(
+            Projections.fields(
+                GetCustomersProjection.Reservation.class,
+                qCustomer.id.as("customerId"),
+                qReservation.startIndex,
+                qReservation.endIndex,
+                qReservation.attendanceStatus
+            )
+        )
+        .from(qReservation)
+        .join(qCustomer).on(qCustomer.id.eq(qReservation.customer.id))
+        .where(qReservation.customer.id.in(customerIds))
         .fetch();
   }
 }

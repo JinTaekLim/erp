@@ -1,0 +1,77 @@
+package com.erp.erp.domain.customer.common.projection;
+
+import com.erp.erp.domain.customer.common.entity.CustomerStatus;
+import com.erp.erp.domain.customer.common.entity.Gender;
+import com.erp.erp.domain.plan.common.entity.CourseType;
+import com.erp.erp.domain.plan.common.entity.LicenseType;
+import com.erp.erp.domain.plan.common.entity.PlanType;
+import com.erp.erp.domain.reservation.common.entity.AttendanceStatus;
+import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+public class GetCustomersProjection {
+
+  @Getter
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class Customer {
+    @Schema(description = "고객 ID")
+    private Long customerId;
+    @Schema(description = "상태 값 ( ACTIVE, INACTIVE, DELETED )")
+    private CustomerStatus status;
+    @Schema(description = "프로필 URL")
+    private String photoUrl;
+    @Schema(description = "이름")
+    private String name;
+    @Schema(description = "성별")
+    private Gender gender;
+    @Schema(description = "전화번호")
+    private String phone;
+    private LocalDate expiredAt;
+
+
+    // PlanPayment
+    @Schema(description = "등록 날짜")
+    private LocalDateTime registrationDate;
+
+    // OtherPayment
+    @Schema(description = "기타 결제 금액")
+    private int otherPaymentPrice;
+
+    // Plan
+    private int availableTime;
+    private int availablePeriod;
+    @Schema(description = "1/2종 구분")
+    private LicenseType licenseType;
+    @Schema(description = "이용권 이름")
+    private String planName;
+    @Schema(description = "이용권 구분 (시간/기간제)")
+    private PlanType planType;
+    @Schema(description = "이용 과정 (취득/장롱/일반)")
+    private CourseType courseType;
+  }
+
+
+  @Getter
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class Reservation {
+
+    private Long customerId;
+
+    private int startIndex;
+
+    private int endIndex;
+
+    private AttendanceStatus attendanceStatus;
+  }
+
+
+}

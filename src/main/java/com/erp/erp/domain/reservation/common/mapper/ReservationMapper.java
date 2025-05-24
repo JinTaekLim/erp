@@ -1,6 +1,7 @@
 package com.erp.erp.domain.reservation.common.mapper;
 
 import com.erp.erp.domain.customer.common.dto.ProgressDto;
+import com.erp.erp.domain.customer.common.dto.UpdateCustomersCacheEvent;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.progress.common.entity.Progress;
 import com.erp.erp.domain.institute.common.entity.Institute;
@@ -8,7 +9,6 @@ import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.reservation.common.dto.AddReservationDto;
 import com.erp.erp.domain.reservation.common.dto.GetDailyReservationDto;
 import com.erp.erp.domain.reservation.common.dto.GetReservationCustomerDetailsDto;
-import com.erp.erp.domain.reservation.common.dto.UpdateReservationDto;
 import com.erp.erp.domain.reservation.common.dto.UpdatedSeatNumberDto;
 import com.erp.erp.domain.reservation.common.entity.Reservation;
 import java.time.LocalDateTime;
@@ -66,4 +66,7 @@ public interface ReservationMapper {
     int availablePeriod = plan.getAvailablePeriod();
     return registrationAt.plusDays(availablePeriod);
   }
+
+  // 캐시 업데이트 이벤트
+  UpdateCustomersCacheEvent toUpdateCustomersCacheEvent(Long instituteId, LocalDateTime time);
 }

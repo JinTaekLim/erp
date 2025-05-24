@@ -23,7 +23,7 @@ public class AuthProvider {
 
   private final String GUEST = "anonymousUser";
 
-  private Long getCurrentAccountId() {
+  public Long getCurrentAccountId() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (Objects.isNull(authentication)) {
       throw new AuthenticationNullException();
@@ -52,5 +52,12 @@ public class AuthProvider {
     Long accountId = getCurrentAccountId();
     return accountReader.findById(accountId);
   }
+
+
+  public Long getCurrentInstituteId() {
+    Long accountId = getCurrentAccountId();
+    return accountReader.findInstitutesByAccountId(accountId).getId();
+  }
+
 
 }

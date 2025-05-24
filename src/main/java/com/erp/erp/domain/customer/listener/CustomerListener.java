@@ -1,11 +1,7 @@
 package com.erp.erp.domain.customer.listener;
 
-import com.erp.erp.domain.account.common.entity.Account;
-import com.erp.erp.domain.customer.common.dto.AddCustomerDto;
-import com.erp.erp.domain.customer.common.dto.AddCustomerMessageDto;
+import com.erp.erp.domain.customer.common.dto.UpdateCustomersCacheMessageDto;
 import com.erp.erp.domain.customer.service.CustomerService;
-import com.erp.erp.domain.plan.common.entity.Plan;
-import com.erp.erp.global.rabbitMq.RabbitMqMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -17,8 +13,15 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 public class CustomerListener {
+
+  private final CustomerService customerService;
+
+  @RabbitListener(queues = "customer.updateCustomersCache")
+  public void updateCustomersCache(Message<?> message) {
+    UpdateCustomersCacheMessageDto dto = (UpdateCustomersCacheMessageDto) message.getPayload();
+    customerService.updateCustomersCache(dto);
+  }
 //
-//  private final CustomerService customerService;
 //  private final RabbitMqMapper rabbitMqMapper;
 //
 //  @RabbitListener(queues = "#{rabbitMqMapper.addCustomerQueueName}")
