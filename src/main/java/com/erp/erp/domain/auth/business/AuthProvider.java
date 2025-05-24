@@ -23,7 +23,7 @@ public class AuthProvider {
 
   private final String GUEST = "anonymousUser";
 
-  private Long getCurrentAccountId() {
+  public Long getCurrentAccountId() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (Objects.isNull(authentication)) {
       throw new AuthenticationNullException();
