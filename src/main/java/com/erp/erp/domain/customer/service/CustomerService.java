@@ -6,9 +6,9 @@ import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.auth.business.AuthProvider;
 import com.erp.erp.domain.customer.business.CustomerCreator;
 import com.erp.erp.domain.customer.business.CustomerReader;
-import com.erp.erp.domain.customer.business.CustomerSender;
 import com.erp.erp.domain.customer.business.CustomerUpdater;
 import com.erp.erp.domain.customer.business.GetCustomerCacheManager;
+import com.erp.erp.domain.customer.common.dto.UpdateCustomersCacheEvent;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomersCacheMessageDto;
 import com.erp.erp.domain.customer.common.entity.CustomerPhoto;
 import com.erp.erp.domain.customer.common.mapper.CustomerParser;
@@ -34,9 +34,11 @@ import com.erp.erp.domain.plan.business.PlanReader;
 import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.reservation.business.ReservationCacheManager;
 import com.erp.erp.domain.reservation.business.ReservationReader;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,7 +49,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 public class CustomerService {
 
-  private final ReservationReader reservationReader;
+  private final ApplicationEventPublisher applicationEventPublisher;
+
   int PAGE_SIZE = 20;
 
   private final AuthProvider authProvider;
@@ -58,12 +61,12 @@ public class CustomerService {
   private final CustomerPhotoManger customerPhotoManger;
   private final ProgressReader progressReader;
   private final CustomerMapper customerMapper;
-  private final CustomerSender customerSender;
   private final ReservationCacheManager reservationCacheManager;
   private final ProgressUpdater progressUpdater;
   private final CustomerPhotoMapper customerPhotoMapper;
   private final CustomerPhotoCreator customerPhotoCreator;
   private final GetCustomerCacheManager getCustomerCacheManager;
+  private final ReservationReader reservationReader;
 
 
   private final CustomerParser customerParser = new CustomerParser();
@@ -74,6 +77,7 @@ public class CustomerService {
   public void sendAddCustomerRequest(AddCustomerDto.Request req, MultipartFile file) {
     Account account = authProvider.getCurrentAccount();
     Institute institute = account.getInstitute();
+    Long instituteId = institute.getId();
 
     // 이용권 조회
     Plan plan = planReader.findById(req.getPlanId());
@@ -94,8 +98,13 @@ public class CustomerService {
       customerPhotoCreator.save(customerPhoto);
     }
 
-    // 캐시 갱신
-    reservationCacheManager.save(customer);
+    // 캐시 삭제
+    LocalDateTime date = LocalDateTime.now();
+    getCustomerCacheManager.deleteCache(instituteId, date);
+
+    // 트랜잭션 종료 이후 캐시 갱신 메세지 큐 발행
+    UpdateCustomersCacheEvent event = customerMapper.toUpdateCustomersCacheEvent(instituteId, date);
+    applicationEventPublisher.publishEvent(event);
 
   }
 
@@ -111,20 +120,25 @@ public class CustomerService {
       reservationCacheManager.updateCacheExcludingCustomer(instituteId, customersId);
     }
 
+    // 캐시 삭제
+    LocalDateTime date = LocalDateTime.now();
+    getCustomerCacheManager.deleteCache(instituteId, date);
+
+    // 트랜잭션 종료 이후 캐시 갱신 메세지 큐 발행
+    UpdateCustomersCacheEvent event = customerMapper.toUpdateCustomersCacheEvent(instituteId, date);
+    applicationEventPublisher.publishEvent(event);
+
     return customerReader.findByIdAndInstituteId(customersId, instituteId).getStatus();
   }
 
   @Transactional
   public UpdateCustomerDto.Response updateCustomer(UpdateCustomerDto.Request req, MultipartFile file) {
 
-    Account account = authProvider.getCurrentAccount();
-    Long accountId = account.getId();
-    Institute institute = account.getInstitute();
+    Long accountId = authProvider.getCurrentAccountId();
+    Long instituteId = authProvider.getCurrentInstituteId();
 
     // 회원 조회
-    Customer customer = customerReader.findByIdAndInstituteId(
-        req.getCustomerId(), institute.getId()
-    );
+    Customer customer = customerReader.findByIdAndInstituteId(req.getCustomerId(), instituteId);
 
     // 사진 데이터가 존재한다면, 이를 업로드하고 URL 을 반환 받음
     String photoUrl = customer.getPhotoUrl();
@@ -142,6 +156,14 @@ public class CustomerService {
 
     // 진도표 전체 조회
     List<Progress> updateProgress = progressReader.findByCustomerIdAndDesc(customer.getId());
+
+    // 캐시 삭제
+    LocalDateTime date = LocalDateTime.now();
+    getCustomerCacheManager.deleteCache(instituteId, date);
+
+    // 트랜잭션 종료 이후 캐시 갱신 메세지 큐 발행
+    UpdateCustomersCacheEvent event = customerMapper.toUpdateCustomersCacheEvent(instituteId, date);
+    applicationEventPublisher.publishEvent(event);
 
     return customerMapper.entityToUpdateCustomerResponse(updateCustomer, updateProgress);
   }

@@ -1,5 +1,9 @@
 package com.erp.erp.domain.customer.business;
 
+
+import com.erp.erp.domain.cache.common.enums.UpdateCacheStatus;
+import com.erp.erp.domain.cache.common.mapper.CacheMapper;
+import com.erp.erp.domain.cache.common.script.RedisScripts;
 import com.erp.erp.domain.cache.repository.RedisCacheRepository;
 import com.erp.erp.domain.cache.repository.RedisScriptRepository;
 import com.erp.erp.domain.customer.common.dto.GetCustomerCache;
@@ -19,6 +23,7 @@ public class GetCustomerCacheManager {
 
   private final RedisCacheRepository<GetCustomerCache> redisCacheRepository;
   private final RedisScriptRepository redisScriptRepository;
+  private final CacheMapper cacheMapper;
 
 
   private final static String PREFIX = "get_customers_cache:";
@@ -34,33 +39,12 @@ public class GetCustomerCacheManager {
   }
 
 
-  private static final String SCRIPT = """
-        local value = redis.call('GET', KEYS[1])
-      
-        if value == false then
-            redis.call('SET', KEYS[1], ARGV[2])
-            return "SUCCESS"
-        end
-      
-        local json = cjson.decode(value)
-        local time = tonumber(json.updatedTime)
-        local updatedTime = tonumber(ARGV[1])
-      
-        if time == nil or time <= updatedTime then
-            redis.call('SET', KEYS[1], ARGV[2])
-            return "UPDATE"
-        else
-            return "SKIP"
-        end
-      
-      """;
-
-  public String updateCacheWithTime(Long instituteId, List<GetCustomerDto.Response> response, LocalDateTime date) {
+  public void updateCacheWithTime(Long instituteId, List<GetCustomerDto.Response> response, LocalDateTime date) {
 
     String key = getKey(instituteId);
 
     long epochSecond = date.toEpochSecond(ZoneOffset.UTC);
-    GetCustomerCache cache = getCustomerCache(response, epochSecond);
+    GetCustomerCache cache = cacheMapper.toGetCustomerCache(response, epochSecond);
 
     String customersJson = ConverterUtil.toJson(cache);
 
@@ -71,14 +55,15 @@ public class GetCustomerCacheManager {
         customersJson
     );
 
-    return redisScriptRepository.execute(SCRIPT, key, args);
+    String result = redisScriptRepository.execute(RedisScripts.getUpdateCacheScript(), key, args);
+    UpdateCacheStatus status = UpdateCacheStatus.valueOf(result);
   }
 
-  private GetCustomerCache getCustomerCache(List<GetCustomerDto.Response> response, long date) {
-    return GetCustomerCache.builder()
-        .getCustomers(response)
-        .updatedTime(date)
-        .build();
-  }
+  public void deleteCache(Long instituteId, LocalDateTime date) {
+    String key = getKey(instituteId);
+    long epochSecond = date.toEpochSecond(ZoneOffset.UTC);
+    GetCustomerCache cache = cacheMapper.toGetCustomerCache(new ArrayList<>(), epochSecond);
 
+    redisCacheRepository.save(key, cache);
+  }
 }

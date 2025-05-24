@@ -14,6 +14,9 @@ public class RabbitMqMapper {
   private final String addReservationQueueName;
   private final String updateReservationQueueName;
 
+  private final String updateCustomersCacheQueueName;
+  private final String updateCustomersCacheExchange;
+
   public RabbitMqMapper(RabbitMqProperties rabbitMqProperties) {
     this.customerExchange = rabbitMqProperties.getQueues().get(0).getExchange();
     this.reservationExchange = rabbitMqProperties.getQueues().get(1).getExchange();
@@ -21,6 +24,9 @@ public class RabbitMqMapper {
     this.addCustomerQueueName = rabbitMqProperties.getQueues().get(0).getName().get(0);
     this.addReservationQueueName = rabbitMqProperties.getQueues().get(1).getName().get(0);
     this.updateReservationQueueName = rabbitMqProperties.getQueues().get(1).getName().get(1);
+
+    this.updateCustomersCacheQueueName = rabbitMqProperties.getQueues().get(3).getName().get(0);
+    this.updateCustomersCacheExchange = rabbitMqProperties.getQueues().get(3).getExchange();
   }
 
 }

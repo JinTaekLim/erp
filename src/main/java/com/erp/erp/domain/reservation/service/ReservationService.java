@@ -3,10 +3,11 @@ package com.erp.erp.domain.reservation.service;
 import com.erp.erp.domain.account.common.entity.Account;
 import com.erp.erp.domain.auth.business.AuthProvider;
 import com.erp.erp.domain.customer.business.CustomerReader;
+import com.erp.erp.domain.customer.business.GetCustomerCacheManager;
+import com.erp.erp.domain.customer.common.dto.UpdateCustomersCacheEvent;
 import com.erp.erp.domain.institute.business.InstituteLock;
 import com.erp.erp.domain.progress.business.ProgressCreator;
 import com.erp.erp.domain.progress.business.ProgressExtractor;
-import com.erp.erp.domain.progress.business.ProgressManger;
 import com.erp.erp.domain.progress.business.ProgressReader;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.progress.business.ProgressUpdater;
@@ -14,11 +15,9 @@ import com.erp.erp.domain.progress.common.entity.Progress;
 import com.erp.erp.domain.institute.business.InstituteValidator;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.progress.common.mapper.ProgressMapper;
-import com.erp.erp.domain.reservation.business.PendingReservationDeleter;
 import com.erp.erp.domain.reservation.business.ReservationCacheManager;
 import com.erp.erp.domain.reservation.business.ReservationCalculator;
 import com.erp.erp.domain.reservation.business.ReservationDelete;
-import com.erp.erp.domain.reservation.business.ReservationSender;
 import com.erp.erp.domain.reservation.business.ReservationValidator;
 import com.erp.erp.domain.reservation.business.ReservationCreator;
 import com.erp.erp.domain.reservation.business.ReservationReader;
@@ -27,9 +26,11 @@ import com.erp.erp.domain.reservation.common.dto.*;
 import com.erp.erp.domain.reservation.common.entity.Reservation;
 import com.erp.erp.domain.reservation.common.mapper.ReservationMapper;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class ReservationService {
 
+  private final ApplicationEventPublisher applicationEventPublisher;
   private final AuthProvider authProvider;
   private final InstituteValidator instituteValidator;
   private final ReservationReader reservationReader;
@@ -52,6 +54,8 @@ public class ReservationService {
   private final InstituteLock instituteLock;
   private final ProgressCreator progressCreator;
   private final ProgressMapper progressMapper;
+  private final GetCustomerCacheManager getCustomerCacheManager;
+
 
   private final ProgressExtractor progressExtractor = new ProgressExtractor();
   private final ReservationCalculator reservationCalculator = new ReservationCalculator();
@@ -97,8 +101,13 @@ public class ReservationService {
     Progress progress = progressMapper.toEntity(customer, req.getReservationDate(), usedTime, accountId);
     progressCreator.save(progress);
 
-    // 캐시 데이터 갱신
-    reservationCacheManager.updateCustomerReservation(reservation);
+    // 캐시 삭제
+    LocalDateTime date = LocalDateTime.now();
+    getCustomerCacheManager.deleteCache(instituteId, date);
+
+    // 트랜잭션 종료 이후 캐시 갱신 메세지 큐 발행
+    UpdateCustomersCacheEvent event = reservationMapper.toUpdateCustomersCacheEvent(instituteId, date);
+    applicationEventPublisher.publishEvent(event);
   }
 
   @Transactional
@@ -143,15 +152,20 @@ public class ReservationService {
       reservationCreator.save(newReservation);
     });
 
-    // 캐시 데이터 갱신
-    reservationCacheManager.updateCustomerReservation(newReservation);
-
     // 진도표 검증
     List<Long> ids = progressExtractor.extractUpdateReservationToProgressIds(req.getProgressList());
     progressReader.findByIdAndCustomerId(ids, customer.getId());
 
     // 진도표 저장
     progressUpdater.updateReservationProgress(req.getProgressList(), accountId);
+
+    // 캐시 삭제
+    LocalDateTime date = LocalDateTime.now();
+    getCustomerCacheManager.deleteCache(instituteId, date);
+
+    // 트랜잭션 종료 이후 캐시 갱신 메세지 큐 발행
+    UpdateCustomersCacheEvent event = reservationMapper.toUpdateCustomersCacheEvent(instituteId, date);
+    applicationEventPublisher.publishEvent(event);
   }
 
   public List<GetDailyReservationDto.Response> getDailyReservations(LocalDate date) {
@@ -177,11 +191,20 @@ public class ReservationService {
   }
 
 
+  @Transactional
   public void deleteReservations(Long reservationId) {
-    Institute institute = authProvider.getCurrentInstitute();
-    Reservation reservation = reservationReader.findByIdAndInstituteId(reservationId,
-        institute.getId());
+    Long instituteId = authProvider.getCurrentInstituteId();
+
+    Reservation reservation = reservationReader.findByIdAndInstituteId(reservationId, instituteId);
     reservationDelete.delete(reservation);
+
+    // 캐시 삭제
+    LocalDateTime date = LocalDateTime.now();
+    getCustomerCacheManager.deleteCache(instituteId, date);
+
+    // 트랜잭션 종료 이후 캐시 갱신 메세지 큐 발행
+    UpdateCustomersCacheEvent event = reservationMapper.toUpdateCustomersCacheEvent(instituteId, date);
+    applicationEventPublisher.publishEvent(event);
   }
 
   public GetReservationCustomerDetailsDto.Response getReservationCustomerDetails(

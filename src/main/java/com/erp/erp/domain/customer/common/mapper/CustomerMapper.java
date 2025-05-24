@@ -7,6 +7,7 @@ import com.erp.erp.domain.customer.common.dto.GetCustomerDetailDto.PlanPaymentRe
 import com.erp.erp.domain.customer.common.dto.GetCustomerDto;
 import com.erp.erp.domain.customer.common.dto.SearchCustomerNameDto;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomerDto;
+import com.erp.erp.domain.customer.common.dto.UpdateCustomersCacheEvent;
 import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.customer.common.projection.GetCustomersProjection;
 import com.erp.erp.domain.progress.common.entity.Progress;
@@ -152,4 +153,7 @@ public interface CustomerMapper {
       int remainingPeriod,
       double remainingTime
   );
+
+  // 캐시 업데이트 이벤트
+  UpdateCustomersCacheEvent toUpdateCustomersCacheEvent(Long instituteId, LocalDateTime time);
 }
