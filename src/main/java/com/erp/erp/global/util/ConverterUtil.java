@@ -33,4 +33,12 @@ public class ConverterUtil {
   public static String toString(Object object) {
     return (object == null) ? null : object.toString();
   }
+
+  public static <T> T toObject(String json, Class<T> clazz) {
+    try {
+      return objectMapper.readValue(json, clazz);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
 }
