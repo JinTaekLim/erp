@@ -6,6 +6,7 @@ import com.erp.erp.domain.customer.common.entity.Customer;
 import com.erp.erp.domain.progress.common.entity.Progress;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.plan.common.entity.Plan;
+import com.erp.erp.domain.reservation.business.PushUpdateReservationEvent;
 import com.erp.erp.domain.reservation.common.dto.AddReservationDto;
 import com.erp.erp.domain.reservation.common.dto.GetDailyReservationDto;
 import com.erp.erp.domain.reservation.common.dto.GetReservationCustomerDetailsDto;
@@ -69,4 +70,7 @@ public interface ReservationMapper {
 
   // 캐시 업데이트 이벤트
   UpdateCustomersCacheEvent toUpdateCustomersCacheEvent(Long instituteId, LocalDateTime time);
+
+  // 예약 변동 알림 이벤트
+  PushUpdateReservationEvent toPushUpdateReservationEvent(Long instituteId);
 }
