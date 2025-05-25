@@ -13,8 +13,8 @@ public class RabbitMqCustomerManger {
 
   public void sendUpdateCustomersCache(Message message) {
     rabbitMqManager.sendMessage(
-        rabbitMqMapper.getCustomerUpdateCustomersCacheQueueName(),
         rabbitMqMapper.getCustomerUpdateCustomersCacheExchange(),
+        rabbitMqMapper.getCustomerUpdateCustomersCacheQueueName(),
         message
     );
   }
