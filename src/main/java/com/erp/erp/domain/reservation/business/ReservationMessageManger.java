@@ -1,7 +1,7 @@
 package com.erp.erp.domain.reservation.business;
 
 import com.erp.erp.global.rabbitMq.RabbitMqManager;
-import com.erp.erp.global.rabbitMq.RabbitMqMapper;
+import com.erp.erp.global.rabbitMq.RabbitMqRouter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.Message;
 import org.springframework.stereotype.Component;
@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
 public class ReservationMessageManger {
 
   private final RabbitMqManager rabbitMqManager;
-  private final RabbitMqMapper rabbitMqMapper;
+  private final RabbitMqRouter rabbitMqRouter;
 
   public void sendPushEvent(Message message) {
     rabbitMqManager.sendMessage(
-        rabbitMqMapper.getNotificationPushEventExchange(),
-        rabbitMqMapper.getNotificationPushEventQueueName(),
+        rabbitMqRouter.getNotificationPushEventExchange(),
+        rabbitMqRouter.getNotificationPushEventQueueName(),
         message);
   }
 

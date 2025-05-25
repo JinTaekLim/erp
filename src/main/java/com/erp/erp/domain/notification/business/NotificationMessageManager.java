@@ -1,7 +1,7 @@
 package com.erp.erp.domain.notification.business;
 
 import com.erp.erp.global.rabbitMq.RabbitMqManager;
-import com.erp.erp.global.rabbitMq.RabbitMqMapper;
+import com.erp.erp.global.rabbitMq.RabbitMqRouter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.Message;
 import org.springframework.stereotype.Component;
@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
 public class NotificationMessageManager {
 
   private final RabbitMqManager rabbitMqManager;
-  private final RabbitMqMapper rabbitMqMapper;
+  private final RabbitMqRouter rabbitMqRouter;
 
   public String sendAndReceiveCreateAuth(Message message) {
     Object object = rabbitMqManager.sendAndReceiveMessage(
-        rabbitMqMapper.getCreateAuthExchange(),
-        rabbitMqMapper.getCreateAuthQueueName(),
+        rabbitMqRouter.getCreateAuthExchange(),
+        rabbitMqRouter.getCreateAuthQueueName(),
         message
     );
     return object.toString();

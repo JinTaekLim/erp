@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Getter
-public class RabbitMqMapper {
+public class RabbitMqRouter {
 
   private final static String CUSTOMER_UPDATE_CUSTOMERS_CACHE = "customer-update-customers-cache";
   private final static String NOTIFICATION_CREATE_AUTH = "notification-create-auth";
@@ -20,7 +20,7 @@ public class RabbitMqMapper {
   private final String notificationPushEventQueueName;
   private final String notificationPushEventExchange;
 
-  public RabbitMqMapper(RabbitMqProperties rabbitMqProperties) {
+  public RabbitMqRouter(RabbitMqProperties rabbitMqProperties) {
     this.customerUpdateCustomersCacheQueueName = rabbitMqProperties.getName(CUSTOMER_UPDATE_CUSTOMERS_CACHE);
     this.customerUpdateCustomersCacheExchange = rabbitMqProperties.getExchange(CUSTOMER_UPDATE_CUSTOMERS_CACHE);
 
