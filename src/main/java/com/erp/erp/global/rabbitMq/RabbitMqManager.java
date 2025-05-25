@@ -21,4 +21,8 @@ public class RabbitMqManager {
   public Message getMessage(Object object) {
     return rabbitTemplate.getMessageConverter().toMessage(object, new MessageProperties());
   }
+
+  public Object sendAndReceiveMessage(String exchange, String routingKey, Message message) {
+    return rabbitTemplate.convertSendAndReceive(exchange, routingKey, message);
+  }
 }
