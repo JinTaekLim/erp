@@ -7,32 +7,29 @@ import org.springframework.stereotype.Component;
 @Getter
 public class RabbitMqMapper {
 
-  private final String customerExchange;
-  private final String reservationExchange;
+  private final static String CUSTOMER_UPDATE_CUSTOMERS_CACHE = "customer-update-customers-cache";
+  private final static String NOTIFICATION_CREATE_AUTH = "notification-create-auth";
+  private final static String NOTIFICATION_PUSH_EVENT = "notification-push-event";
 
-  private final String addCustomerQueueName;
-  private final String addReservationQueueName;
-  private final String updateReservationQueueName;
+  private final String customerUpdateCustomersCacheQueueName;
+  private final String customerUpdateCustomersCacheExchange;
 
   private final String createAuthQueueName;
   private final String createAuthExchange;
 
-  private final String updateCustomersCacheQueueName;
-  private final String updateCustomersCacheExchange;
+  private final String notificationPushEventQueueName;
+  private final String notificationPushEventExchange;
 
   public RabbitMqMapper(RabbitMqProperties rabbitMqProperties) {
-    this.customerExchange = rabbitMqProperties.getQueues().get(0).getExchange();
-    this.reservationExchange = rabbitMqProperties.getQueues().get(1).getExchange();
+    this.customerUpdateCustomersCacheQueueName = rabbitMqProperties.getName(CUSTOMER_UPDATE_CUSTOMERS_CACHE);
+    this.customerUpdateCustomersCacheExchange = rabbitMqProperties.getExchange(CUSTOMER_UPDATE_CUSTOMERS_CACHE);
 
-    this.addCustomerQueueName = rabbitMqProperties.getQueues().get(0).getName().get(0);
-    this.addReservationQueueName = rabbitMqProperties.getQueues().get(1).getName().get(0);
-    this.updateReservationQueueName = rabbitMqProperties.getQueues().get(1).getName().get(1);
+    this.createAuthQueueName = rabbitMqProperties.getName(NOTIFICATION_CREATE_AUTH);
+    this.createAuthExchange = rabbitMqProperties.getExchange(NOTIFICATION_CREATE_AUTH);
 
-    this.createAuthQueueName = rabbitMqProperties.getQueues().get(2).getName().get(0);
-    this.createAuthExchange = rabbitMqProperties.getQueues().get(2).getExchange();
+    this.notificationPushEventQueueName = rabbitMqProperties.getName(NOTIFICATION_PUSH_EVENT);
+    this.notificationPushEventExchange = rabbitMqProperties.getExchange(NOTIFICATION_PUSH_EVENT);
 
-    this.updateCustomersCacheQueueName = rabbitMqProperties.getQueues().get(3).getName().get(0);
-    this.updateCustomersCacheExchange = rabbitMqProperties.getQueues().get(3).getExchange();
   }
 
 }

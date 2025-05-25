@@ -11,17 +11,10 @@ public class RabbitMqCustomerManger {
   private final RabbitMqManager rabbitMqManager;
   private final RabbitMqMapper rabbitMqMapper;
 
-  public void sendAddCustomer(Message message) {
-    rabbitMqManager.sendMessage(
-        rabbitMqMapper.getCustomerExchange(),
-        rabbitMqMapper.getAddCustomerQueueName(),
-        message);
-  }
-
   public void sendUpdateCustomersCache(Message message) {
     rabbitMqManager.sendMessage(
-        rabbitMqMapper.getUpdateCustomersCacheExchange(),
-        rabbitMqMapper.getUpdateCustomersCacheQueueName(),
+        rabbitMqMapper.getCustomerUpdateCustomersCacheQueueName(),
+        rabbitMqMapper.getCustomerUpdateCustomersCacheExchange(),
         message
     );
   }

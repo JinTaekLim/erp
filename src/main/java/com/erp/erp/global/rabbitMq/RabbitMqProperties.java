@@ -1,6 +1,6 @@
 package com.erp.erp.global.rabbitMq;
 
-import java.util.List;
+import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -11,12 +11,22 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "rabbitmq")
 public class RabbitMqProperties {
-  private List<QueueConfig> queues;
+
+  private Map<String, QueueInfo> queues;
+
+
+  public String getName(String key) {
+    return queues.get(key).getName();
+  }
+
+  public String getExchange(String key) {
+    return queues.get(key).getExchange();
+  }
 
   @Getter
   @Setter
-  public static class QueueConfig {
+  public static class QueueInfo {
+    private String name;
     private String exchange;
-    private List<String> name;
   }
 }
