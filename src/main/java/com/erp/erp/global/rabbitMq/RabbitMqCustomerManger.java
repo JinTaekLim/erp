@@ -9,19 +9,12 @@ import org.springframework.stereotype.Component;
 public class RabbitMqCustomerManger {
 
   private final RabbitMqManager rabbitMqManager;
-  private final RabbitMqMapper rabbitMqMapper;
-
-  public void sendAddCustomer(Message message) {
-    rabbitMqManager.sendMessage(
-        rabbitMqMapper.getCustomerExchange(),
-        rabbitMqMapper.getAddCustomerQueueName(),
-        message);
-  }
+  private final RabbitMqRouter rabbitMqRouter;
 
   public void sendUpdateCustomersCache(Message message) {
     rabbitMqManager.sendMessage(
-        rabbitMqMapper.getUpdateCustomersCacheExchange(),
-        rabbitMqMapper.getUpdateCustomersCacheQueueName(),
+        rabbitMqRouter.getCustomerUpdateCustomersCacheExchange(),
+        rabbitMqRouter.getCustomerUpdateCustomersCacheQueueName(),
         message
     );
   }

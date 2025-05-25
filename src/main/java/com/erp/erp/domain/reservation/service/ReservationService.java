@@ -15,9 +15,11 @@ import com.erp.erp.domain.progress.common.entity.Progress;
 import com.erp.erp.domain.institute.business.InstituteValidator;
 import com.erp.erp.domain.institute.common.entity.Institute;
 import com.erp.erp.domain.progress.common.mapper.ProgressMapper;
+import com.erp.erp.domain.reservation.business.PushUpdateReservationEvent;
 import com.erp.erp.domain.reservation.business.ReservationCacheManager;
 import com.erp.erp.domain.reservation.business.ReservationCalculator;
 import com.erp.erp.domain.reservation.business.ReservationDelete;
+import com.erp.erp.domain.reservation.business.ReservationSender;
 import com.erp.erp.domain.reservation.business.ReservationValidator;
 import com.erp.erp.domain.reservation.business.ReservationCreator;
 import com.erp.erp.domain.reservation.business.ReservationReader;
@@ -60,8 +62,10 @@ public class ReservationService {
   private final ProgressExtractor progressExtractor = new ProgressExtractor();
   private final ReservationCalculator reservationCalculator = new ReservationCalculator();
   private final ProgressUpdater progressUpdater;
+  private final ReservationSender reservationSender;
 
 
+  @Transactional
   public void addReservationRequest(AddReservationDto.Request req) {
     Account account = authProvider.getCurrentAccount();
     Institute institute = account.getInstitute();
@@ -106,8 +110,13 @@ public class ReservationService {
     getCustomerCacheManager.deleteCache(instituteId, date);
 
     // 트랜잭션 종료 이후 캐시 갱신 메세지 큐 발행
-    UpdateCustomersCacheEvent event = reservationMapper.toUpdateCustomersCacheEvent(instituteId, date);
-    applicationEventPublisher.publishEvent(event);
+    UpdateCustomersCacheEvent updateCache = reservationMapper.toUpdateCustomersCacheEvent(instituteId, date);
+    applicationEventPublisher.publishEvent(updateCache);
+
+    // 트랜잭션 종료 이후 예약 변동 이벤트 메세지 큐 발행
+    PushUpdateReservationEvent updateReservation = reservationMapper.toPushUpdateReservationEvent(instituteId);
+    applicationEventPublisher.publishEvent(updateReservation);
+
   }
 
   @Transactional
@@ -164,8 +173,13 @@ public class ReservationService {
     getCustomerCacheManager.deleteCache(instituteId, date);
 
     // 트랜잭션 종료 이후 캐시 갱신 메세지 큐 발행
-    UpdateCustomersCacheEvent event = reservationMapper.toUpdateCustomersCacheEvent(instituteId, date);
-    applicationEventPublisher.publishEvent(event);
+    UpdateCustomersCacheEvent updateCache = reservationMapper.toUpdateCustomersCacheEvent(instituteId, date);
+    applicationEventPublisher.publishEvent(updateCache);
+
+    // 트랜잭션 종료 이후 예약 변동 이벤트 메세지 큐 발행
+    PushUpdateReservationEvent updateReservation = reservationMapper.toPushUpdateReservationEvent(instituteId);
+    applicationEventPublisher.publishEvent(updateReservation);
+
   }
 
   public List<GetDailyReservationDto.Response> getDailyReservations(LocalDate date) {
@@ -176,16 +190,22 @@ public class ReservationService {
 
 
   // note. 변경된 좌석에 예약이 존재하는지 검증 필요
+  @Transactional
   public UpdatedSeatNumberDto.Response updatedSeatNumber(UpdatedSeatNumberDto.Request req) {
     Account account = authProvider.getCurrentAccount();
     Institute institute = account.getInstitute();
+    Long instituteId = institute.getId();
 
     instituteValidator.isValidSeatNumber(institute, req.getSeatNumber());
     Reservation reservation = reservationReader.findByIdAndInstituteId(req.getReservationId(),
-        institute.getId());
+        instituteId);
     reservationUpdater.updateSeatNumber(
         reservation, req.getSeatNumber(), String.valueOf(account.getId())
     );
+
+    // 트랜잭션 종료 이후 예약 변동 이벤트 메세지 큐 발행
+    PushUpdateReservationEvent updateReservation = reservationMapper.toPushUpdateReservationEvent(instituteId);
+    applicationEventPublisher.publishEvent(updateReservation);
 
     return reservationMapper.entityToUpdatedSeatNumberDtoResponse(reservation);
   }
@@ -203,8 +223,12 @@ public class ReservationService {
     getCustomerCacheManager.deleteCache(instituteId, date);
 
     // 트랜잭션 종료 이후 캐시 갱신 메세지 큐 발행
-    UpdateCustomersCacheEvent event = reservationMapper.toUpdateCustomersCacheEvent(instituteId, date);
-    applicationEventPublisher.publishEvent(event);
+    UpdateCustomersCacheEvent updateCache = reservationMapper.toUpdateCustomersCacheEvent(instituteId, date);
+    applicationEventPublisher.publishEvent(updateCache);
+
+    // 트랜잭션 종료 이후 예약 변동 이벤트 메세지 큐 발행
+    PushUpdateReservationEvent updateReservation = reservationMapper.toPushUpdateReservationEvent(instituteId);
+    applicationEventPublisher.publishEvent(updateReservation);
   }
 
   public GetReservationCustomerDetailsDto.Response getReservationCustomerDetails(

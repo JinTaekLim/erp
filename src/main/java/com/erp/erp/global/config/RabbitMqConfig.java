@@ -24,11 +24,10 @@ public class RabbitMqConfig {
 
   @Bean
   public Declarables rabbitDeclarables() {
-    List<Declarable> declarable = rabbitMqProperties.getQueues().stream()
-        .flatMap(q -> q.getName().stream()
-            .map(queueName -> createQueueAndBinding(q.getExchange(), queueName)))
-        .flatMap(List::stream)
+    List<Declarable> declarable = rabbitMqProperties.getQueues().values().stream()
+        .flatMap(q -> createQueueAndBinding(q.getExchange(), q.getName()).stream())
         .toList();
+
 
     return new Declarables(declarable);
   }

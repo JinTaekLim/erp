@@ -2,10 +2,12 @@ package com.erp.erp.domain.institute.business;
 
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class InstituteLock {
@@ -34,7 +36,8 @@ public class InstituteLock {
     try {
       getLock(instituteId);
       action.run();
-    } catch (Exception e) {
+    } catch (InterruptedException e) {
+      log.error(e.getMessage());
       throw new RuntimeException("락 획득 실패");
     } finally {
       unLock(instituteId);
