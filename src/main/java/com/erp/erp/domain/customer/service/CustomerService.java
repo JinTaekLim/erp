@@ -168,12 +168,15 @@ public class CustomerService {
     return customerMapper.entityToUpdateCustomerResponse(updateCustomer, updateProgress);
   }
 
+  // note. 2중 if문 처리 필요
   public List<GetCustomerDto.Response> getCustomers(Long lastId, CustomerStatus status) {
     Long instituteId = authProvider.getCurrentInstituteId();
 
-    // 캐시 데이터가 존재할시, 이를 반환
-    List<GetCustomerDto.Response> cache = getCustomerCacheManager.findByInstituteId(instituteId);
-    if (!cache.isEmpty()) return cache;
+    // 첫 번째 페이지 요청이며 매장의 캐시가 존재할시, 이를 반환
+    if (lastId == null) {
+      List<GetCustomerDto.Response> cache = getCustomerCacheManager.findByInstituteId(instituteId);
+      if (!cache.isEmpty()) return cache;
+    }
 
     // 고객 정보 조회
     List<GetCustomersProjection.Customer> customers = customerReader.findCustomersAfter(
