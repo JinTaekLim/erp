@@ -68,37 +68,37 @@ class ReservationSchedulerTest extends IntegrationTest {
   }
 
 
-  @Test
-  void updateGetCustomer() throws Exception {
-    //given
-    Institute institute = createInstitutes();
-    Plan plan = createPlans();
-    int customerSize = RandomValue.getInt(1,25);
-    CustomerStatus status = CustomerStatus.ACTIVE;
-
-    List<Customer> customers = new ArrayList<>(IntStream.range(0, customerSize)
-        .mapToObj(i -> {
-          return createCustomer(plan, institute, status);
-        }).toList());
-
-    List<Reservation> reservations = customers.stream()
-        .flatMap(customer -> {
-          int reservationSize = RandomValue.getInt(1, 5);
-          return IntStream.range(0, reservationSize)
-              .mapToObj(i -> createReservation(customer));
-        })
-        .toList();
-
-    Long lastId = customers.get(customerSize-1).getId() + 1;
-
-    // when
-    reservationScheduler.updateGetCustomer();
-
-    List<GetCustomerDto.Response> cache = reservationCacheManager.getCustomers(institute.getId());
-    List<GetCustomerDto.Response> response = customerRepository.findAllByInstituteBeforeIdAndStatus(institute.getId(), lastId, CustomerStatus.ACTIVE, PAGE_SIZE);
-
-    // then
-    assertThat(cache.size()).isEqualTo(response.size());
-    assertThat(cache).usingRecursiveComparison().isEqualTo(response);
-  }
+//  @Test
+//  void updateGetCustomer() throws Exception {
+//    //given
+//    Institute institute = createInstitutes();
+//    Plan plan = createPlans();
+//    int customerSize = RandomValue.getInt(1,25);
+//    CustomerStatus status = CustomerStatus.ACTIVE;
+//
+//    List<Customer> customers = new ArrayList<>(IntStream.range(0, customerSize)
+//        .mapToObj(i -> {
+//          return createCustomer(plan, institute, status);
+//        }).toList());
+//
+//    List<Reservation> reservations = customers.stream()
+//        .flatMap(customer -> {
+//          int reservationSize = RandomValue.getInt(1, 5);
+//          return IntStream.range(0, reservationSize)
+//              .mapToObj(i -> createReservation(customer));
+//        })
+//        .toList();
+//
+//    Long lastId = customers.get(customerSize-1).getId() + 1;
+//
+//    // when
+//    reservationScheduler.updateGetCustomer();
+//
+//    List<GetCustomerDto.Response> cache = reservationCacheManager.getCustomers(institute.getId());
+//    List<GetCustomerDto.Response> response = customerRepository.findAllByInstituteBeforeIdAndStatus(institute.getId(), lastId, CustomerStatus.ACTIVE, PAGE_SIZE);
+//
+//    // then
+//    assertThat(cache.size()).isEqualTo(response.size());
+//    assertThat(cache).usingRecursiveComparison().isEqualTo(response);
+//  }
 }

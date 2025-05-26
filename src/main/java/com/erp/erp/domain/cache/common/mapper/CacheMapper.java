@@ -9,4 +9,6 @@ import org.mapstruct.Mapper;
 public interface CacheMapper {
 
   GetCustomerCache toGetCustomerCache(List<GetCustomerDto.Response> getCustomers, long updatedTime);
+
+  List<GetCustomerDto.Response> toGetCustomerDtoList(List<GetCustomerCache.GetCustomers> customers);
 }
