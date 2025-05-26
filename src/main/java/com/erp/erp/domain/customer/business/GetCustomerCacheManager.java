@@ -12,8 +12,8 @@ import com.erp.erp.global.util.ConverterUtil;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class GetCustomerCacheManager {
 
-  private final RedisCacheRepository<GetCustomerCache> redisCacheRepository;
+  private final RedisCacheRepository redisCacheRepository;
   private final RedisScriptRepository redisScriptRepository;
   private final CacheMapper cacheMapper;
 
@@ -33,10 +33,13 @@ public class GetCustomerCacheManager {
 
   public List<GetCustomerDto.Response> findByInstituteId(Long instituteId) {
     String key = getKey(instituteId);
-    return Optional.ofNullable(redisCacheRepository.get(key))
+
+    return redisCacheRepository.getGetCustomerCache(key)
         .map(GetCustomerCache::getGetCustomers)
-        .orElseGet(ArrayList::new);
+        .map(cacheMapper::toGetCustomerDtoList)
+        .orElseGet(Collections::emptyList);
   }
+
 
 
   public void updateCacheWithTime(Long instituteId, List<GetCustomerDto.Response> response, LocalDateTime date) {

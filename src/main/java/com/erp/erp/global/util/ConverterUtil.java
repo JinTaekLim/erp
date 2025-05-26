@@ -41,4 +41,8 @@ public class ConverterUtil {
       throw new RuntimeException(e);
     }
   }
+
+  public static <T> T toObject(Object object, Class<T> clazz) {
+    return objectMapper.convertValue(object, clazz);
+  }
 }
