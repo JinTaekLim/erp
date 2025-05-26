@@ -72,5 +72,10 @@ public interface ReservationMapper {
   UpdateCustomersCacheEvent toUpdateCustomersCacheEvent(Long instituteId, LocalDateTime time);
 
   // 예약 변동 알림 이벤트
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "name", ignore = true)
+  @Mapping(target = "reconnectTime", ignore = true)
+  @Mapping(target = "comment", ignore = true)
   PushUpdateReservationEvent toPushUpdateReservationEvent(Long instituteId);
+
 }
