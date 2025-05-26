@@ -3,6 +3,7 @@ package com.erp.erp.global.config.security;
 import com.erp.erp.domain.auth.business.TokenExtractor;
 import com.erp.erp.global.config.UrlProperties;
 import com.erp.erp.global.config.log.LogFilter;
+import com.erp.erp.global.config.log.LogManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +28,7 @@ public class SecurityConfig {
 
   private final UrlProperties urlProperties;
   private final TokenExtractor tokenExtractor;
+  private final LogManager logManager;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -42,7 +44,7 @@ public class SecurityConfig {
         .sessionManagement(c -> c
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 필요한 상황에만 생성
         // 로깅 필터 추가
-        .addFilterBefore(new LogFilter(), SecurityContextHolderFilter.class)
+        .addFilterBefore(new LogFilter(logManager), SecurityContextHolderFilter.class)
         .addFilterBefore(new AuthFilter(tokenExtractor), UsernamePasswordAuthenticationFilter.class)
 
         .authorizeHttpRequests(auth -> auth.
