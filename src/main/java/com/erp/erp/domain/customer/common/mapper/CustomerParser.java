@@ -39,8 +39,9 @@ public class CustomerParser {
           .mapToInt(r -> reservationCalculator.getAbsenceCount(r.getAttendanceStatus()))
           .sum();
 
+      int availablePeriod = c.getAvailablePeriod();
       int remainingPeriod = reservationCalculator.getRemainingPeriod(
-          c.getExpiredAt(), c.getRegistrationDate().toLocalDate()
+          availablePeriod, c.getExpiredAt(), c.getRegistrationDate().toLocalDate()
       );
 
       double remainingTime = reservationCalculator.getRemainingTime(c.getAvailableTime(), usedTime);
