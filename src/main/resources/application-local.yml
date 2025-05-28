@@ -16,6 +16,7 @@ spring:
     port: 5672
     username: guest
     password: guest
+    managementUrl: "http://localhost:15672/"
 
   jpa:
     hibernate:

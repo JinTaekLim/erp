@@ -88,6 +88,8 @@ dependencies {
 	// Jackson
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
+	// OpenFeign
+	implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.1.4")
 
 	// test
 	testRuntimeOnly 'com.h2database:h2:2.2.224'
