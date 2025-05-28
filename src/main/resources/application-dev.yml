@@ -16,6 +16,7 @@ spring:
     port: ${datasource.dev.rabbitmq.port}
     username: ${datasource.dev.rabbitmq.username}
     password: ${datasource.dev.rabbitmq.password}
+    managementUrl: ${datasource.dev.rabbitmq.managementUrl}
 
   jpa:
     hibernate:

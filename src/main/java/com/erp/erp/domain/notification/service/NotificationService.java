@@ -2,7 +2,7 @@ package com.erp.erp.domain.notification.service;
 
 import com.erp.erp.domain.auth.business.AuthProvider;
 import com.erp.erp.domain.notification.business.NotificationServiceClient;
-import com.erp.erp.global.properties.SupportServerProperties;
+import com.erp.erp.global.properties.SupportServerRouter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class NotificationService {
 
-  private final SupportServerProperties supportServer;
+  private final SupportServerRouter supportServer;
   private final AuthProvider authProvider;
   private final NotificationServiceClient notificationServiceClient;
 

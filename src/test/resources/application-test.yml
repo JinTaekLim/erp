@@ -10,6 +10,13 @@ spring:
     jdbc:
       initialize-schema: always
 
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    managementUrl: "http://localhost:15672/"
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -25,3 +32,10 @@ logging:
   level.org.hibernate:
 #    SQL: DEBUG
     orm.jdbc.bind: TRACE
+
+
+
+datasource:
+  prod:
+    rabbitmq:
+      managementUrl: http://localhost:15672/
