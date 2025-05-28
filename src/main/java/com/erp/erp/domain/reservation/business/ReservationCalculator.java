@@ -18,11 +18,14 @@ public class ReservationCalculator {
     return attendanceStatus == AttendanceStatus.ABSENT ? 1 : 0;
   }
 
-  public int getRemainingPeriod(LocalDate expiredAt, LocalDate registrationAt) {
-    LocalDate now = LocalDate.now();
-    return (int) ((expiredAt != null) ?
-            ChronoUnit.DAYS.between(expiredAt, now) :
-            ChronoUnit.DAYS.between(registrationAt, now));
+  public int getRemainingPeriod(int availablePeriod, LocalDate expiredAt, LocalDate registrationAt) {
+    // 사용 시작 날짜
+    LocalDate startUsePeriod = (expiredAt != null) ? expiredAt : registrationAt;
+    // 사용한 기간
+    int usedPeriodInDays = (int) ChronoUnit.DAYS.between(startUsePeriod, LocalDate.now());
+
+    // 남은 기간
+    return availablePeriod - usedPeriodInDays;
   }
 
   public double getRemainingTime(int availableTime, double usedTime) {
