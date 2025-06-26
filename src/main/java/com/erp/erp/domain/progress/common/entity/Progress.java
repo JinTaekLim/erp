@@ -1,11 +1,13 @@
 package com.erp.erp.domain.progress.common.entity;
 
 import com.erp.erp.domain.customer.common.entity.Customer;
+import com.erp.erp.domain.reservation.common.entity.Reservation;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import jakarta.validation.constraints.NotNull;
@@ -28,6 +30,10 @@ public class Progress {
   @NotNull
   private Customer customer;
 
+  @OneToOne
+  @NotNull
+  private Reservation reservation;
+
   @NotNull
   private LocalDate date;
 
@@ -45,8 +51,11 @@ public class Progress {
   private LocalDateTime updatedAt;
 
   @Builder
-  public Progress(Customer customer, LocalDate date, Double usedTime, String createdId) {
+  public Progress(Customer customer, Reservation reservation, LocalDate date, Double usedTime,
+      String createdId
+  ) {
     this.customer = customer;
+    this.reservation = reservation;
     this.date = date;
     this.usedTime = usedTime;
     this.createdId = createdId;

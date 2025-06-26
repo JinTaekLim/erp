@@ -11,4 +11,5 @@ public interface ProgressRepository extends JpaRepository<Progress, Long> {
   List<Progress> findByCustomerId(Long customerId);
 
   List<Progress> findAllByIdInAndCustomerId(List<Long> id, Long customerId);
+  void deleteByReservationId(Long reservationId);
 }
