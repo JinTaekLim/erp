@@ -123,10 +123,22 @@ class ReservationTest extends IntegrationTest {
     return reservationRepository.save(reservation);
   }
 
-  private List<Progress> createProgressList(Customer customer, int size) {
-    List<Progress> progressList = ProgressGenerator.get(customer, size);
-    progressRepository.saveAll(progressList);
-    return progressList;
+  private List<Reservation> createReservationList(Customer customer, int size) {
+    List<Reservation> reservations = ReservationGenerator.getList(customer, customer.getInstitute(), size);
+    reservationRepository.saveAll(reservations);
+    return reservations;
+  }
+
+  private List<Progress> createProgressList(Customer customer, List<Reservation> reservations) {
+    List<Progress> progress = ProgressGenerator.get(customer, reservations);
+    progressRepository.saveAll(progress);
+    return progress;
+  }
+
+  private Progress createProgress(Customer customer, Reservation reservations) {
+    Progress progress = ProgressGenerator.get(customer, reservations);
+    progressRepository.save(progress);
+    return progress;
   }
 
   @Test
@@ -332,17 +344,15 @@ class ReservationTest extends IntegrationTest {
 
     Customer customer = createCustomers(institute);
     Reservation reservation = createReservation(customer, institute);
-    int progressSize = RandomValue.getInt(0, 5);
-    List<Progress> progressList = createProgressList(customer, progressSize);
+    Progress progress = createProgress(customer, reservation);
 
-    int addProgressSize = RandomValue.getInt(0,progressSize);
-    List<UpdateReservationDto.ProgressRequest> progressRequest = IntStream.range(0, addProgressSize)
-        .mapToObj(p -> {
-          return ProgressRequest.builder()
-              .progressId(progressList.get(p).getId())
-              .content(RandomValue.string(100).get())
-              .build();
-        }).toList();
+
+    List<UpdateReservationDto.ProgressRequest> progressRequest = List.of(
+        ProgressRequest.builder()
+            .progressId(progress.getId())
+            .content(RandomValue.string(100).get())
+            .build()
+    );
 
 
     Reservation newReservation = ReservationGenerator.get(customer, institute);
@@ -832,7 +842,8 @@ class ReservationTest extends IntegrationTest {
     Customer customer = createCustomers(institute);
 
     int progressSize = RandomValue.getInt(0,5);
-    List<Progress> progressList = createProgressList(customer, progressSize);
+    List<Reservation> reservations = createReservationList(customer, progressSize);
+    List<Progress> progressList = createProgressList(customer, reservations);
 
     Reservation reservation = createReservation(customer, institute);
 

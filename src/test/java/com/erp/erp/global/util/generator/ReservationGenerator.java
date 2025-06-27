@@ -7,6 +7,8 @@ import com.erp.erp.global.util.randomValue.RandomValue;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.IntStream;
 
 public class ReservationGenerator extends EntityGenerator{
 
@@ -47,6 +49,28 @@ public class ReservationGenerator extends EntityGenerator{
         .endIndex(endIndex)
         .seatNumber(seatNumber)
         .build();
+  }
+
+  public static List<Reservation> getList(Customer customer, Institute institute, int size) {
+    LocalDate day = RandomValue.getRandomLocalDate();
+
+    int openIndex = convertToTimeIndex(institute.getOpenTime());
+    int closeIndex = convertToTimeIndex(institute.getCloseTime());
+    int startIndex = getStartIndex(openIndex, closeIndex);
+    int endIndex = getEndIndex(startIndex, closeIndex);
+    int seatNumber = RandomValue.getInt(1, institute.getTotalSeat());
+
+    return IntStream.range(0, size)
+        .mapToObj(i -> {
+          return Reservation.builder()
+              .customer(customer)
+              .institute(institute)
+              .reservationDate(day)
+              .startIndex(startIndex)
+              .endIndex(endIndex)
+              .seatNumber(seatNumber)
+              .build();
+        }).toList();
   }
 
   public static Reservation get(Customer customer, Institute institute,
