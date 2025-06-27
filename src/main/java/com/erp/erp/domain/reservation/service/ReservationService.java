@@ -102,7 +102,7 @@ public class ReservationService {
 
 
     double usedTime = reservationCalculator.getUsedTime(req.getStartIndex(), req.getEndIndex());
-    Progress progress = progressMapper.toEntity(customer, req.getReservationDate(), usedTime, accountId);
+    Progress progress = progressMapper.toEntity(customer, reservation, usedTime, accountId);
     progressCreator.save(progress);
 
     // 캐시 삭제
