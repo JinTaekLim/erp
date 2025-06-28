@@ -16,6 +16,10 @@ public class ProgressDeleter {
     progressRepository.deleteAllByCustomerId(customerId);
   }
 
+  public void deleteByReservationId(Long reservationId) {
+    progressRepository.deleteByReservationId(reservationId);
+  }
+
   public void deleteAll(List<Progress> progressList) {
     progressRepository.deleteAll(progressList);
   }

@@ -7,6 +7,7 @@ import com.erp.erp.domain.customer.business.GetCustomerCacheManager;
 import com.erp.erp.domain.customer.common.dto.UpdateCustomersCacheEvent;
 import com.erp.erp.domain.institute.business.InstituteLock;
 import com.erp.erp.domain.progress.business.ProgressCreator;
+import com.erp.erp.domain.progress.business.ProgressDeleter;
 import com.erp.erp.domain.progress.business.ProgressExtractor;
 import com.erp.erp.domain.progress.business.ProgressReader;
 import com.erp.erp.domain.customer.common.entity.Customer;
@@ -57,6 +58,7 @@ public class ReservationService {
   private final ProgressCreator progressCreator;
   private final ProgressMapper progressMapper;
   private final GetCustomerCacheManager getCustomerCacheManager;
+  private final ProgressDeleter progressDeleter;
 
 
   private final ProgressExtractor progressExtractor = new ProgressExtractor();
@@ -215,6 +217,10 @@ public class ReservationService {
   public void deleteReservations(Long reservationId) {
     Long instituteId = authProvider.getCurrentInstituteId();
 
+    // 진도표 삭제
+    progressDeleter.deleteByReservationId(reservationId);
+
+    // 예약 삭제
     Reservation reservation = reservationReader.findByIdAndInstituteId(reservationId, instituteId);
     reservationDelete.delete(reservation);
 
