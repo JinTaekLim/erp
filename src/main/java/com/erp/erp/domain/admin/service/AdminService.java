@@ -14,8 +14,10 @@ import com.erp.erp.domain.admin.common.dto.GetAccountDto;
 import com.erp.erp.domain.admin.common.dto.LoginDto;
 import com.erp.erp.domain.admin.common.dto.UpdateAccountDto;
 import com.erp.erp.domain.admin.common.dto.UpdateInstituteDto;
+import com.erp.erp.domain.admin.common.dto.UpdatePlanCacheEvent;
 import com.erp.erp.domain.admin.common.entity.Admin;
 import com.erp.erp.domain.admin.common.dto.GetInstituteDto;
+import com.erp.erp.domain.admin.common.mapper.AdminMapper;
 import com.erp.erp.domain.institute.business.InstituteCreator;
 import com.erp.erp.domain.institute.business.InstituteReader;
 import com.erp.erp.domain.institute.business.InstituteUpdater;
@@ -26,11 +28,15 @@ import com.erp.erp.domain.plan.common.entity.Plan;
 import com.erp.erp.domain.plan.common.mapper.PlanMapper;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class AdminService {
+
+  private final ApplicationEventPublisher applicationEventPublisher;
 
   private final AccountCreator accountCreator;
   private final AccountReader accountReader;
@@ -44,6 +50,7 @@ public class AdminService {
   private final AdminReader adminReader;
   private final AdminAuthProvider adminAuthProvider;
   private final InstituteUpdater instituteUpdater;
+  private final AdminMapper adminMapper;
 
   public AddAccountDto.Response addAccount(AddAccountDto.Request req) {
     Admin admin = adminAuthProvider.getAdmin();
@@ -53,10 +60,16 @@ public class AdminService {
     return accountMapper.entityToDto(account);
   }
 
+  @Transactional
   public AddPlanDto.Response addPlans(AddPlanDto.Request req) {
     Admin admin = adminAuthProvider.getAdmin();
     Plan plan = planMapper.dtoToEntity(req, String.valueOf(admin.getId()));
     planCreator.save(plan);
+
+    // 트랜잭션 종류 이후 캐시 갱신 메세지 큐 발행
+    UpdatePlanCacheEvent event = adminMapper.updatePlanCacheEvent(admin.getId());
+    applicationEventPublisher.publishEvent(event);
+
     return planMapper.entityToAddPlanResponse(plan);
   }
 
