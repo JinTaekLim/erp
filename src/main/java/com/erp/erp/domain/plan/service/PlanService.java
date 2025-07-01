@@ -32,4 +32,9 @@ public class PlanService {
 
      return planMapper.entityToGetPlanResponseList(plans);
   }
+
+  public void updatePlanCache() {
+    List<Plan> plans = planReader.findAll();
+    planCache.updatePlans(plans);
+  }
 }
