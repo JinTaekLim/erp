@@ -1,21 +1,23 @@
-# ERP 란?
+# 2.0.0
 
-> 운전 면허 매장 회원/예약 관리 WEB 사이트 
+### 추가 사항
+- 오류 발생 시 Discord 알림 전송
+- 메세지 큐 ( 발행,수신 ) 로깅추가
+- 서포트(보조) 서버와 통신을 위한 설정 추가
 
-- 기간 : 2024.10 ~ 2024.12
-- 구성 : FE 2, BE 1, Designer 1
-- [기획/UI](https://www.figma.com/design/kplN35VPPaPC1LSfMvOAtA/%5B-ERP-%5D?node-id=0-1&t=GvDgwRCKznwXJCly-1)
-
-## 기술 스택
-- Backend
-    - Java, Spring Boot, Jpa, Spring Security, JWT, Swagger
-- DB
-    - MySQL, Redis
-- DevOps / Infra
-    - AWS EC2, Docker, GitHub Actions, Nginx
-
-## 아키텍처
-![ERP-Architecture drawio](https://github.com/user-attachments/assets/53eb3aea-797f-4c04-8fa0-0916023991a6)
+### 변경 사항
+- 진도표 정렬 순서 변경
+- 예약/고객 상세 조회 반환 값 변경
+- Swagger 접속 경로 변경
+- 무분별한 Swagger 접속 로깅 최소화
+- File 데이터 로깅 제거
+- 예약 추가/삭제 시, 진도표 함께 추가/삭제 되도록 변경
+- 예약 수정 요청 값 변경
 
 
-## 트러블슈팅
+### 오류 수정 
+- 임시 파일 업로드 배치가 실행 되지 않는 오류 수정
+- 예약 상세 조회 중 잘못된 Memo 데이터 반환 오류 수정 
+
+
+
