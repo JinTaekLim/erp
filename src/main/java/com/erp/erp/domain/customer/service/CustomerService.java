@@ -116,10 +116,6 @@ public class CustomerService {
 
     customerUpdater.updateStatus(customersId, req.getStatus(), String.valueOf(account.getId()));
 
-    if (req.getStatus().equals(CustomerStatus.DELETED)) {
-      reservationCacheManager.updateCacheExcludingCustomer(instituteId, customersId);
-    }
-
     // 캐시 삭제
     LocalDateTime date = LocalDateTime.now();
     getCustomerCacheManager.deleteCache(instituteId, date);
