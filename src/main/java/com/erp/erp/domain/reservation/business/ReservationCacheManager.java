@@ -77,13 +77,4 @@ public class ReservationCacheManager {
 
     return reservationCache;
   }
-
-  public void updateCacheExcludingCustomer(Long instituteId, Long customerId) {
-    List<ReservationCache> reservationCacheList = reservationCacheReader.findByInstituteId(
-        instituteId
-    );
-    reservationCacheUpdater.updateCacheExcludingCustomer(
-        instituteId, customerId, reservationCacheList
-    );
-  }
 }
