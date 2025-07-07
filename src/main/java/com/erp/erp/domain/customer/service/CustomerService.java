@@ -239,13 +239,7 @@ public class CustomerService {
   public GetCustomerDetailDto.Response getCustomerDetail(Long customerId) {
     Institute institute = authProvider.getCurrentInstitute();
     Customer customer = customerReader.findByIdAndInstituteId(customerId, institute.getId());
-
-    // 진도표 상위 5개 제한 ( 프론트 수정 전까지 임시 코드 )
-    List<Progress> progress = progressReader.findByCustomerIdAndDesc(customerId)
-        .stream()
-        .limit(3)
-        .toList();
-
+    List<Progress> progress = progressReader.findByCustomerIdAndDesc(customerId);
     return customerMapper.entityToGetCustomerDetailResponse(customer, progress);
   }
 
