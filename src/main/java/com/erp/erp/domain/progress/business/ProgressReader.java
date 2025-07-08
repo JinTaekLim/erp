@@ -16,7 +16,7 @@ public class ProgressReader {
 
   public List<Progress> findByCustomerIdAndDesc(Long id) {
     List<Progress> progress = progressRepository.findByCustomerId(id);
-    progress.sort(Comparator.comparing(Progress::getId).reversed());
+    progress.sort(Comparator.comparing(Progress::getDate).reversed());
     return progress;
   }
 
