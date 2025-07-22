@@ -24,6 +24,21 @@ public class RabbitMqRouter {
   private final String planUpdatePlanCacheQueueName;
   private final String planUpdatePlanCacheExchange;
 
+
+  // Batch
+  private final static String CUSTOMER_TEMPORARY_PHOTO = "customer-temporary-photo";
+  private final static String CUSTOMER_UPDATE_STATUS = "customer-update-status";
+  private final static String CUSTOMER_UPDATE_EXPIRED_AT = "customer-update-expired-at";
+
+  private final String customerTemporaryPhotoQueueName;
+  private final String customerTemporaryPhotoExchange;
+
+  private final String customerUpdateStatusQueueName;
+  private final String customerUpdateStatusExchange;
+
+  private final String customerUpdateExpiredAtQueueName;
+  private final String customerUpdateExpiredAtExchange;
+
   public RabbitMqRouter(RabbitMqProperties rabbitMqProperties) {
     this.customerUpdateCustomersCacheQueueName = rabbitMqProperties.getName(CUSTOMER_UPDATE_CUSTOMERS_CACHE);
     this.customerUpdateCustomersCacheExchange = rabbitMqProperties.getExchange(CUSTOMER_UPDATE_CUSTOMERS_CACHE);
@@ -36,6 +51,15 @@ public class RabbitMqRouter {
 
     this.planUpdatePlanCacheQueueName = rabbitMqProperties.getName(PLAN_UPDATE_PLAN_CACHE);
     this.planUpdatePlanCacheExchange = rabbitMqProperties.getExchange(PLAN_UPDATE_PLAN_CACHE);
+
+    this.customerTemporaryPhotoQueueName = rabbitMqProperties.getName(CUSTOMER_TEMPORARY_PHOTO);
+    this.customerTemporaryPhotoExchange = rabbitMqProperties.getExchange(CUSTOMER_TEMPORARY_PHOTO);
+
+    this.customerUpdateStatusQueueName = rabbitMqProperties.getName(CUSTOMER_UPDATE_STATUS);
+    this.customerUpdateStatusExchange = rabbitMqProperties.getExchange(CUSTOMER_UPDATE_STATUS);
+
+    this.customerUpdateExpiredAtQueueName = rabbitMqProperties.getName(CUSTOMER_UPDATE_EXPIRED_AT);
+    this.customerUpdateExpiredAtExchange = rabbitMqProperties.getExchange(CUSTOMER_UPDATE_EXPIRED_AT);
   }
 
 }
